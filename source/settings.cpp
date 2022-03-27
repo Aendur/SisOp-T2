@@ -32,21 +32,21 @@ void Settings::ParseLine(const string & line, int nline) {
 
 void Settings::ParseAttr(const string & attr, const string & args) {
 	static const umap<string, std::pair<unsigned int, string>> arg_num = {
-		{ "WINDOW_SIZE"     , {2, "(width,height)" }},
-		{ "GRID_SIZE"       , {2, "(width,height)" }},
-		{ "GRID_COLOR"      , {3, "(R,G,B)"        }},
-		{ "BACKGROUND_COLOR", {3, "(R,G,B)"        }},
-		{ "SQUARE_CELLS"    , {1, "(TRUE/FALSE)"   }},
-		{ "FRAME_RATE"      , {1, "(fps)"          }},
-		{ "PLAYER"          , {4, "(name,R,G,B)"   }},
+		{ "GRID_SIZE"        , {2, "(width,height)" }},
+		{ "CELL_SIZE"        , {1, "(size)"         }},
+		{ "LINE_COLOR"       , {3, "(R,G,B)"        }},
+		{ "BACKGROUND_COLOR" , {3, "(R,G,B)"        }},
+		{ "BORDER_SIZE"      , {2, "(outer,inner)"  }},
+		{ "FRAME_RATE"       , {1, "(fps)"          }},
+		{ "PLAYER"           , {4, "(name,R,G,B)"   }},
 	};
 
 	static const umap<string, void (*)(const vector<string> &)> arg_act = {
-		{ "WINDOW_SIZE"      , &Settings::SetWindowSize     },
 		{ "GRID_SIZE"        , &Settings::SetGridSize       },
-		{ "GRID_COLOR"       , &Settings::SetGridColor      },
+		{ "CELL_SIZE"        , &Settings::SetCellSize       },
+		{ "LINE_COLOR"       , &Settings::SetLineColor      },
 		{ "BACKGROUND_COLOR" , &Settings::SetBackgroundColor},
-		{ "SQUARE_CELLS"     , &Settings::SetSquareCells    },
+		{ "BORDER_SIZE"      , &Settings::SetBorderSize     },
 		{ "FRAME_RATE"       , &Settings::SetFrameRate      },
 		{ "PLAYER"           , &Settings::AddPlayer         },
 	};
@@ -61,22 +61,39 @@ void Settings::ParseAttr(const string & attr, const string & args) {
 	}
 }
 
-void Settings::SetWindowSize(const vector<string> & argv) {
-	Settings::window_width = std::stoi(Utility::strip(argv[0]));
-	Settings::window_height = std::stoi(Utility::strip(argv[1]));	
+void Settings::SetCellSize(const vector<string> & argv) {
+	Settings::cell_size = std::stoi(argv[0]);
 }
 
 void Settings::SetGridSize(const vector<string> & argv) {
-	Settings::grid_width = std::stoi(Utility::strip(argv[0]));
-	Settings::grid_height = std::stoi(Utility::strip(argv[1]));
+	Settings::grid_width = std::stoi(argv[0]);
+	Settings::grid_height = std::stoi(argv[1]);
 }
 
-void Settings::SetGridColor(const vector<string> & argv) { (void) argv; throw std::logic_error("SetGridColor unimplemented"); }
-void Settings::SetBackgroundColor(const vector<string> & argv) { (void) argv; throw std::logic_error("SetBackgroundColor unimplemented"); }
-void Settings::SetSquareCells(const vector<string> & argv) { (void) argv; throw std::logic_error("SetSquareCells unimplemented"); }
+void Settings::SetLineColor(const vector<string> & argv) { (void) argv; throw std::logic_error("SetLineColor unimplemented"); }
+
+void Settings::SetBackgroundColor(const vector<string> & argv) {
+	Settings::background_color.R = std::stoi(argv[0]);
+	Settings::background_color.G = std::stoi(argv[1]);
+	Settings::background_color.B = std::stoi(argv[2]);
+}
+
+void Settings::SetBorderSize(const vector<string> & argv) {
+	Settings::border_size1 = std::stoi(argv[0]);
+	Settings::border_size2 = std::stoi(argv[1]);
+}
+
 void Settings::SetFrameRate(const vector<string> & argv) { (void) argv; throw std::logic_error("SetFrameRate unimplemented"); }
 void Settings::AddPlayer(const vector<string> & argv) { (void) argv; throw std::logic_error("AddPlayer unimplemented"); }
 
+
+int Settings::GetWindowWidth(void) {
+	return Settings::cell_size * Settings::grid_width + 2 * (Settings::border_size1 + Settings::border_size2);
+}
+
+int Settings::GetWindowHeight(void) {
+	return Settings::cell_size * Settings::grid_height + 2 * (Settings::border_size1 + Settings::border_size2);
+}
 
 
 

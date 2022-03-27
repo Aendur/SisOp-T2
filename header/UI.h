@@ -27,6 +27,10 @@ private:
 	float dt = -1.0f;
 	void CalculateDeltaTime(void);
 
+	void DrawBoard(void);
+	void DrawBorder(void);
+	void DrawGrid(void);
+
 public:
 	UI(const std::string & t, int w, int h);
 	~UI(void);

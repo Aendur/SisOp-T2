@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "settings.h"
 
 #include <iostream>
 
@@ -65,6 +66,7 @@ void UI::Run(void) {
 		this->CalculateDeltaTime();
 
 		this->HandleInput();
+		this->DrawBoard();
 
 		SDL_RenderPresent(this->renderer);
 		SDL_Delay(32);
@@ -109,4 +111,58 @@ void UI::CalculateDeltaTime(void) {
 	this->frameStart = SDL_GetTicks();
 	this->dt = (float) (this->frameStart - lastFrame) * 0.001;
 	//std::cout << this->dt << std::endl;
+}
+
+void UI::DrawBoard(void) {
+	Color bgc = Settings::background_color;
+	SDL_SetRenderDrawColor(this->renderer, bgc.R, bgc.G, bgc.B, bgc.A);
+	SDL_RenderClear(this->renderer);
+
+	DrawBorder();
+	DrawGrid();
+}
+
+void UI::DrawBorder(void) {
+	static int outer_border_size = Settings::border_size1;
+	static int total_border_size = Settings::border_size1 + Settings::border_size2;
+	static int board_w = width  - 2 * total_border_size;
+	static int board_h = height - 2 * total_border_size;
+	static const SDL_Rect border_outer[4] = {
+		{ 0, 0, width, outer_border_size },
+		{ 0, 0, outer_border_size, height },
+		{ 0, height - outer_border_size, width, outer_border_size },
+		{ width - outer_border_size, 0, outer_border_size, height },
+	};
+	static const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
+
+	Color lc = Settings::line_color;
+	SDL_SetRenderDrawColor(this->renderer, lc.R, lc.G, lc.B, lc.A);
+	SDL_RenderFillRects(this->renderer, border_outer, 4);
+	SDL_RenderDrawRect(this->renderer, &border_inner);
+}
+
+void UI::DrawGrid(void) {
+	static int csize = Settings::cell_size;
+	static int nrows = Settings::grid_height;
+	static int ncols = Settings::grid_width;
+	static int board_height = csize * nrows - 1;
+	static int board_width = csize * ncols - 1;
+	static Color lc = Settings::line_color;
+	
+	SDL_SetRenderDrawColor(this->renderer, lc.R, lc.G, lc.B, lc.A);
+	
+	int x0 = Settings::border_size1 + Settings::border_size2;
+	int y0 = x0;
+
+	for(int i = 0; i < nrows; ++i) {
+		int y = y0 + i * csize;
+		SDL_RenderDrawLine(this->renderer, x0, y            , x0 + board_width, y            );
+		SDL_RenderDrawLine(this->renderer, x0, y + csize - 1, x0 + board_width, y + csize - 1);
+	}
+
+	for(int i = 0; i < nrows; ++i) {
+		int x = x0 + i * csize;
+		SDL_RenderDrawLine(this->renderer, x            , y0, x            , y0 + board_width);
+		SDL_RenderDrawLine(this->renderer, x + csize - 1, y0, x + csize - 1, y0 + board_width);
+	}
 }

@@ -16,7 +16,7 @@ int main (int, char ** argv) {
 	Settings::LoadSettings("settings.ini");
 
 	(void)argv;
-	UI ui("test", 800, 600);
+	UI ui("test", Settings::GetWindowWidth(), Settings::GetWindowHeight());
 	ui.Run();
 
 	return 0;
