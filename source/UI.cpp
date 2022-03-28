@@ -62,12 +62,11 @@ void UI::Dispose(void) {
 }
 
 void UI::Run(void) {
+	this->DrawBoard();
+	
 	while (!this->quit) {
 		this->CalculateDeltaTime();
-
 		this->HandleInput();
-		this->DrawBoard();
-
 		SDL_RenderPresent(this->renderer);
 		SDL_Delay(32);
 	}
