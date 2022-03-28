@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "settings.h"
+#include "board.h"
 #include "UI.h"
 
 //#include <ctime>
@@ -14,6 +15,8 @@ int main (int, char ** argv) {
 	//std::srand(std::time(NULL));
 
 	Settings::LoadSettings("settings.ini");
+	Board board_main(Settings::grid_width, Settings::grid_height);
+	board_main.print();
 
 	(void)argv;
 	UI ui("test", Settings::GetWindowWidth(), Settings::GetWindowHeight());
