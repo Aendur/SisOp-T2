@@ -70,7 +70,11 @@ void Settings::SetGridSize(const vector<string> & argv) {
 	Settings::grid_height = std::stoi(argv[1]);
 }
 
-void Settings::SetLineColor(const vector<string> & argv) { (void) argv; throw std::logic_error("SetLineColor unimplemented"); }
+void Settings::SetLineColor(const vector<string> & argv) {
+	Settings::line_color.R = std::stoi(argv[0]);
+	Settings::line_color.G = std::stoi(argv[1]);
+	Settings::line_color.B = std::stoi(argv[2]);	
+}
 
 void Settings::SetBackgroundColor(const vector<string> & argv) {
 	Settings::background_color.R = std::stoi(argv[0]);

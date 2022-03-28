@@ -125,8 +125,8 @@ void UI::DrawBoard(void) {
 void UI::DrawBorder(void) {
 	static int outer_border_size = Settings::border_size1;
 	static int total_border_size = Settings::border_size1 + Settings::border_size2;
-	static int board_w = width  - 2 * total_border_size;
-	static int board_h = height - 2 * total_border_size;
+	static int board_w = width  - 2 * total_border_size + 2;
+	static int board_h = height - 2 * total_border_size + 2;
 	static const SDL_Rect border_outer[4] = {
 		{ 0, 0, width, outer_border_size },
 		{ 0, 0, outer_border_size, height },
@@ -160,9 +160,9 @@ void UI::DrawGrid(void) {
 		SDL_RenderDrawLine(this->renderer, x0, y + csize - 1, x0 + board_width, y + csize - 1);
 	}
 
-	for(int i = 0; i < nrows; ++i) {
+	for(int i = 0; i < ncols; ++i) {
 		int x = x0 + i * csize;
-		SDL_RenderDrawLine(this->renderer, x            , y0, x            , y0 + board_width);
-		SDL_RenderDrawLine(this->renderer, x + csize - 1, y0, x + csize - 1, y0 + board_width);
+		SDL_RenderDrawLine(this->renderer, x            , y0, x            , y0 + board_height);
+		SDL_RenderDrawLine(this->renderer, x + csize - 1, y0, x + csize - 1, y0 + board_height);
 	}
 }
