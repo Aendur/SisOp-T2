@@ -18,6 +18,10 @@ int main (int, char ** argv) {
 	Board board_main(Settings::grid_width, Settings::grid_height);
 	board_main.print();
 
+	for (const auto & player : Settings::players) {
+		player.print();
+	}
+
 	(void)argv;
 	UI ui("test", Settings::GetWindowWidth(), Settings::GetWindowHeight());
 	ui.Run();

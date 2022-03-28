@@ -8,6 +8,7 @@
 class Player {
 private:
 	inline static int _nplayers = 0;
+	
 	int _id;
 	std::string _name;
 	Color _color;
@@ -15,6 +16,7 @@ private:
 	unsigned char * _board = nullptr;
 public:
 	Player(const std::string &, const Color &);
+	void print(void) const;
 };
 
 #endif

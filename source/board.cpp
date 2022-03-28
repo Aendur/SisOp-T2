@@ -22,7 +22,7 @@ Board::~Board(void) {
 	this->_board = nullptr;
 }
 
-void Board::print(void) {
+void Board::print(void) const {
 	for (int j = 0; j < _height; ++j) {
 		for (int i = 0; i < _width; ++i) {
 			printf("%4d", this->_board[i + j * _width]);

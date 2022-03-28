@@ -12,7 +12,7 @@ private:
 public:
 	Board(int, int);
 	~Board(void);
-	void print(void);
+	void print(void) const;
 };
 
 #endif

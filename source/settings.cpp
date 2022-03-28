@@ -88,7 +88,11 @@ void Settings::SetBorderSize(const vector<string> & argv) {
 }
 
 void Settings::SetFrameRate(const vector<string> & argv) { (void) argv; throw std::logic_error("SetFrameRate unimplemented"); }
-void Settings::AddPlayer(const vector<string> & argv) { (void) argv; throw std::logic_error("AddPlayer unimplemented"); }
+
+void Settings::AddPlayer(const vector<string> & argv) {
+	Color c(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]), 255);
+	Settings::players.push_back(Player(argv[0], c));
+}
 
 
 int Settings::GetWindowWidth(void) {
