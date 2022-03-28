@@ -91,7 +91,7 @@ void Settings::SetFrameRate(const vector<string> & argv) { (void) argv; throw st
 
 void Settings::AddPlayer(const vector<string> & argv) {
 	Color c(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]), 255);
-	Settings::players.push_back(Player(argv[0], c));
+	Player::AddPlayer(argv[0], c);
 }
 
 

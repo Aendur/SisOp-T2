@@ -32,8 +32,6 @@ public:
 	inline static int grid_height = 8;
 	inline static Color line_color = Color(0, 0, 0, 255);
 	inline static Color background_color = Color(127, 127, 127, 255);
-	inline static std::vector<Player> players = std::vector<Player>();
-
 
 	static void LoadSettings(const std::string &);
 };
