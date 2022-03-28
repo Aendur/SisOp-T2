@@ -12,11 +12,13 @@ int main (int, char ** argv) {
 	for (auto & player : Player::players) {
 		player.print();
 		player.SetBoard(&board_main);
+		player.Run();
 	}
+	board_main.print();
 
 	(void)argv;
 	UI ui("test", Settings::GetWindowWidth(), Settings::GetWindowHeight());
-	ui.Run();
+	ui.Run(&board_main);
 
 	return 0;
 }

@@ -4,6 +4,8 @@
 #include <string>
 #include <SDL2/SDL.h>
 
+class Board;
+
 class UI {
 private:
 	SDL_Window * window = nullptr;
@@ -30,11 +32,12 @@ private:
 	void DrawBoard(void);
 	void DrawBorder(void);
 	void DrawGrid(void);
+	void PaintCell(signed char, int, int);
 
 public:
 	UI(const std::string & t, int w, int h);
 	~UI(void);
-	void Run(void);
+	void Run(Board *);
 };
 
 #endif

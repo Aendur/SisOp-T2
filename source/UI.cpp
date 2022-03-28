@@ -1,5 +1,7 @@
 #include "UI.h"
 #include "settings.h"
+#include "player.h"
+#include "board.h"
 
 #include <iostream>
 
@@ -61,17 +63,36 @@ void UI::Dispose(void) {
 	std::cout << "done." << std::endl;
 }
 
-void UI::Run(void) {
+void UI::Run(Board * board) {
 	this->DrawBoard();
 	
 	while (!this->quit) {
 		this->CalculateDeltaTime();
 		this->HandleInput();
+
+
+		if (!board->pending_changes.empty()) {
+			auto & movement = board->pending_changes.front();
+			PaintCell(movement.player, movement.i, movement.j);
+			board->pending_changes.pop();
+		}
+
 		SDL_RenderPresent(this->renderer);
 		SDL_Delay(32);
 	}
 }
 
+void UI::PaintCell(signed char p, int i, int j) {
+	const Color & c = Player::players.at(p).color();
+	SDL_SetRenderDrawColor(this->renderer, c.R, c.G, c.B, c.A);
+
+	int size = Settings::cell_size - 2;
+	int x = Settings::border_size1 + Settings::border_size2 + Settings::cell_size * j + 1;
+	int y = Settings::border_size1 + Settings::border_size2 + Settings::cell_size * i + 1;
+	SDL_Rect cell = {x, y, size, size};
+
+	SDL_RenderFillRect(this->renderer, &cell);
+}
 
 void UI::HandleInput(void) {
 	SDL_Event event;
