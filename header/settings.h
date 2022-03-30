@@ -19,8 +19,8 @@ private:
 	void ParseLine(const std::string &, int);
 	void ParseAttr(const std::string &, const std::string &);
 public:
-	int GetWindowWidth(void);
-	int GetWindowHeight(void);
+	int GetWindowWidth(void) const;
+	int GetWindowHeight(void) const;
 
 	int border_size1 = 15;
 	int border_size2 = 5;

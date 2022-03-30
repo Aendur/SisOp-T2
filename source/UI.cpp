@@ -1,14 +1,48 @@
 #include "UI.h"
 #include "settings.h"
-#include "player.h"
-#include "board.h"
 
 #include <iostream>
+
+
+UI::UI(const std::string & t, const Settings & settings) : title(t), settings(settings) {
+	this->width = settings.GetWindowWidth();
+	this->height = settings.GetWindowHeight();
+}
+
+
+void UI::Initialize(void) {
+	if (!this->initialized) {
+		InitializeSDL();
+		CreateWindow();
+		CreateRenderer();
+		this->initialized = true;
+		std::cout << "done." << std::endl;
+	}
+}
+
+void UI::Dispose(void) {
+	if (this->initialized) {
+		std::cout << "deallocating renderer..." << std::endl;
+		SDL_DestroyRenderer(this->renderer);
+		this->renderer = nullptr;
+		
+		std::cout << "deallocating window..." << std::endl;
+		SDL_DestroyWindow(this->window);
+		this->window = nullptr;
+		
+		std::cout << "cleanup SDL..." << std::endl;
+		SDL_Quit();
+		
+		std::cout << "done." << std::endl;
+
+		this->initialized = false;
+	}
+}
 
 void UI::InitializeSDL(void) {
 	std::cout << "initializing SDL..." << std::endl;
 	int status;
-	status = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
+	status = SDL_Init(SDL_INIT_VIDEO); // | SDL_INIT_TIMER);
 	if (status != 0) {
 		std::string error = SDL_GetError();
 		throw std::runtime_error(error);
@@ -33,43 +67,11 @@ void UI::CreateRenderer(void) {
 	}
 }
 
-UI::UI(const std::string & t, int w, int h) : title(t), width(w), height(h) {
-	this->Initialize();
-}
-
-void UI::Initialize(void) {
-	InitializeSDL();
-	CreateWindow();
-	CreateRenderer();
-	std::cout << "done." << std::endl;
-}
-
-UI::~UI() {
-	this->Dispose();
-}
-
-void UI::Dispose(void) {
-	std::cout << "deallocating renderer..." << std::endl;
-	SDL_DestroyRenderer(this->renderer);
-	this->renderer = nullptr;
-	
-	std::cout << "deallocating window..." << std::endl;
-	SDL_DestroyWindow(this->window);
-	this->window = nullptr;
-	
-	std::cout << "cleanup SDL..." << std::endl;
-	SDL_Quit();
-	
-	std::cout << "done." << std::endl;
-}
-
-void UI::Run(Board * board) {
+/*void UI::Run(Board * board) {
 	this->DrawBoard();
 	
 	while (!this->quit) {
-		this->CalculateDeltaTime();
 		this->HandleInput();
-
 
 		if (!board->pending_changes.empty()) {
 			auto & movement = board->pending_changes.front();
@@ -80,15 +82,14 @@ void UI::Run(Board * board) {
 		SDL_RenderPresent(this->renderer);
 		SDL_Delay(32);
 	}
-}
+}*/
 
-void UI::PaintCell(signed char p, int i, int j) {
-	const Color & c = Player::players.at(p).color();
-	SDL_SetRenderDrawColor(this->renderer, c.R, c.G, c.B, c.A);
+void UI::PaintCell(int i, int j, const Color & color) {
+	SDL_SetRenderDrawColor(this->renderer, color.R, color.G, color.B, color.A);
 
-	int size = Settings::cell_size - 2;
-	int x = Settings::border_size1 + Settings::border_size2 + Settings::cell_size * j + 1;
-	int y = Settings::border_size1 + Settings::border_size2 + Settings::cell_size * i + 1;
+	int size = settings.cell_size - 2;
+	int x = settings.border_size1 + settings.border_size2 + settings.cell_size * j + 1;
+	int y = settings.border_size1 + settings.border_size2 + settings.cell_size * i + 1;
 	SDL_Rect cell = {x, y, size, size};
 
 	SDL_RenderFillRect(this->renderer, &cell);
@@ -126,16 +127,8 @@ void UI::HandleInput(void) {
 }
 ////////////////////
 
-void UI::CalculateDeltaTime(void) {
-	int lastFrame = this->frameStart;
-	this->frameStart = SDL_GetTicks();
-	this->dt = (float) (this->frameStart - lastFrame) * 0.001;
-	//std::cout << this->dt << std::endl;
-}
-
 void UI::DrawBoard(void) {
-	Color bgc = Settings::background_color;
-	SDL_SetRenderDrawColor(this->renderer, bgc.R, bgc.G, bgc.B, bgc.A);
+	SDL_SetRenderDrawColor(this->renderer, settings.background_color.R, settings.background_color.G, settings.background_color.B, settings.background_color.A);
 	SDL_RenderClear(this->renderer);
 
 	DrawBorder();
@@ -143,35 +136,35 @@ void UI::DrawBoard(void) {
 }
 
 void UI::DrawBorder(void) {
-	static int outer_border_size = Settings::border_size1;
-	static int total_border_size = Settings::border_size1 + Settings::border_size2;
-	static int board_w = width  - 2 * total_border_size + 2;
-	static int board_h = height - 2 * total_border_size + 2;
-	static const SDL_Rect border_outer[4] = {
+	const int outer_border_size = settings.border_size1;
+	const int total_border_size = settings.border_size1 + settings.border_size2;
+	const int board_w = width  - 2 * total_border_size + 2;
+	const int board_h = height - 2 * total_border_size + 2;
+	
+	const SDL_Rect border_outer[4] = {
 		{ 0, 0, width, outer_border_size },
 		{ 0, 0, outer_border_size, height },
 		{ 0, height - outer_border_size, width, outer_border_size },
 		{ width - outer_border_size, 0, outer_border_size, height },
 	};
-	static const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
+	
+	const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
 
-	Color lc = Settings::line_color;
-	SDL_SetRenderDrawColor(this->renderer, lc.R, lc.G, lc.B, lc.A);
+	SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
 	SDL_RenderFillRects(this->renderer, border_outer, 4);
 	SDL_RenderDrawRect(this->renderer, &border_inner);
 }
 
 void UI::DrawGrid(void) {
-	static int csize = Settings::cell_size;
-	static int nrows = Settings::grid_height;
-	static int ncols = Settings::grid_width;
-	static int board_height = csize * nrows - 1;
-	static int board_width = csize * ncols - 1;
-	static Color lc = Settings::line_color;
+	const int csize = settings.cell_size;
+	const int nrows = settings.grid_height;
+	const int ncols = settings.grid_width;
+	const int board_height = csize * nrows - 1;
+	const int board_width = csize * ncols - 1;
 	
-	SDL_SetRenderDrawColor(this->renderer, lc.R, lc.G, lc.B, lc.A);
+	SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
 	
-	int x0 = Settings::border_size1 + Settings::border_size2;
+	int x0 = settings.border_size1 + settings.border_size2;
 	int y0 = x0;
 
 	for(int i = 0; i < nrows; ++i) {
@@ -185,4 +178,10 @@ void UI::DrawGrid(void) {
 		SDL_RenderDrawLine(this->renderer, x            , y0, x            , y0 + board_height);
 		SDL_RenderDrawLine(this->renderer, x + csize - 1, y0, x + csize - 1, y0 + board_height);
 	}
+}
+
+void UI::Refresh(void) {
+	this->HandleInput();
+	SDL_RenderPresent(this->renderer);
+	SDL_Delay(32);
 }

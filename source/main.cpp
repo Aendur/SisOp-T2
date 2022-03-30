@@ -1,11 +1,19 @@
 #include <iostream>
 
+#include <thread>
+#include <chrono>
+
 #include "settings.h"
 #include "board.h"
 #include "UI.h"
 
 int main (int, char ** argv) {
-	Settings::LoadSettings("settings.ini");
+	(void)argv;
+	
+	Settings * settings = new Settings();
+	settings->Load("settings.ini");
+
+	/*
 	Board board_main(Settings::grid_width, Settings::grid_height);
 	board_main.print();
 
@@ -15,10 +23,19 @@ int main (int, char ** argv) {
 		player.Run();
 	}
 	board_main.print();
+	*/
 
-	(void)argv;
-	UI ui("test", Settings::GetWindowWidth(), Settings::GetWindowHeight());
-	ui.Run(&board_main);
+	UI * ui = new UI("test", *settings);
+	ui->Initialize();
 
+	SDL_Delay(5000);
+
+	ui->Dispose();
+	//ui.Run(&board_main);
+	delete ui;
+
+	delete settings;
+	std::cout << "return 0" << std::endl;
+	std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1000));
 	return 0;
 }

@@ -22,7 +22,7 @@ void Settings::Load(const std::string & path) {
 }
 
 void Settings::ParseLine(const string & line, int nline) {
-	if (line.length() > 0 && line[0] != '#') {
+	if (line.length() > 2 && line[0] != '#') {
 		auto v1 = Utility::split(line, "=");
 
 		if (v1.size() != 2) { throw std::runtime_error("error: invalid arguments on line " + std::to_string(nline) + ":\n" + line); }
@@ -55,7 +55,7 @@ void Settings::ParseAttr(const string & attr, const string & args) {
 	unsigned int argc_expected = arg_num.at(attr).first;
 	if (argv.size() != argc_expected) { throw std::runtime_error(attr + " expects " + std::to_string(argc_expected) + " arguments " + arg_num.at(attr).second); }
 	try {
-		//(*arg_act.at(attr))(argv);
+		(this->*arg_act.at(attr))(argv);
 	} catch (std::exception & e) {
 		std::cout << e.what() << std::endl;
 	}
@@ -96,11 +96,11 @@ void Settings::AddPlayer(const vector<string> & argv) {
 }
 
 
-int Settings::GetWindowWidth(void) {
+int Settings::GetWindowWidth(void) const {
 	return this->cell_size * this->grid_width + 2 * (this->border_size1 + this->border_size2);
 }
 
-int Settings::GetWindowHeight(void) {
+int Settings::GetWindowHeight(void) const {
 	return this->cell_size * this->grid_height + 2 * (this->border_size1 + this->border_size2);
 }
 
