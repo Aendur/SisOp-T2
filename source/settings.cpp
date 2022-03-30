@@ -4,18 +4,18 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <unordered_map>
 
 using std::ifstream;
 using std::string;
 using std::vector;
 #define umap std::unordered_map
 
-void Settings::LoadSettings(const std::string & path) {
+void Settings::Load(const std::string & path) {
 	ifstream stream(path);
 	string line;
 	int nline = 0;
 	while( std::getline(stream, line) ) {
-		//std::cout << line << std::endl;
 		ParseLine(line, ++nline);
 	}
 	stream.close();
@@ -41,7 +41,7 @@ void Settings::ParseAttr(const string & attr, const string & args) {
 		{ "PLAYER"           , {4, "(name,R,G,B)"   }},
 	};
 
-	static const umap<string, void (*)(const vector<string> &)> arg_act = {
+	static const umap<string, void (Settings::*)(const vector<string> &)> arg_act = {
 		{ "GRID_SIZE"        , &Settings::SetGridSize       },
 		{ "CELL_SIZE"        , &Settings::SetCellSize       },
 		{ "LINE_COLOR"       , &Settings::SetLineColor      },
@@ -55,52 +55,53 @@ void Settings::ParseAttr(const string & attr, const string & args) {
 	unsigned int argc_expected = arg_num.at(attr).first;
 	if (argv.size() != argc_expected) { throw std::runtime_error(attr + " expects " + std::to_string(argc_expected) + " arguments " + arg_num.at(attr).second); }
 	try {
-		(*arg_act.at(attr))(argv);
+		//(*arg_act.at(attr))(argv);
 	} catch (std::exception & e) {
 		std::cout << e.what() << std::endl;
 	}
 }
 
 void Settings::SetCellSize(const vector<string> & argv) {
-	Settings::cell_size = std::stoi(argv[0]);
+	this->cell_size = std::stoi(argv[0]);
 }
 
 void Settings::SetGridSize(const vector<string> & argv) {
-	Settings::grid_width = std::stoi(argv[0]);
-	Settings::grid_height = std::stoi(argv[1]);
+	this->grid_width = std::stoi(argv[0]);
+	this->grid_height = std::stoi(argv[1]);
 }
 
 void Settings::SetLineColor(const vector<string> & argv) {
-	Settings::line_color.R = std::stoi(argv[0]);
-	Settings::line_color.G = std::stoi(argv[1]);
-	Settings::line_color.B = std::stoi(argv[2]);	
+	this->line_color.R = std::stoi(argv[0]);
+	this->line_color.G = std::stoi(argv[1]);
+	this->line_color.B = std::stoi(argv[2]);	
 }
 
 void Settings::SetBackgroundColor(const vector<string> & argv) {
-	Settings::background_color.R = std::stoi(argv[0]);
-	Settings::background_color.G = std::stoi(argv[1]);
-	Settings::background_color.B = std::stoi(argv[2]);
+	this->background_color.R = std::stoi(argv[0]);
+	this->background_color.G = std::stoi(argv[1]);
+	this->background_color.B = std::stoi(argv[2]);
 }
 
 void Settings::SetBorderSize(const vector<string> & argv) {
-	Settings::border_size1 = std::stoi(argv[0]);
-	Settings::border_size2 = std::stoi(argv[1]);
+	this->border_size1 = std::stoi(argv[0]);
+	this->border_size2 = std::stoi(argv[1]);
 }
 
 void Settings::SetFrameRate(const vector<string> & argv) { (void) argv; throw std::logic_error("SetFrameRate unimplemented"); }
 
 void Settings::AddPlayer(const vector<string> & argv) {
-	Color c(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]), 255);
-	Player::AddPlayer(argv[0], c);
+	(void) argv; throw std::logic_error("AddPlayer unimplemented");
+	//Color c(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]), 255);
+	//Player::AddPlayer(argv[0], c);
 }
 
 
 int Settings::GetWindowWidth(void) {
-	return Settings::cell_size * Settings::grid_width + 2 * (Settings::border_size1 + Settings::border_size2);
+	return this->cell_size * this->grid_width + 2 * (this->border_size1 + this->border_size2);
 }
 
 int Settings::GetWindowHeight(void) {
-	return Settings::cell_size * Settings::grid_height + 2 * (Settings::border_size1 + Settings::border_size2);
+	return this->cell_size * this->grid_height + 2 * (this->border_size1 + this->border_size2);
 }
 
 
