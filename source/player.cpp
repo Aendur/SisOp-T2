@@ -1,24 +1,16 @@
 #include "player.h"
+#include "game.h"
 #include "board.h"
 
 #include <cstdio>
 
-void Player::AddPlayer(const std::string & name, const Color & color) {
-	unsigned long long seed = std::random_device()();
-	players.push_back(Player(name, color).BuildRNG(seed));
-
+Player::Player(const std::string & name, const Color & color) : _id(players.size()), _name(name), _color(color) {
+	this->_seed = std::random_device()();
+	this->_generator = std::mt19937(_seed);
 }
-
-Player & Player::BuildRNG(unsigned long long seed) {
-	this->_seed = seed;
-	this->_generator = std::mt19937(seed);
-	return *this;
-}
-
-Player::Player(const std::string & name, const Color & color) : _id(players.size()), _name(name), _color(color) {}
 
 void Player::print(void) const {
-	printf("\033[48;2;%d;%d;%dm   \033[0m ", _color.R, _color.G, _color.B);
+	printf("\033[48;2;%d;%d;%dm     \033[0m ", _color.R, _color.G, _color.B);
 	printf("PLAYER %d ", _id);
 	printf("%s ", _name.c_str());
 	printf("(%d,%d,%d)\n", _color.R, _color.G, _color.B);

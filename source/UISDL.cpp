@@ -1,16 +1,15 @@
-#include "UI.h"
+#include "UISDL.h"
 #include "settings.h"
 
 #include <iostream>
 
-
-UI::UI(const std::string & t, const Settings & settings) : title(t), settings(settings) {
+UISDL::UISDL(const std::string & t, const Settings & settings) : title(t), settings(settings) {
 	this->width = settings.GetWindowWidth();
 	this->height = settings.GetWindowHeight();
 }
 
 
-void UI::Initialize(void) {
+void UISDL::Initialize(void) {
 	if (!this->initialized) {
 		InitializeSDL();
 		CreateWindow();
@@ -20,7 +19,7 @@ void UI::Initialize(void) {
 	}
 }
 
-void UI::Dispose(void) {
+void UISDL::Dispose(void) {
 	if (this->initialized) {
 		std::cout << "deallocating renderer..." << std::endl;
 		SDL_DestroyRenderer(this->renderer);
@@ -39,7 +38,7 @@ void UI::Dispose(void) {
 	}
 }
 
-void UI::InitializeSDL(void) {
+void UISDL::InitializeSDL(void) {
 	std::cout << "initializing SDL..." << std::endl;
 	int status;
 	status = SDL_Init(SDL_INIT_VIDEO); // | SDL_INIT_TIMER);
@@ -49,7 +48,7 @@ void UI::InitializeSDL(void) {
 	}
 }
 
-void UI::CreateWindow(void) {
+void UISDL::CreateWindow(void) {
 	std::cout << "creating SDL window..." << std::endl;
 	this->window = SDL_CreateWindow(this->title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->width, this->height, 0);
 	if (this->window == nullptr) {
@@ -58,7 +57,7 @@ void UI::CreateWindow(void) {
 	}
 }
 
-void UI::CreateRenderer(void) {
+void UISDL::CreateRenderer(void) {
 	std::cout << "creating SDL renderer..." << std::endl;
 	this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
 	if (this->renderer == nullptr) {
@@ -67,7 +66,7 @@ void UI::CreateRenderer(void) {
 	}
 }
 
-/*void UI::Run(Board * board) {
+/*void UISDL::Run(Board * board) {
 	this->DrawBoard();
 	
 	while (!this->quit) {
@@ -84,18 +83,18 @@ void UI::CreateRenderer(void) {
 	}
 }*/
 
-void UI::PaintCell(int i, int j, const Color & color) {
+void UISDL::PaintCell(int i, int j, const Color & color) {
 	SDL_SetRenderDrawColor(this->renderer, color.R, color.G, color.B, color.A);
 
 	int size = settings.cell_size - 2;
-	int x = settings.border_size1 + settings.border_size2 + settings.cell_size * j + 1;
-	int y = settings.border_size1 + settings.border_size2 + settings.cell_size * i + 1;
+	int x = settings.border_size_outer + settings.border_size_inner + settings.cell_size * j + 1;
+	int y = settings.border_size_outer + settings.border_size_inner + settings.cell_size * i + 1;
 	SDL_Rect cell = {x, y, size, size};
 
 	SDL_RenderFillRect(this->renderer, &cell);
 }
 
-void UI::HandleInput(void) {
+void UISDL::HandleInput(void) {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
 		switch(event.type) {
@@ -127,7 +126,7 @@ void UI::HandleInput(void) {
 }
 ////////////////////
 
-void UI::DrawBoard(void) {
+void UISDL::DrawBoard(void) {
 	SDL_SetRenderDrawColor(this->renderer, settings.background_color.R, settings.background_color.G, settings.background_color.B, settings.background_color.A);
 	SDL_RenderClear(this->renderer);
 
@@ -135,9 +134,9 @@ void UI::DrawBoard(void) {
 	DrawGrid();
 }
 
-void UI::DrawBorder(void) {
-	const int outer_border_size = settings.border_size1;
-	const int total_border_size = settings.border_size1 + settings.border_size2;
+void UISDL::DrawBorder(void) {
+	const int outer_border_size = settings.border_size_outer;
+	const int total_border_size = settings.border_size_outer + settings.border_size_inner;
 	const int board_w = width  - 2 * total_border_size + 2;
 	const int board_h = height - 2 * total_border_size + 2;
 	
@@ -155,7 +154,7 @@ void UI::DrawBorder(void) {
 	SDL_RenderDrawRect(this->renderer, &border_inner);
 }
 
-void UI::DrawGrid(void) {
+void UISDL::DrawGrid(void) {
 	const int csize = settings.cell_size;
 	const int nrows = settings.grid_height;
 	const int ncols = settings.grid_width;
@@ -164,7 +163,7 @@ void UI::DrawGrid(void) {
 	
 	SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
 	
-	int x0 = settings.border_size1 + settings.border_size2;
+	int x0 = settings.border_size_outer + settings.border_size_inner;
 	int y0 = x0;
 
 	for(int i = 0; i < nrows; ++i) {
@@ -180,8 +179,12 @@ void UI::DrawGrid(void) {
 	}
 }
 
-void UI::Refresh(void) {
+void UISDL::Refresh(void) {
 	this->HandleInput();
 	SDL_RenderPresent(this->renderer);
 	SDL_Delay(32);
+}
+
+void UISDL::Await(int t) {
+	SDL_Delay(t);
 }

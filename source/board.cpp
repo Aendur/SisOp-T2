@@ -2,11 +2,6 @@
 #include <cstdio>
 
 Board::Board(int width, int height) : _width(width), _height(height) {
-	//this->_board = std::vector<std::vector<unsigned char>>(height);
-	//for (int j = 0; j < height; ++j) {
-	//	this->_board[j] = std::vector<unsigned char>(width);
-	//}
-	
 	this->_board = new signed char[width * height];
 
 	for (int j = 0; j < height; ++j) {
@@ -18,6 +13,7 @@ Board::Board(int width, int height) : _width(width), _height(height) {
 }
 
 Board::~Board(void) {
+	printf("clean up board...\n");
 	delete[] this->_board;
 	this->_board = nullptr;
 }

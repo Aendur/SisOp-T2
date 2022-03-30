@@ -11,6 +11,8 @@ using std::string;
 using std::vector;
 #define umap std::unordered_map
 
+
+
 void Settings::Load(const std::string & path) {
 	ifstream stream(path);
 	string line;
@@ -83,25 +85,24 @@ void Settings::SetBackgroundColor(const vector<string> & argv) {
 }
 
 void Settings::SetBorderSize(const vector<string> & argv) {
-	this->border_size1 = std::stoi(argv[0]);
-	this->border_size2 = std::stoi(argv[1]);
+	this->border_size_outer = std::stoi(argv[0]);
+	this->border_size_inner = std::stoi(argv[1]);
 }
 
 void Settings::SetFrameRate(const vector<string> & argv) { (void) argv; throw std::logic_error("SetFrameRate unimplemented"); }
 
 void Settings::AddPlayer(const vector<string> & argv) {
-	(void) argv; throw std::logic_error("AddPlayer unimplemented");
-	//Color c(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]), 255);
-	//Player::AddPlayer(argv[0], c);
+	Color c(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]), 255);
+	players.push_back({argv[0], c});
 }
 
 
 int Settings::GetWindowWidth(void) const {
-	return this->cell_size * this->grid_width + 2 * (this->border_size1 + this->border_size2);
+	return this->cell_size * this->grid_width + 2 * (this->border_size_outer + this->border_size_inner);
 }
 
 int Settings::GetWindowHeight(void) const {
-	return this->cell_size * this->grid_height + 2 * (this->border_size1 + this->border_size2);
+	return this->cell_size * this->grid_height + 2 * (this->border_size_outer + this->border_size_inner);
 }
 
 
