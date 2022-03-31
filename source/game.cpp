@@ -66,7 +66,7 @@ void Game::Run(void) {
 		
 		// flush board
 
-		if (!board_main->pending_changes.empty()) {
+		while (!board_main->pending_changes.empty()) {
 			auto & movement = board_main->pending_changes.front();
 
 			int id = movement.player;
