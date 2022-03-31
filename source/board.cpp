@@ -27,9 +27,12 @@ void Board::print(void) const {
 	}
 }
 
+
 void Board::Mark(signed char playerID, int i, int j) {
 	if (0 <= i && i < _height && 0 <= j && j < _width) {
+		board_lock.lock();
 		this->_board[i * _width + j] = playerID;
 		pending_changes.push({playerID, i, j});
+		board_lock.unlock();
 	}
 }

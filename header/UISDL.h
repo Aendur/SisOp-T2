@@ -23,12 +23,9 @@ private:
 	void InitializeSDL(void);
 	void CreateWindow(void);
 	void CreateRenderer(void);
-
-	void HandleInput(void);
 	
 	void DrawBorder(void);
 	void DrawGrid(void);
-	void PaintCell(int, int, const Color &);
 
 public:
 	UISDL(const std::string & t, const Settings &);
@@ -36,9 +33,14 @@ public:
 
 	void Initialize(void);
 	void Dispose(void);
-	void Refresh(void);
+
+	void HandleInput(void);
 	void DrawBoard(void);
+	void PaintCell(int, int, const Color &);
+	
+	void Refresh(void);
 	void Await(int);
+	bool Quit(void) { return quit; }
 };
 
 #endif

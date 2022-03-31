@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <queue>
+#include <mutex>
 
 struct Movement {
 	signed char player;
@@ -16,6 +17,7 @@ private:
 	int _width;
 	int _height;
 	signed char * _board = nullptr;
+	std::mutex board_lock;
 public:
 	std::queue<Movement> pending_changes = std::queue<Movement>();
 

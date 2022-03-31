@@ -12,6 +12,8 @@ class Board;
 
 class Player {
 private:
+	inline static signed char nplayers = 0;
+
 	signed char _id;
 	std::string _name;
 	Color _color;
@@ -22,9 +24,6 @@ private:
 	Game * _game = nullptr;
 	
 public:
-	inline static std::vector<Player> players = std::vector<Player>();
-	static void AddPlayer(const std::string &, const Color &);
-
 	Player(const std::string &, const Color &);
 	inline void SetGame(Game* g) { _game = g; }
 	inline void SetBoard(Board* b) { _board = b; }

@@ -4,6 +4,8 @@
 #include "board.h"
 #include "UISDL.h"
 
+#include <iostream>
+
 using std::string;
 
 Game::~Game(void) {
@@ -30,10 +32,7 @@ void Game::InitPlayers(void) {
 		p->SetBoard(board_main);
 		p->SetGame(this);
 		this->players.push_back(p);
-	}
-	for (Player * p : this->players) {
 		p->print();
-		p->Run();
 	}
 }
 
@@ -47,7 +46,41 @@ void Game::InitUI(void) {
 	this->ui->Initialize();
 	this->ui->DrawBoard();
 	this->ui->Refresh();
-	this->ui->Await(5000);
+	//this->ui->Await(5000);
 }
 
-void Game::Run(void) {}
+#include <thread>
+void Game::Run(void) {
+	std::cout << "init mainloop" << std::endl;
+
+	std::vector<std::thread> threads;
+	
+	for (Player * p : players) {
+		//std::thread t(Player::Run, p);
+		//threads.push_back(t);
+		threads.emplace_back(&Player::Run, p);
+	}
+
+	while (!ui->Quit()) {
+		ui->HandleInput();
+		
+		// flush board
+
+		if (!board_main->pending_changes.empty()) {
+			auto & movement = board_main->pending_changes.front();
+
+			int id = movement.player;
+			std::cout << "i=" << movement.i << " j=" << movement.j << " id=" << id << std::endl;
+			
+			ui->PaintCell(movement.i, movement.j, players[movement.player]->color());
+			board_main->pending_changes.pop();
+		}
+		
+		
+		ui->Refresh();
+		ui->Await(30);
+	}
+	
+	for (std::thread & t : threads) { t.join(); }
+
+}

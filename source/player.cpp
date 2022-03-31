@@ -3,10 +3,13 @@
 #include "board.h"
 
 #include <cstdio>
+#include <chrono>
+#include <thread>
 
-Player::Player(const std::string & name, const Color & color) : _id(players.size()), _name(name), _color(color) {
+Player::Player(const std::string & name, const Color & color) : _id(nplayers++), _name(name), _color(color) {
 	this->_seed = std::random_device()();
 	this->_generator = std::mt19937(_seed);
+	
 }
 
 void Player::print(void) const {
@@ -20,7 +23,8 @@ void Player::Run(void) {
 	std::uniform_int_distribution<int> dist_x(0, _board->width());
 	std::uniform_int_distribution<int> dist_y(0, _board->height());
 
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < 1000; ++i) {
 		_board->Mark(_id, dist_y(_generator), dist_x(_generator));
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
 	}
 }

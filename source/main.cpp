@@ -1,7 +1,4 @@
-// #include <iostream>
-// #include <thread>
-// #include <chrono>
-
+#include <iostream>
 #include "game.h"
 
 int main (int, char ** argv) {
@@ -10,8 +7,8 @@ int main (int, char ** argv) {
 	Game game;
 	game.LoadSettings("settings.ini");
 	game.Initialize();
+	game.Run();
 	
-	//std::cout << "return 0" << std::endl;
-	//std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(1000));
+	std::cout << "main return 0" << std::endl;
 	return 0;
 }

@@ -66,23 +66,6 @@ void UISDL::CreateRenderer(void) {
 	}
 }
 
-/*void UISDL::Run(Board * board) {
-	this->DrawBoard();
-	
-	while (!this->quit) {
-		this->HandleInput();
-
-		if (!board->pending_changes.empty()) {
-			auto & movement = board->pending_changes.front();
-			PaintCell(movement.player, movement.i, movement.j);
-			board->pending_changes.pop();
-		}
-
-		SDL_RenderPresent(this->renderer);
-		SDL_Delay(32);
-	}
-}*/
-
 void UISDL::PaintCell(int i, int j, const Color & color) {
 	SDL_SetRenderDrawColor(this->renderer, color.R, color.G, color.B, color.A);
 
@@ -188,3 +171,4 @@ void UISDL::Refresh(void) {
 void UISDL::Await(int t) {
 	SDL_Delay(t);
 }
+
