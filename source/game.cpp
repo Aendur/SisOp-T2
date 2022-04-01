@@ -66,22 +66,23 @@ void Game::Run(void) {
 		ui->HandleInput();
 		
 		// flush board
+		auto pending = board_main->Flush();
+		while (!pending.empty()) {
+			auto & movement = pending.front();
 
-		while (!board_main->pending_changes.empty()) {
-			auto & movement = board_main->pending_changes.front();
-
-			int id = movement.player;
-			std::cout << "i=" << movement.i << " j=" << movement.j << " id=" << id << std::endl;
+			//int id = movement.player;
+			//std::cout << "i=" << movement.i << " j=" << movement.j << " id=" << id << std::endl;
 			
 			ui->PaintCell(movement.i, movement.j, players[movement.player]->GetColor());
-			board_main->pending_changes.pop();
+			pending.pop();
 		}
 		
 		
 		ui->Refresh();
 		ui->Await(16);
 	}
-	
+
 	for (std::thread & t : threads) { t.join(); }
 
+	board_main->print();
 }

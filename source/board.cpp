@@ -43,3 +43,14 @@ bool Board::Mark(signed char playerID, int i, int j) {
 	}
 	return marked;
 }
+
+std::queue<Movement> Board::Flush(void) {
+	std::queue<Movement> flushed;
+	board_lock.lock();
+	while(!pending_changes.empty()) {
+		flushed.push(pending_changes.front());
+		pending_changes.pop();
+	}
+	board_lock.unlock();
+	return flushed;
+}
