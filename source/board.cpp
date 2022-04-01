@@ -32,7 +32,7 @@ bool Board::Mark(signed char playerID, int i, int j) {
 	bool marked = false;
 	if (0 <= i && i < _height && 0 <= j && j < _width) {
 		board_lock.lock();
-		if (this->_board[i * _width + j] == -1) {
+		if (this->_board[i * _width + j] == (signed char) -1) {
 			this->_board[i * _width + j] = playerID;
 			pending_changes.push({playerID, i, j});
 			marked = true;
