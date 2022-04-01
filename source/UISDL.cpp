@@ -41,7 +41,7 @@ void UISDL::Dispose(void) {
 void UISDL::InitializeSDL(void) {
 	std::cout << "initializing SDL..." << std::endl;
 	int status;
-	status = SDL_Init(SDL_INIT_VIDEO); // | SDL_INIT_TIMER);
+	status = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 	if (status != 0) {
 		std::string error = SDL_GetError();
 		throw std::runtime_error(error);
@@ -66,48 +66,14 @@ void UISDL::CreateRenderer(void) {
 	}
 }
 
-void UISDL::PaintCell(int i, int j, const Color & color) {
-	SDL_SetRenderDrawColor(this->renderer, color.R, color.G, color.B, color.A);
-
-	int size = settings.cell_size - 2;
-	int x = settings.border_size_outer + settings.border_size_inner + settings.cell_size * j + 1;
-	int y = settings.border_size_outer + settings.border_size_inner + settings.cell_size * i + 1;
-	SDL_Rect cell = {x, y, size, size};
-
-	SDL_RenderFillRect(this->renderer, &cell);
-}
-
 void UISDL::HandleInput(void) {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
-		switch(event.type) {
-		//case SDL_KEYDOWN:
-		//	if (event.key.repeat) break;
-		//	this->keyState[event.key.keysym.sym] = true;
-		//	this->keyUpdate[event.key.keysym.sym] = this->updateCounter;
-		//	break;
-		//case SDL_KEYUP:
-		//	this->keyState[event.key.keysym.sym] = false;
-		//	this->keyUpdate[event.key.keysym.sym] = this->updateCounter;
-		//	break;
-		//case SDL_MOUSEBUTTONDOWN:
-		//	this->mouseState[event.button.button] = true;
-		//	this->mouseUpdate[event.button.button] = this->updateCounter;
-		//	break;
-		//case SDL_MOUSEBUTTONUP:
-		//	this->mouseState[event.button.button] = false;
-		//	this->mouseUpdate[event.button.button] = this->updateCounter;
-		//	break;
-		case SDL_QUIT:
+		if(event.type == SDL_QUIT) {
 			this->quit = true;
-			break;
-		default:
-			//std::cout << "unhandled SDL event: " << event.type << std::endl;
-			break;
 		}
 	}
 }
-////////////////////
 
 void UISDL::DrawBoard(void) {
 	SDL_SetRenderDrawColor(this->renderer, settings.background_color.R, settings.background_color.G, settings.background_color.B, settings.background_color.A);
@@ -160,6 +126,17 @@ void UISDL::DrawGrid(void) {
 		SDL_RenderDrawLine(this->renderer, x            , y0, x            , y0 + board_height);
 		SDL_RenderDrawLine(this->renderer, x + csize - 1, y0, x + csize - 1, y0 + board_height);
 	}
+}
+
+void UISDL::PaintCell(int i, int j, const Color & color) {
+	SDL_SetRenderDrawColor(this->renderer, color.R, color.G, color.B, color.A);
+
+	int size = settings.cell_size - 2;
+	int x = settings.border_size_outer + settings.border_size_inner + settings.cell_size * j + 1;
+	int y = settings.border_size_outer + settings.border_size_inner + settings.cell_size * i + 1;
+	SDL_Rect cell = {x, y, size, size};
+
+	SDL_RenderFillRect(this->renderer, &cell);
 }
 
 void UISDL::Refresh(void) {
