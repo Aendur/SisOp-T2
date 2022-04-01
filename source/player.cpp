@@ -1,18 +1,15 @@
 #include "player.h"
 #include "game.h"
 #include "board.h"
+#include "AI.h"
 
 #include <cstdio>
 #include <chrono>
 #include <thread>
 
-Player::Player(const std::string & name, const Color & color) : _id(nplayers++), _name(name), _color(color) {
-	this->_seed = std::random_device()();
-	this->_generator = std::mt19937(_seed);
-	
-}
+Player::Player(const std::string & name, const Color & color) : _id(nplayers++), _name(name), _color(color) {}
 
-void Player::print(void) const {
+void Player::Print(void) const {
 	printf("\033[48;2;%d;%d;%dm     \033[0m ", _color.R, _color.G, _color.B);
 	printf("PLAYER %d ", _id);
 	printf("%s ", _name.c_str());
@@ -20,11 +17,23 @@ void Player::print(void) const {
 }
 
 void Player::Run(void) {
-	std::uniform_int_distribution<int> dist_x(0, _board->width());
-	std::uniform_int_distribution<int> dist_y(0, _board->height());
+	//for (int i = 0; i < 1000; ++i) {
+	while(_ai->HasMoves()) {
+		const auto & move = _ai->NextMove();
+		if (move.first >= 0 && move.second >= 0) {
+			bool marked = _board->Mark(_id, move.first, move.second);
+			_ai->ConfirmMove(move.first, move.second, marked);
+		}
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(4));
+	}
+}
 
-	for (int i = 0; i < 1000; ++i) {
-		_board->Mark(_id, dist_y(_generator), dist_x(_generator));
-		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(10));
+void Player::InitAI(void) {
+	this->_ai = new AI(this->_board->width(), this->_board->height(), this->_id);
+}
+
+Player::~Player(void) {
+	if (this->_ai != nullptr) {
+		delete this->_ai;
 	}
 }

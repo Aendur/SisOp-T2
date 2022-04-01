@@ -31,8 +31,9 @@ void Game::InitPlayers(void) {
 		Player * p = new Player(i.first, i.second);
 		p->SetBoard(board_main);
 		p->SetGame(this);
+		p->InitAI();
 		this->players.push_back(p);
-		p->print();
+		p->Print();
 	}
 }
 
@@ -72,13 +73,13 @@ void Game::Run(void) {
 			int id = movement.player;
 			std::cout << "i=" << movement.i << " j=" << movement.j << " id=" << id << std::endl;
 			
-			ui->PaintCell(movement.i, movement.j, players[movement.player]->color());
+			ui->PaintCell(movement.i, movement.j, players[movement.player]->GetColor());
 			board_main->pending_changes.pop();
 		}
 		
 		
 		ui->Refresh();
-		ui->Await(30);
+		ui->Await(16);
 	}
 	
 	for (std::thread & t : threads) { t.join(); }

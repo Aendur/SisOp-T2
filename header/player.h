@@ -5,10 +5,10 @@
 #include "color.h"
 #include <string>
 #include <vector>
-#include <random>
 
 class Game;
 class Board;
+class AI;
 
 class Player {
 private:
@@ -17,18 +17,20 @@ private:
 	signed char _id;
 	std::string _name;
 	Color _color;
-	
-	unsigned long long _seed;
-	std::mt19937  _generator;
+
+	AI * _ai = nullptr;
 	Board * _board = nullptr;
 	Game * _game = nullptr;
 	
 public:
 	Player(const std::string &, const Color &);
+	~Player(void);
 	inline void SetGame(Game* g) { _game = g; }
 	inline void SetBoard(Board* b) { _board = b; }
-	inline const Color & color(void) const { return _color; }
-	void print(void) const;
+	inline const Color & GetColor(void) const { return _color; }
+	
+	void InitAI(void);
+	void Print(void) const;
 	void Run(void);
 };
 

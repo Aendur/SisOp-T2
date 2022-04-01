@@ -24,7 +24,7 @@ public:
 	Board(int, int);
 	~Board(void);
 	void print(void) const;
-	void Mark(signed char, int, int);
+	bool Mark(signed char, int, int);
 
 	inline int width(void) { return _width; }
 	inline int height(void) { return _height; }

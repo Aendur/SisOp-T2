@@ -51,6 +51,15 @@
 		"stdexcept": "cpp",
 		"streambuf": "cpp",
 		"cinttypes": "cpp",
-		"typeinfo": "cpp"
+		"typeinfo": "cpp",
+		"xiosbase": "cpp",
+		"chrono": "cpp",
+		"condition_variable": "cpp",
+		"set": "cpp",
+		"ratio": "cpp",
+		"mutex": "cpp",
+		"semaphore": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp"
 	}
 }
