@@ -66,12 +66,38 @@ void UISDL::CreateRenderer(void) {
 	}
 }
 
+
+		//case SDL_KEYDOWN:
+		//	if (event.key.repeat) break;
+		//	this->keyState[event.key.keysym.sym] = true;
+		//	this->keyUpdate[event.key.keysym.sym] = this->updateCounter;
+		//	break;
+		//case SDL_KEYUP:
+		//	this->keyState[event.key.keysym.sym] = false;
+		//	this->keyUpdate[event.key.keysym.sym] = this->updateCounter;
+		//	break;
+		//case SDL_MOUSEBUTTONDOWN:
+		//	this->mouseState[event.button.button] = true;
+		//	this->mouseUpdate[event.button.button] = this->updateCounter;
+		//	break;
+		//case SDL_MOUSEBUTTONUP:
+		//	this->mouseState[event.button.button] = false;
+		//	this->mouseUpdate[event.button.button] = this->updateCounter;
+		//	break;
+
 void UISDL::HandleInput(void) {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
-		if(event.type == SDL_QUIT) {
-			this->quit = true;
+		switch (event.type) {
+			case SDL_KEYUP:
+				if ((event.key.keysym.sym == SDLK_q) || (event.key.keysym.sym == SDLK_ESCAPE))
+					this->quit = true;
+				break;
+			case SDL_QUIT:
+				this->quit = true;
+				break;
 		}
+
 	}
 }
 
