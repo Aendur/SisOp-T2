@@ -5,15 +5,18 @@
 #include "UISDL.h"
 
 #include <iostream>
+#include <thread>
 
 using std::string;
 
 Game::~Game(void) {
 	this->ui->Dispose();
 	delete this->ui;
+	
 	for (Player * p : this->players) { delete p; }
-	delete this->board_main;
 	this->players.clear();
+
+	delete this->board_main;
 }
 
 void Game::LoadSettings(const string & path) {
@@ -28,12 +31,10 @@ void Game::Initialize(void) {
 
 void Game::InitPlayers(void) {
 	for (auto & i : this->settings.players) {
-		Player * p = new Player(i.first, i.second);
-		p->SetBoard(board_main);
-		p->SetGame(this);
-		p->InitAI();
-		this->players.push_back(p);
+		Player * p = new Player(i.second, *this);
+		p->InitAI(i.first);
 		p->Print();
+		this->players.push_back(p);
 	}
 }
 
@@ -47,18 +48,14 @@ void Game::InitUI(void) {
 	this->ui->Initialize();
 	this->ui->DrawBoard();
 	this->ui->Refresh();
-	//this->ui->Await(5000);
 }
 
-#include <thread>
 void Game::Run(void) {
 	std::cout << "init mainloop" << std::endl;
 
 	std::vector<std::thread> threads;
 	
 	for (Player * p : players) {
-		//std::thread t(Player::Run, p);
-		//threads.push_back(t);
 		threads.emplace_back(&Player::Run, p);
 	}
 
@@ -69,10 +66,8 @@ void Game::Run(void) {
 		auto pending = board_main->Flush();
 		while (!pending.empty()) {
 			auto & movement = pending.front();
-
 			//int id = movement.player;
 			//std::cout << "i=" << movement.i << " j=" << movement.j << " id=" << id << std::endl;
-			
 			ui->PaintCell(movement.i, movement.j, players[movement.player]->GetColor());
 			pending.pop();
 		}

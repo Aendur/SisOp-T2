@@ -27,8 +27,8 @@ public:
 	bool Mark(signed char, int, int);
 	std::queue<Movement> Flush(void);
 
-	inline int width(void) { return _width; }
-	inline int height(void) { return _height; }
+	inline int width(void) const { return _width; }
+	inline int height(void) const { return _height; }
 
 };
 

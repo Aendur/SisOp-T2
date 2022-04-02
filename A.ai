@@ -1,0 +1,6 @@
+# Player AI settings
+
+# Number of grid cells (width,height)
+# window size is roughly GRID_SIZE * CELL_SIZE in each dimension
+# minimum value = 1
+SEED=0

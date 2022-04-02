@@ -1,12 +1,72 @@
 #include "AI.h"
-#include "player.h"
+#include "board.h"
+#include "utility.h"
 
 #include <iostream>
+#include <fstream>
+#include <unordered_map>
 
-AI::AI(int width, int height, signed char p) : width(width), height(height), player(p) {
-	this->_seed = std::random_device()();
+#define umap std::unordered_map
+
+using std::string;
+using std::vector;
+using std::ifstream;
+
+AI::AI(const string & path, const Board & board) {
+	this->width = board.width();
+	this->height = board.height();
+	this->LoadAI(path);
 	this->_generator = std::mt19937(_seed);
-	this->board_view = std::vector<bool>(width * height);
+	this->board_view = vector<bool>(width * height);
+}
+
+void AI::LoadAI(const std::string & path) {
+	ifstream stream(path + ".ai");
+	string line;
+	int nline = 0;
+	while( std::getline(stream, line) ) {
+		ParseLine(line, ++nline);
+	}
+	stream.close();
+}
+
+void AI::ParseLine(const string & line, int nline) {
+	if (line.length() > 2 && line[0] != '#') {
+		auto v1 = Utility::split(line, "=");
+
+		if (v1.size() != 2) { throw std::runtime_error("error: invalid arguments on line " + std::to_string(nline) + ":\n" + line); }
+		ParseAttr(Utility::strip(v1[0]), v1[1]);
+	}
+}
+
+struct arg_feats {
+	unsigned int argc;
+	string argdesc;
+	void (AI::*argf)(const vector<string> &);
+};
+
+void AI::ParseAttr(const string & attr, const string & args) {
+	static const umap<string, arg_feats> arg_act = {
+		{ "SEED", {1, "(seed)", &AI::SetSeed} },
+	};
+
+	vector<string> argv = Utility::split(args, ",");
+	unsigned int argc_expected = arg_act.at(attr).argc;
+	if (argv.size() != argc_expected) { throw std::runtime_error(attr + " expects " + std::to_string(argc_expected) + " arguments " + arg_act.at(attr).argdesc); }
+	try {
+		(this->*(arg_act.at(attr).argf))(argv);
+	} catch (std::exception & e) {
+		std::cout << e.what() << std::endl;
+	}
+}
+
+void AI::SetSeed(const vector<string> & args) {
+	unsigned long long s = std::stoull(args[0]);
+	if (s == 0) {
+		this->_seed = std::random_device()();
+	} else {
+		this->_seed = s;
+	}
 }
 
 std::pair<int, int> AI::NextMove(void) {

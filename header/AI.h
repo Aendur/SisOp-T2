@@ -5,6 +5,8 @@
 #include <set>
 #include <random>
 
+class Board;
+
 class AI {
 private:
 	unsigned long long _seed;
@@ -15,13 +17,18 @@ private:
 	int width;
 	int height;
 	int nmoves = 0;
-	signed char player = -1;
 
 	bool has_moves = true;
 
+	void LoadAI(const std::string &);
+	void ParseLine(const std::string &, int);
+	void ParseAttr(const std::string &, const std::string &);
+
+	void SetSeed(const std::vector<std::string> &);
+
 	std::vector<std::pair<int,int>> GetNeighbors(int, int);
 public:
-	AI(int width, int height, signed char p);
+	AI(const std::string &, const Board &);
 	//~AI(void);
 
 	std::pair<int, int> NextMove(void);

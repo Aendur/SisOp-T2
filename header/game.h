@@ -25,11 +25,9 @@ public:
 	~Game(void);
 	void LoadSettings(const std::string &);
 	void Initialize(void);
-	
-
 	void Run(void);
+
+	inline Board & GetBoard(void) const { return *board_main; }
 };
 
-
 #endif
-

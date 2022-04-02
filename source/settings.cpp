@@ -11,8 +11,6 @@ using std::string;
 using std::vector;
 #define umap std::unordered_map
 
-
-
 void Settings::Load(const std::string & path) {
 	ifstream stream(path);
 	string line;
