@@ -98,14 +98,8 @@ std::pair<int, int> AI::NextMove(void) {
 		return { dist_i(_generator), dist_j(_generator) };
 	} else {
 		if (partial_cores.size() > 0) {
-			//std::cout << partial_cores.size() << std::endl;
-			std::uniform_int_distribution<int> shuffle(0, partial_cores.size() - 1);
-			int pair_index = shuffle(_generator);
-			auto pair = partial_cores.begin(); 
-			while(--pair_index >= 0) { ++pair; }
-
-			auto neighbors = GetNeighbors(pair->first, pair->second);
-			//print_cores(player.GetId(), *pair, neighbors.size(), partial_cores);
+			auto pair = GetNextExpansionCoords();
+			auto neighbors = GetNeighborsNoDiagonal(pair);
 			if (neighbors.size() == 0) {
 				partial_cores.erase(pair);
 				return {-1,-1};
@@ -120,8 +114,17 @@ std::pair<int, int> AI::NextMove(void) {
 	}
 }
 
-#include <cstdio>
-std::vector<std::pair<int,int>> AI::GetNeighbors(int i, int j) {
+const std::pair<int,int> AI::GetNextExpansionCoords(void) {
+	std::uniform_int_distribution<int> shuffle(0, partial_cores.size() - 1);
+	int pair_index = shuffle(_generator);
+	auto pair = partial_cores.begin(); 
+	while(--pair_index >= 0) { ++pair; }
+	return *pair;
+}
+
+const std::vector<std::pair<int,int>> AI::GetNeighbors(const std::pair<int,int> & coords) const {
+	int i = coords.first;
+	int j = coords.second;
 	std::vector<std::pair<int,int>> result;
 
 	for (int i2 = i - 1; i2 <= i + 1; ++i2) {
@@ -134,6 +137,37 @@ std::vector<std::pair<int,int>> AI::GetNeighbors(int i, int j) {
 			if (i_range_ok && j_range_ok && not_ij && is_free) {
 				result.push_back({i2, j2});
 			}
+		}
+	}
+
+	return result;
+}
+
+const std::vector<std::pair<int,int>> AI::GetNeighborsNoDiagonal(const std::pair<int,int> & coords) const {
+	int i = coords.first;
+	int j = coords.second;
+	std::vector<std::pair<int,int>> result;
+
+	for (int i2 = i - 1; i2 <= i + 1; ++i2) {
+		int j2 = j;
+		bool i_range_ok = (0 <= i2 && i2 < height);
+		bool not_ij = (i2 != i);
+		bool is_free = (board_view[i2 * width + j2] == false);
+		
+		if (i_range_ok && not_ij && is_free) {
+			result.push_back({i2, j2});
+		}
+	}
+		
+		
+	for (int j2 = j - 1; j2 <= j + 1; ++j2) {
+		int i2 = i;
+		bool j_range_ok = (0 <= j2 && j2 < width);
+		bool not_ij = (j2 != j);
+		bool is_free = (board_view[i2 * width + j2] == false);
+		
+		if (j_range_ok && not_ij && is_free) {
+			result.push_back({i2, j2});
 		}
 	}
 

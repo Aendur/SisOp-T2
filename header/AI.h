@@ -30,7 +30,9 @@ private:
 	void SetSeed(const std::vector<std::string> &);
 	void SetDelay(const std::vector<std::string> &);
 
-	std::vector<std::pair<int,int>> GetNeighbors(int, int);
+	const std::pair<int, int> GetNextExpansionCoords(void);
+	const std::vector<std::pair<int,int>> GetNeighbors(const std::pair<int,int> &) const;
+	const std::vector<std::pair<int,int>> GetNeighborsNoDiagonal(const std::pair<int,int> &) const;
 public:
 	AI(const std::string &, const Player &, const Board &);
 	//~AI(void);
