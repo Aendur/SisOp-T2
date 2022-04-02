@@ -34,6 +34,7 @@ public:
 	std::pair<int, int> NextMove(void);
 	void ConfirmMove(int, int, bool);
 	inline bool HasMoves(void) { return has_moves; }
+	void Print(void) const;
 };
 
 #endif

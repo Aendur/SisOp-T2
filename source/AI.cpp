@@ -77,7 +77,7 @@ std::pair<int, int> AI::NextMove(void) {
 		return { dist_y(_generator), dist_x(_generator) };
 	} else {
 		if (partial_cores.size() > 0) {
-			std::cout << partial_cores.size() << std::endl;
+			//std::cout << partial_cores.size() << std::endl;
 			std::uniform_int_distribution<int> shuffle(0, partial_cores.size() - 1);
 			int pair_index = shuffle(_generator);
 			auto pair = partial_cores.begin(); 
@@ -123,4 +123,9 @@ void AI::ConfirmMove(int i, int j, bool marked) {
 		partial_cores.insert( {i,j} );
 		++nmoves;
 	}
+}
+
+void AI::Print(void) const {
+	std::cout << "seed=" << this->_seed << '\n';
+	std::cout << "nmoves=" << this->nmoves << std::endl;
 }

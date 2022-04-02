@@ -13,6 +13,7 @@ void Player::Print(void) const {
 	printf("\033[48;2;%d;%d;%dm     \033[0m ", _color.R, _color.G, _color.B);
 	printf("PLAYER %d ", _id);
 	printf("(%d,%d,%d)\n", _color.R, _color.G, _color.B);
+	this->_ai->Print();
 }
 
 void Player::Run(void) {
