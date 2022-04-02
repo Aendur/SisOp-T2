@@ -31,14 +31,17 @@ void Board::print(void) const {
 bool Board::Mark(signed char playerID, int i, int j) {
 	bool marked = false;
 	if (0 <= i && i < _height && 0 <= j && j < _width) {
+		int index = i * _width + j;
 		board_lock.lock();
-		if (this->_board[i * _width + j] == (signed char) -1) {
-			this->_board[i * _width + j] = playerID;
+
+		if (this->_board[index] == (signed char) -1) {
+			this->_board[index] = playerID;
 			pending_changes.push({playerID, i, j});
 			marked = true;
 		} else {
 			marked = false;
 		}
+
 		board_lock.unlock();
 	}
 	return marked;
@@ -47,10 +50,12 @@ bool Board::Mark(signed char playerID, int i, int j) {
 std::queue<Movement> Board::Flush(void) {
 	std::queue<Movement> flushed;
 	board_lock.lock();
+
 	while(!pending_changes.empty()) {
 		flushed.push(pending_changes.front());
 		pending_changes.pop();
 	}
+
 	board_lock.unlock();
 	return flushed;
 }
