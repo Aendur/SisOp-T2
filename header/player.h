@@ -22,6 +22,7 @@ private:
 public:
 	Player(const Color &, const Game &);
 	~Player(void);
+	inline signed char GetId(void) const { return _id; }
 	inline const Color & GetColor(void) const { return _color; }
 	
 	void InitAI(const std::string &);

@@ -4,8 +4,6 @@
 #include "AI.h"
 
 #include <cstdio>
-#include <chrono>
-#include <thread>
 
 Player::Player(const Color & color, const Game & game) : _id(nplayers++), _color(color), _game(game) {}
 
@@ -23,12 +21,12 @@ void Player::Run(void) {
 			bool marked = _game.GetBoard().Mark(_id, move.first, move.second);
 			_ai->ConfirmMove(move.first, move.second, marked);
 		}
-		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(4));
+		_ai->Delay();
 	}
 }
 
 void Player::InitAI(const std::string & path) {
-	this->_ai = new AI(path, this->_game.GetBoard());
+	this->_ai = new AI(path, *this, this->_game.GetBoard());
 }
 
 Player::~Player(void) {

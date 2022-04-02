@@ -1,10 +1,13 @@
 #include "AI.h"
 #include "board.h"
 #include "utility.h"
+#include "player.h"
 
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
+#include <chrono>
+#include <thread>
 
 #define umap std::unordered_map
 
@@ -12,7 +15,7 @@ using std::string;
 using std::vector;
 using std::ifstream;
 
-AI::AI(const string & path, const Board & board) {
+AI::AI(const string & path, const Player & p, const Board & board) : player(p) {
 	this->width = board.width();
 	this->height = board.height();
 	this->LoadAI(path);
@@ -47,7 +50,8 @@ struct arg_feats {
 
 void AI::ParseAttr(const string & attr, const string & args) {
 	static const umap<string, arg_feats> arg_act = {
-		{ "SEED", {1, "(seed)", &AI::SetSeed} },
+		{ "SEED",  {1, "(seed)", &AI::SetSeed } },
+		{ "DELAY", {1, "(ms)"  , &AI::SetDelay} },
 	};
 
 	vector<string> argv = Utility::split(args, ",");
@@ -69,12 +73,29 @@ void AI::SetSeed(const vector<string> & args) {
 	}
 }
 
+void AI::SetDelay(const vector<string> & args) {
+	this->delay = std::stoull(args[0]);
+}
+
+void print_cores(int id, const std::pair<int,int> & chosen, int neibs, const std::set<std::pair<int,int>> & cores) {
+	if (id == 1) {
+		//std::ofstream logfile("player" + std::to_string(id) + ".log", std::ios_base::openmode::_S_app);
+		std::cout << id << " chosen: (" << chosen.first << ',' << chosen.second << ") neibs: " << neibs << " |";
+		for (const auto & core : cores) {
+			std::cout << " (" << core.first << ',' << core.second << ')';
+		}
+		std::cout << std::endl;
+		//logfile.close();
+	}
+}
+
 std::pair<int, int> AI::NextMove(void) {
 	if (nmoves == 0) {
-		std::cout << "nm was 0: " << nmoves << std::endl;
-		std::uniform_int_distribution<int> dist_x(0, this->width);
-		std::uniform_int_distribution<int> dist_y(0, this->height);
-		return { dist_y(_generator), dist_x(_generator) };
+		int id = player.GetId();
+		std::cout << id << " attempting first move..." << std::endl;
+		std::uniform_int_distribution<int> dist_i(0, this->height - 1);
+		std::uniform_int_distribution<int> dist_j(0, this->width - 1);
+		return { dist_i(_generator), dist_j(_generator) };
 	} else {
 		if (partial_cores.size() > 0) {
 			//std::cout << partial_cores.size() << std::endl;
@@ -84,6 +105,7 @@ std::pair<int, int> AI::NextMove(void) {
 			while(--pair_index >= 0) { ++pair; }
 
 			auto neighbors = GetNeighbors(pair->first, pair->second);
+			//print_cores(player.GetId(), *pair, neighbors.size(), partial_cores);
 			if (neighbors.size() == 0) {
 				partial_cores.erase(pair);
 				return {-1,-1};
@@ -98,6 +120,7 @@ std::pair<int, int> AI::NextMove(void) {
 	}
 }
 
+#include <cstdio>
 std::vector<std::pair<int,int>> AI::GetNeighbors(int i, int j) {
 	std::vector<std::pair<int,int>> result;
 
@@ -126,6 +149,13 @@ void AI::ConfirmMove(int i, int j, bool marked) {
 }
 
 void AI::Print(void) const {
-	std::cout << "seed=" << this->_seed << '\n';
+	std::cout << "SEED=" << this->_seed << '\n';
+	std::cout << "DELAY=" << this->delay << '\n';
 	std::cout << "nmoves=" << this->nmoves << std::endl;
+}
+
+void AI::Delay(void) const {
+	auto t = std::chrono::duration<int, std::milli>(this->delay);
+	std::this_thread::sleep_for(t);
+
 }

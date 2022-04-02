@@ -79,5 +79,5 @@ void Game::Run(void) {
 
 	for (std::thread & t : threads) { t.join(); }
 
-	board_main->print();
+	//board_main->print();
 }
