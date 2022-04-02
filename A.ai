@@ -1,6 +1,5 @@
 # Player AI settings
 
-# Number of grid cells (width,height)
-# window size is roughly GRID_SIZE * CELL_SIZE in each dimension
-# minimum value = 1
+# RNG seed (seed)
+# SEED=0 for random seed
 SEED=0
