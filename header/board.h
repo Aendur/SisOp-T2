@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <mutex>
+#include <map>
 
 struct Movement {
 	signed char player;
@@ -26,6 +27,10 @@ public:
 	void print(void) const;
 	bool Mark(signed char, int, int);
 	std::queue<Movement> Flush(void);
+
+	const std::map<signed char, int> CountScores(void) const;
+
+	signed char Get(int, int) const;
 
 	inline int width(void) const { return _width; }
 	inline int height(void) const { return _height; }

@@ -38,7 +38,7 @@ public:
 	void DrawBoard(void);
 	void PaintCell(int, int, const Color &);
 	
-	void Refresh(void);
+	void Refresh(int);
 	void Await(int);
 	bool Quit(void) { return quit; }
 };

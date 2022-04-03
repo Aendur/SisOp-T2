@@ -20,6 +20,8 @@ private:
 	void InitPlayers(void);
 	void InitUI(void);
 
+	void RedrawUI(void) const;
+
 public:
 	//Game(void); : settings(s) {}
 	~Game(void);

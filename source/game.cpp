@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <thread>
+#include <chrono>
 
 using std::string;
 
@@ -47,7 +48,29 @@ void Game::InitUI(void) {
 	this->ui = new UISDL("test", this->settings);
 	this->ui->Initialize();
 	this->ui->DrawBoard();
-	this->ui->Refresh();
+	this->ui->Refresh(16);
+}
+
+void Game::RedrawUI(void) const {
+	std::chrono::time_point t0 = std::chrono::steady_clock::now();
+	this->ui->DrawBoard();
+	for (int i = 0; i < board_main->height(); ++i) {
+		for (int j = 0; j < board_main->width(); ++j) {
+			signed char p = board_main->Get(i, j);
+			if (p != -1) {
+				ui->PaintCell(i, j, players[p]->GetColor());
+			}
+		}
+	}
+	std::chrono::time_point t1 = std::chrono::steady_clock::now();
+	std::chrono::duration<long long, std::nano> dt = t1 - t0;
+	std::chrono::duration<long long, std::nano> t(1000000000L / 24);
+	int remaining = (t - dt).count()/1000000L;
+	if (0 < remaining && remaining <= 40) {
+		this->ui->Refresh(remaining);
+	} else {
+		this->ui->Refresh(1);
+	}
 }
 
 void Game::Run(void) {
@@ -60,24 +83,29 @@ void Game::Run(void) {
 	}
 
 	while (!ui->Quit()) {
-		ui->HandleInput();
+		RedrawUI();
 		
 		// flush board
+		/*
+		ui->HandleInput();
 		auto pending = board_main->Flush();
 		while (!pending.empty()) {
 			auto & movement = pending.front();
-			//int id = movement.player;
-			//std::cout << "i=" << movement.i << " j=" << movement.j << " id=" << id << std::endl;
 			ui->PaintCell(movement.i, movement.j, players[movement.player]->GetColor());
 			pending.pop();
 		}
-		
-		
-		ui->Refresh();
-		ui->Await(16);
+		ui->Refresh(16);
+		*/
 	}
 
 	for (std::thread & t : threads) { t.join(); }
 
-	//board_main->print();
+	for (Player * p : players) {
+		p->Print();
+	}
+
+	for (const auto & [k,v] : board_main->CountScores()) {
+		int id = k;
+		std::cout << id << ": " << v << std::endl;
+	}
 }

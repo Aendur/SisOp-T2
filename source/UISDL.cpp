@@ -50,7 +50,9 @@ void UISDL::InitializeSDL(void) {
 
 void UISDL::CreateWindow(void) {
 	std::cout << "creating SDL window..." << std::endl;
-	this->window = SDL_CreateWindow(this->title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->width, this->height, 0);
+	int position = SDL_WINDOWPOS_UNDEFINED; // SDL_WINDOWPOS_CENTERED;
+	unsigned int flags = SDL_WINDOW_OPENGL; // | SDL_WINDOW_BORDERLESS;
+	this->window = SDL_CreateWindow(this->title.c_str(), position, position, this->width, this->height, flags);
 	if (this->window == nullptr) {
 		std::string error = SDL_GetError();
 		throw std::runtime_error(error);
@@ -65,25 +67,6 @@ void UISDL::CreateRenderer(void) {
 		throw std::runtime_error(error);
 	}
 }
-
-
-		//case SDL_KEYDOWN:
-		//	if (event.key.repeat) break;
-		//	this->keyState[event.key.keysym.sym] = true;
-		//	this->keyUpdate[event.key.keysym.sym] = this->updateCounter;
-		//	break;
-		//case SDL_KEYUP:
-		//	this->keyState[event.key.keysym.sym] = false;
-		//	this->keyUpdate[event.key.keysym.sym] = this->updateCounter;
-		//	break;
-		//case SDL_MOUSEBUTTONDOWN:
-		//	this->mouseState[event.button.button] = true;
-		//	this->mouseUpdate[event.button.button] = this->updateCounter;
-		//	break;
-		//case SDL_MOUSEBUTTONUP:
-		//	this->mouseState[event.button.button] = false;
-		//	this->mouseUpdate[event.button.button] = this->updateCounter;
-		//	break;
 
 void UISDL::HandleInput(void) {
 	SDL_Event event;
@@ -110,19 +93,19 @@ void UISDL::DrawBoard(void) {
 }
 
 void UISDL::DrawBorder(void) {
-	const int outer_border_size = settings.border_size_outer;
-	const int total_border_size = settings.border_size_outer + settings.border_size_inner;
-	const int board_w = width  - 2 * total_border_size + 2;
-	const int board_h = height - 2 * total_border_size + 2;
+	static const int outer_border_size = settings.border_size_outer;
+	static const int total_border_size = settings.border_size_outer + settings.border_size_inner;
+	static const int board_w = width  - 2 * total_border_size + 2;
+	static const int board_h = height - 2 * total_border_size + 2;
 	
-	const SDL_Rect border_outer[4] = {
+	static const SDL_Rect border_outer[4] = {
 		{ 0, 0, width, outer_border_size },
 		{ 0, 0, outer_border_size, height },
 		{ 0, height - outer_border_size, width, outer_border_size },
 		{ width - outer_border_size, 0, outer_border_size, height },
 	};
 	
-	const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
+	static const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
 
 	SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
 	SDL_RenderFillRects(this->renderer, border_outer, 4);
@@ -130,11 +113,11 @@ void UISDL::DrawBorder(void) {
 }
 
 void UISDL::DrawGrid(void) {
-	const int csize = settings.cell_size;
-	const int nrows = settings.grid_height;
-	const int ncols = settings.grid_width;
-	const int board_height = csize * nrows - 1;
-	const int board_width = csize * ncols - 1;
+	static const int csize = settings.cell_size;
+	static const int nrows = settings.grid_height;
+	static const int ncols = settings.grid_width;
+	static const int board_height = csize * nrows - 1;
+	static const int board_width = csize * ncols - 1;
 	
 	SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
 	
@@ -142,13 +125,13 @@ void UISDL::DrawGrid(void) {
 	int y0 = x0;
 
 	for(int i = 0; i < nrows; ++i) {
-		int y = y0 + i * csize;
+		const int y = y0 + i * csize;
 		SDL_RenderDrawLine(this->renderer, x0, y            , x0 + board_width, y            );
 		SDL_RenderDrawLine(this->renderer, x0, y + csize - 1, x0 + board_width, y + csize - 1);
 	}
 
 	for(int i = 0; i < ncols; ++i) {
-		int x = x0 + i * csize;
+		const int x = x0 + i * csize;
 		SDL_RenderDrawLine(this->renderer, x            , y0, x            , y0 + board_height);
 		SDL_RenderDrawLine(this->renderer, x + csize - 1, y0, x + csize - 1, y0 + board_height);
 	}
@@ -157,18 +140,18 @@ void UISDL::DrawGrid(void) {
 void UISDL::PaintCell(int i, int j, const Color & color) {
 	SDL_SetRenderDrawColor(this->renderer, color.R, color.G, color.B, color.A);
 
-	int size = settings.cell_size - 2;
-	int x = settings.border_size_outer + settings.border_size_inner + settings.cell_size * j + 1;
-	int y = settings.border_size_outer + settings.border_size_inner + settings.cell_size * i + 1;
-	SDL_Rect cell = {x, y, size, size};
+	const int size = settings.cell_size - 2;
+	const int x = settings.border_size_outer + settings.border_size_inner + settings.cell_size * j + 1;
+	const int y = settings.border_size_outer + settings.border_size_inner + settings.cell_size * i + 1;
+	const SDL_Rect cell = {x, y, size, size};
 
 	SDL_RenderFillRect(this->renderer, &cell);
 }
 
-void UISDL::Refresh(void) {
+void UISDL::Refresh(int delay) {
 	this->HandleInput();
 	SDL_RenderPresent(this->renderer);
-	SDL_Delay(32);
+	SDL_Delay(delay);
 }
 
 void UISDL::Await(int t) {

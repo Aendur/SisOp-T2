@@ -36,7 +36,7 @@ bool Board::Mark(signed char playerID, int i, int j) {
 
 		if (this->_board[index] == (signed char) -1) {
 			this->_board[index] = playerID;
-			pending_changes.push({playerID, i, j});
+			//pending_changes.push({playerID, i, j});
 			marked = true;
 		} else {
 			marked = false;
@@ -58,4 +58,18 @@ std::queue<Movement> Board::Flush(void) {
 
 	board_lock.unlock();
 	return flushed;
+}
+
+const std::map<signed char, int> Board::CountScores(void) const {
+	std::map<signed char, int> scores;
+
+	for (int i = 0; i < (_width * _height); ++i) {
+		++scores[_board[i]];
+	}
+
+	return scores;
+}
+
+signed char Board::Get(int i, int j) const {
+	return _board[i * _width + j];
 }

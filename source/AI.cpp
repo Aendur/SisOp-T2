@@ -99,7 +99,8 @@ std::pair<int, int> AI::NextMove(void) {
 	} else {
 		if (partial_cores.size() > 0) {
 			auto pair = GetNextExpansionCoords();
-			auto neighbors = GetNeighborsNoDiagonal(pair);
+			auto neighbors = GetNeighbors(pair);
+			//auto neighbors = GetNeighborsNoDiagonal(pair);
 			if (neighbors.size() == 0) {
 				partial_cores.erase(pair);
 				return {-1,-1};
@@ -108,6 +109,9 @@ std::pair<int, int> AI::NextMove(void) {
 				return neighbors[dist(_generator)];
 			}
 		} else {
+			int id = player.GetId();
+			std::cout << id << " is out of moves." << std::endl;
+			
 			has_moves = false;
 			return {-1,-1};
 		}
