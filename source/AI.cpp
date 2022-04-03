@@ -193,6 +193,6 @@ void AI::Print(void) const {
 }
 
 void AI::Delay(void) const {
-	auto t = std::chrono::duration<int, std::milli>(this->delay);
+	auto t = std::chrono::duration<int, std::micro>(this->delay);
 	std::this_thread::sleep_for(t);
 }

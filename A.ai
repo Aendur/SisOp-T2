@@ -4,6 +4,6 @@
 # SEED=0 for random seed
 SEED=0
 
-# delay between moves (ms)
-DELAY=5
+# delay between moves (us)
+DELAY=500
 
