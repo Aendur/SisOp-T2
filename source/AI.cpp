@@ -113,13 +113,22 @@ std::pair<int, int> AI::NextMove(void) {
 const std::pair<int,int> AI::GetNextExpansionCoords(void) {
 	long long total_weight = 0;
 	for (const auto & [k,v] : partial_cores) { total_weight += v; }
+	if (player.GetId() == 0) {
+		std::cout << total_weight << std::endl;
+	}
 	std::uniform_int_distribution<long long> shuffle(0, total_weight - 1);
 	long long pair_index = shuffle(_generator);
 	auto pair = partial_cores.begin(); 
 	pair_index -= pair->second;
 	while(pair_index >= 0) {
+		if (player.GetId() == 0) {
+			std::cout << (pair->first.first) << ',' << (pair->first.second) << ',' << (pair->second) << ' ';
+		}
 		++pair;
 		pair_index -= pair->second;
+	}
+	if (player.GetId() == 0) {
+			std::cout << std::endl;
 	}
 	return pair->first;
 }
@@ -186,8 +195,9 @@ const std::vector<std::pair<int,int>> AI::GetNeighborsRK(const std::pair<int,int
 			bool j_range_ok = (0 <= j2 && j2 < width);
 			bool not_ij = !(i2 == i && j2 == j);
 			bool is_free = (board_view[i2 * width + j2] == false);
+			bool radius = (abs(i - i2) + abs(j - j2)) <= K;
 			
-			if (i_range_ok && j_range_ok && not_ij && is_free) {
+			if (i_range_ok && j_range_ok && not_ij && is_free && radius) {
 				result.push_back({i2, j2});
 			}
 		}
@@ -217,22 +227,26 @@ void AI::ConfirmMove(int i, int j, bool marked) {
 			partial_cores.erase(current);
 		}
 
-		for (const auto & neighbor1 : GetNeighborsRK(current, 3)) {
-			if (partial_cores.find(neighbor1) != partial_cores.end()) {
-				partial_cores[neighbor1] += width * height * (nmoves + 1);
+		for (const auto & near : GetNeighborsRK(current, 4)) {
+			if (partial_cores.find(near) != partial_cores.end()) {
+				partial_cores[near] += width * height;
 			}
-			//for (const auto & neighbor2 : GetNeighbors4(neighbor1)) {
-			//	if (partial_cores.find(neighbor2) != partial_cores.end()) {
-			//		partial_cores[neighbor2] += width * height;
-			//	}
-			//	//for (const auto & neighbor3 : GetNeighbors(neighbor2)) {
-			//	//	if (partial_cores.find(neighbor3) != partial_cores.end()) {
-			//	//		partial_cores[neighbor3] += width * height;
-			//	//	}
-			//	//}
-			//}
 		}
-
+		for (const auto & near : GetNeighborsRK(current, 3)) {
+			if (partial_cores.find(near) != partial_cores.end()) {
+				partial_cores[near] += width * height * 10;
+			}
+		}
+		for (const auto & near : GetNeighborsRK(current, 2)) {
+			if (partial_cores.find(near) != partial_cores.end()) {
+				partial_cores[near] += width * height * 100;
+			}
+		}
+		for (const auto & near : GetNeighbors8(current)) {
+			if (partial_cores.find(near) != partial_cores.end()) {
+				partial_cores[near] += width * height * 1000;
+			}
+		}
 	}
 }
 
