@@ -32,7 +32,7 @@ void Game::Initialize(void) {
 
 void Game::InitPlayers(void) {
 	for (auto & i : this->settings.players) {
-		Player * p = new Player(i.second, *this);
+		Player * p = new Player(i.second, this);
 		p->InitAI(i.first);
 		p->Print();
 		this->players.push_back(p);
@@ -108,4 +108,11 @@ void Game::Run(void) {
 		int id = k;
 		std::cout << id << ": " << v << std::endl;
 	}
+}
+
+bool Game::MarkBoard(const Player & p, int i, int j) {
+	board_lock.lock();
+	bool marked = this->board_main->Mark(p.GetId(), i, j);
+	board_lock.unlock();
+	return marked;
 }

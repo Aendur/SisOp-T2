@@ -5,7 +5,7 @@
 
 #include <cstdio>
 
-Player::Player(const Color & color, const Game & game) : _id(nplayers++), _color(color), _game(game) {}
+Player::Player(const Color & color, Game * game) : _id(nplayers++), _color(color), _game(game) {}
 
 void Player::Print(void) const {
 	printf("\033[48;2;%d;%d;%dm     \033[0m ", _color.R, _color.G, _color.B);
@@ -18,7 +18,8 @@ void Player::Run(void) {
 	while(_ai->HasMoves()) {
 		const auto & move = _ai->NextMove();
 		if (move.first >= 0 && move.second >= 0) {
-			bool marked = _game.GetBoard().Mark(_id, move.first, move.second);
+			//bool marked = _game.GetBoard().Mark(_id, move.first, move.second);
+			bool marked = _game->MarkBoard(*this, move.first, move.second);
 			_ai->ConfirmMove(move.first, move.second, marked);
 		}
 		_ai->Delay();
@@ -26,7 +27,7 @@ void Player::Run(void) {
 }
 
 void Player::InitAI(const std::string & path) {
-	this->_ai = new AI(path, *this, this->_game.GetBoard());
+	this->_ai = new AI(path, *this, this->_game->GetBoard());
 }
 
 Player::~Player(void) {

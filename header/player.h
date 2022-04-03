@@ -16,11 +16,11 @@ private:
 	signed char _id;
 	Color _color;
 
-	const Game & _game;
+	Game * _game;
 	AI * _ai = nullptr;
 	
 public:
-	Player(const Color &, const Game &);
+	Player(const Color &, Game *);
 	~Player(void);
 	inline signed char GetId(void) const { return _id; }
 	inline const Color & GetColor(void) const { return _color; }

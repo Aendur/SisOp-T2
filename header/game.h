@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 #include "settings.h"
 
 class Player;
@@ -11,6 +12,8 @@ class UI;
 
 class Game {
 private:
+	std::mutex board_lock;
+
 	Settings settings;
 	std::vector<Player*> players;
 	Board * board_main;
@@ -29,7 +32,9 @@ public:
 	void Initialize(void);
 	void Run(void);
 
-	inline Board & GetBoard(void) const { return *board_main; }
+	bool MarkBoard(const Player & p, int i, int j);
+
+	inline const Board & GetBoard(void) const { return *board_main; }
 };
 
 #endif

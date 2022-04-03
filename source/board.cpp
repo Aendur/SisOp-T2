@@ -32,8 +32,7 @@ bool Board::Mark(signed char playerID, int i, int j) {
 	bool marked = false;
 	if (0 <= i && i < _height && 0 <= j && j < _width) {
 		int index = i * _width + j;
-		board_lock.lock();
-
+		//board_lock.lock();
 		if (this->_board[index] == (signed char) -1) {
 			this->_board[index] = playerID;
 			//pending_changes.push({playerID, i, j});
@@ -41,24 +40,23 @@ bool Board::Mark(signed char playerID, int i, int j) {
 		} else {
 			marked = false;
 		}
-
-		board_lock.unlock();
+		//board_lock.unlock();
 	}
 	return marked;
 }
 
-std::queue<Movement> Board::Flush(void) {
-	std::queue<Movement> flushed;
-	board_lock.lock();
+// std::queue<Movement> Board::Flush(void) {
+// 	std::queue<Movement> flushed;
+// 	board_lock.lock();
 
-	while(!pending_changes.empty()) {
-		flushed.push(pending_changes.front());
-		pending_changes.pop();
-	}
+// 	while(!pending_changes.empty()) {
+// 		flushed.push(pending_changes.front());
+// 		pending_changes.pop();
+// 	}
 
-	board_lock.unlock();
-	return flushed;
-}
+// 	board_lock.unlock();
+// 	return flushed;
+// }
 
 const std::map<signed char, int> Board::CountScores(void) const {
 	std::map<signed char, int> scores;
