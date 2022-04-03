@@ -8,12 +8,10 @@
 
 class Settings {
 private:
-	void SetCellSize(const std::vector<std::string> &);
 	void SetGridSize(const std::vector<std::string> &);
 	void SetLineColor(const std::vector<std::string> &);
 	void SetBackgroundColor(const std::vector<std::string> &);
 	void SetBorderSize(const std::vector<std::string> &);
-	void SetFrameRate(const std::vector<std::string> &);
 	void AddPlayer(const std::vector<std::string> &);
 
 	void ParseLine(const std::string &, int);

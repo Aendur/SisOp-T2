@@ -32,22 +32,18 @@ void Settings::ParseLine(const string & line, int nline) {
 
 void Settings::ParseAttr(const string & attr, const string & args) {
 	static const umap<string, std::pair<unsigned int, string>> arg_num = {
-		{ "GRID_SIZE"        , {2, "(width,height)" }},
-		{ "CELL_SIZE"        , {1, "(size)"         }},
-		{ "LINE_COLOR"       , {3, "(R,G,B)"        }},
-		{ "BACKGROUND_COLOR" , {3, "(R,G,B)"        }},
-		{ "BORDER_SIZE"      , {2, "(outer,inner)"  }},
-		{ "FRAME_RATE"       , {1, "(fps)"          }},
-		{ "PLAYER"           , {4, "(name,R,G,B)"   }},
+		{ "GRID_SIZE"        , {3, "(width,height,cell_size)" }},
+		{ "LINE_COLOR"       , {3, "(R,G,B)"                  }},
+		{ "BACKGROUND_COLOR" , {3, "(R,G,B)"                  }},
+		{ "BORDER_SIZE"      , {2, "(outer,inner)"            }},
+		{ "PLAYER"           , {4, "(name,R,G,B)"             }},
 	};
 
 	static const umap<string, void (Settings::*)(const vector<string> &)> arg_act = {
 		{ "GRID_SIZE"        , &Settings::SetGridSize       },
-		{ "CELL_SIZE"        , &Settings::SetCellSize       },
 		{ "LINE_COLOR"       , &Settings::SetLineColor      },
 		{ "BACKGROUND_COLOR" , &Settings::SetBackgroundColor},
 		{ "BORDER_SIZE"      , &Settings::SetBorderSize     },
-		{ "FRAME_RATE"       , &Settings::SetFrameRate      },
 		{ "PLAYER"           , &Settings::AddPlayer         },
 	};
 
@@ -61,13 +57,10 @@ void Settings::ParseAttr(const string & attr, const string & args) {
 	}
 }
 
-void Settings::SetCellSize(const vector<string> & argv) {
-	this->cell_size = std::stoi(argv[0]);
-}
-
 void Settings::SetGridSize(const vector<string> & argv) {
 	this->grid_width = std::stoi(argv[0]);
 	this->grid_height = std::stoi(argv[1]);
+	this->cell_size = std::stoi(argv[2]);
 }
 
 void Settings::SetLineColor(const vector<string> & argv) {
@@ -86,8 +79,6 @@ void Settings::SetBorderSize(const vector<string> & argv) {
 	this->border_size_outer = std::stoi(argv[0]);
 	this->border_size_inner = std::stoi(argv[1]);
 }
-
-void Settings::SetFrameRate(const vector<string> & argv) { (void) argv; throw std::logic_error("SetFrameRate unimplemented"); }
 
 void Settings::AddPlayer(const vector<string> & argv) {
 	Color c(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]), 255);
