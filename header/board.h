@@ -31,6 +31,7 @@ public:
 	const std::map<signed char, int> CountScores(void) const;
 
 	signed char Get(int, int) const;
+	signed char Flip(int, int);
 
 	inline int width(void) const { return _width; }
 	inline int height(void) const { return _height; }

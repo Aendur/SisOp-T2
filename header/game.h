@@ -30,6 +30,7 @@ private:
 	void InitUI(void);
 
 	void RedrawUI(void) const;
+	void UpdateUI(void) const;
 	void PrintResults(void) const;
 
 public:

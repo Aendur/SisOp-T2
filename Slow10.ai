@@ -5,5 +5,5 @@
 SEED=0
 
 # delay between moves (us)
-DELAY=16000
+DELAY=10000
 

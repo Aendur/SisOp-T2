@@ -33,7 +33,7 @@ bool Board::Mark(signed char playerID, int i, int j) {
 	if (0 <= i && i < _height && 0 <= j && j < _width) {
 		int index = i * _width + j;
 		if (this->_board[index] == (signed char) -1) {
-			this->_board[index] = playerID;
+			this->_board[index] = playerID | (signed char) 0x80;
 			marked = true;
 		} else {
 			marked = false;
@@ -59,7 +59,11 @@ const std::map<signed char, int> Board::CountScores(void) const {
 	std::map<signed char, int> scores;
 
 	for (int i = 0; i < (_width * _height); ++i) {
-		++scores[_board[i]];
+		if (_board[i] < 0) {
+			++scores[_board[i] & (signed char) 0x7F];
+		} else {
+			++scores[_board[i]];
+		}
 	}
 
 	return scores;
@@ -67,4 +71,10 @@ const std::map<signed char, int> Board::CountScores(void) const {
 
 signed char Board::Get(int i, int j) const {
 	return _board[i * _width + j];
+}
+
+signed char Board::Flip(int i, int j) {
+	int index = i * _width + j;
+	_board[index] &= (signed char) 0x7F;
+	return _board[index];
 }

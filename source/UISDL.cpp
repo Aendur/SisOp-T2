@@ -95,18 +95,23 @@ void UISDL::DrawBorder(void) {
 	static const int board_w = width  - 2 * total_border_size + 2;
 	static const int board_h = height - 2 * total_border_size + 2;
 	
-	static const SDL_Rect border_outer[4] = {
-		{ 0, 0, width, outer_border_size },
-		{ 0, 0, outer_border_size, height },
-		{ 0, height - outer_border_size, width, outer_border_size },
-		{ width - outer_border_size, 0, outer_border_size, height },
-	};
-	
-	static const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
+	if (total_border_size > 0) {
+		static const SDL_Rect border_outer[4] = {
+			{ 0, 0, width, outer_border_size },
+			{ 0, 0, outer_border_size, height },
+			{ 0, height - outer_border_size, width, outer_border_size },
+			{ width - outer_border_size, 0, outer_border_size, height },
+		};
+		
+		static const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
 
-	SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
-	SDL_RenderFillRects(this->renderer, border_outer, 4);
-	SDL_RenderDrawRect(this->renderer, &border_inner);
+		SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
+		if (outer_border_size > 0)
+			SDL_RenderFillRects(this->renderer, border_outer, 4);
+		if (settings.border_size_inner > 0)
+			SDL_RenderDrawRect(this->renderer, &border_inner);
+	}
+
 }
 
 void UISDL::DrawGrid(void) {
@@ -116,23 +121,26 @@ void UISDL::DrawGrid(void) {
 	static const int board_height = csize * nrows - 1;
 	static const int board_width = csize * ncols - 1;
 	
-	SDL_SetRenderDrawBlendMode(this->renderer, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
-	
-	int x0 = settings.border_size_outer + settings.border_size_inner;
-	int y0 = x0;
+	if (settings.line_color.A > 0) {
+		SDL_SetRenderDrawBlendMode(this->renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
+		
+		int x0 = settings.border_size_outer + settings.border_size_inner;
+		int y0 = x0;
 
-	for(int i = 0; i < nrows; ++i) {
-		const int y = y0 + i * csize;
-		SDL_RenderDrawLine(this->renderer, x0, y            , x0 + board_width, y            );
-		SDL_RenderDrawLine(this->renderer, x0, y + csize - 1, x0 + board_width, y + csize - 1);
+		for(int i = 0; i < nrows; ++i) {
+			const int y = y0 + i * csize;
+			SDL_RenderDrawLine(this->renderer, x0, y            , x0 + board_width, y            );
+			SDL_RenderDrawLine(this->renderer, x0, y + csize - 1, x0 + board_width, y + csize - 1);
+		}
+
+		for(int i = 0; i < ncols; ++i) {
+			const int x = x0 + i * csize;
+			SDL_RenderDrawLine(this->renderer, x            , y0, x            , y0 + board_height);
+			SDL_RenderDrawLine(this->renderer, x + csize - 1, y0, x + csize - 1, y0 + board_height);
+		}
 	}
 
-	for(int i = 0; i < ncols; ++i) {
-		const int x = x0 + i * csize;
-		SDL_RenderDrawLine(this->renderer, x            , y0, x            , y0 + board_height);
-		SDL_RenderDrawLine(this->renderer, x + csize - 1, y0, x + csize - 1, y0 + board_height);
-	}
 }
 
 void UISDL::PaintCell(int i, int j, const Color & color) {
@@ -144,12 +152,20 @@ void UISDL::PaintCell(int i, int j, const Color & color) {
 	const SDL_Rect cell = {x, y, size, size};
 
 	SDL_RenderFillRect(this->renderer, &cell);
+
+	if (settings.line_color.A > 0) {
+		SDL_SetRenderDrawBlendMode(this->renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
+		SDL_RenderDrawRect(this->renderer, &cell);
+	}
 }
 
 void UISDL::Refresh(int delay) {
 	//this->HandleInput();
 	SDL_RenderPresent(this->renderer);
-	SDL_Delay(delay);
+	if (delay > 0) {
+		SDL_Delay(delay);
+	}
 }
 
 //void UISDL::Await(int t) {

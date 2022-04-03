@@ -66,22 +66,35 @@ void Game::RedrawUI(void) const {
 	this->ui->DrawBorder();
 	for (int i = 0; i < board_main->height(); ++i) {
 		for (int j = 0; j < board_main->width(); ++j) {
-			signed char p = board_main->Get(i, j);
-			if (p != -1) {
+			if (board_main->Get(i, j) < -1) {
+				signed char p = board_main->Flip(i, j);
 				ui->PaintCell(i, j, players[p]->GetColor());
 			}
 		}
 	}
-	this->ui->DrawGrid();
+	//this->ui->DrawGrid();
 	std::chrono::time_point t1 = std::chrono::steady_clock::now();
 	std::chrono::duration<long long, std::nano> dt = t1 - t0;
 	std::chrono::duration<long long, std::nano> t(1000000000L / 24);
 	int remaining = (t - dt).count()/1000000L;
-	if (0 < remaining && remaining <= 40) {
-		this->ui->Refresh(remaining);
-	} else {
-		this->ui->Refresh(1);
+	this->ui->Refresh(remaining);
+}
+
+void Game::UpdateUI(void) const {
+	std::chrono::time_point t0 = std::chrono::steady_clock::now();
+	for (int i = 0; i < board_main->height(); ++i) {
+		for (int j = 0; j < board_main->width(); ++j) {
+			if (board_main->Get(i, j) < -1) {
+				signed char p = board_main->Flip(i, j);
+				ui->PaintCell(i, j, players[p]->GetColor());
+			}
+		}
 	}
+	std::chrono::time_point t1 = std::chrono::steady_clock::now();
+	std::chrono::duration<long long, std::nano> dt = t1 - t0;
+	std::chrono::duration<long long, std::nano> t(1000000000L / 24);
+	int remaining = (t - dt).count()/1000000L;
+	this->ui->Refresh(remaining);
 }
 
 void Game::Run(void) {
@@ -95,7 +108,8 @@ void Game::Run(void) {
 
 	while (!ui->Quit()) {
 		ui->HandleInput();
-		RedrawUI();
+		//RedrawUI();
+		UpdateUI();
 		//ui->HandleInput();
 		//ui->Refresh(25);
 
