@@ -38,6 +38,8 @@ void Game::InitPlayers(void) {
 		p->Print();
 		this->players.push_back(p);
 	}
+
+	this->unfinished_players = (int) players.size();
 }
 
 void Game::InitBoard(void) {
@@ -92,16 +94,20 @@ void Game::Run(void) {
 		RedrawUI();
 		//ui->HandleInput();
 		//ui->Refresh(25);
+
+		if (unfinished_players == 0) {
+			for (std::thread & t : threads) { t.join(); }
+			this->PrintResults();
+			unfinished_players = -1;
+		}
 	}
+	
+	printf("\n\n\n");
+	for (std::thread & t : threads) { if (t.joinable()) { t.join(); } }
+}
 
-	for (std::thread & t : threads) { t.join(); }
-
-	//for (Player * p : players) { p->Print(); }
-	//for (const auto & [k,v] : board_main->CountScores()) {
-	//	int id = k;
-	//	std::cout << id << ": " << v << std::endl;
-	//}
-
+void Game::PrintResults(void) const {
+	printf("\n\n\n");
 	std::set<std::pair<int, signed char>> scores;
 	for (const auto & [k,v] : board_main->CountScores()) { scores.insert({-v, k}); }
 	for (const auto & [v,k] : scores) {
@@ -110,7 +116,6 @@ void Game::Run(void) {
 		//std::cout << "\033[48;2;" << c.R << ';' << c.G << ';' << c.B << "m     \033[0m Player " << id << " - Score: " << -v << std::endl;
 		printf("\033[48;2;%d;%d;%dm     \033[0m Player %d - Score: %d\n", c.R, c.G, c.B, id, -v);
 	}
-
 }
 
 bool Game::MarkBoard(const Player & p, int i, int j) {
@@ -128,4 +133,10 @@ bool Game::MarkBoard(const Player & p, int i, int j) {
 	board_lock_cell[i * board_main->width() + j].unlock();
 
 	return marked;
+}
+
+void Game::NotifyFinished(void) {
+	notice_lock.lock();
+	--unfinished_players;
+	notice_lock.unlock();
 }

@@ -24,6 +24,7 @@ void Player::Run(void) {
 		}
 		//_ai->Delay();
 	}
+	_game->NotifyFinished();
 }
 
 void Player::InitAI(const std::string & path) {
