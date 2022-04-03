@@ -84,12 +84,9 @@ void UISDL::HandleInput(void) {
 	}
 }
 
-void UISDL::DrawBoard(void) {
+void UISDL::DrawBackground(void) {
 	SDL_SetRenderDrawColor(this->renderer, settings.background_color.R, settings.background_color.G, settings.background_color.B, settings.background_color.A);
 	SDL_RenderClear(this->renderer);
-
-	DrawBorder();
-	DrawGrid();
 }
 
 void UISDL::DrawBorder(void) {
@@ -119,6 +116,7 @@ void UISDL::DrawGrid(void) {
 	static const int board_height = csize * nrows - 1;
 	static const int board_width = csize * ncols - 1;
 	
+	SDL_SetRenderDrawBlendMode(this->renderer, SDL_BLENDMODE_BLEND);
 	SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
 	
 	int x0 = settings.border_size_outer + settings.border_size_inner;
@@ -140,9 +138,9 @@ void UISDL::DrawGrid(void) {
 void UISDL::PaintCell(int i, int j, const Color & color) {
 	SDL_SetRenderDrawColor(this->renderer, color.R, color.G, color.B, color.A);
 
-	const int size = settings.cell_size - 2;
-	const int x = settings.border_size_outer + settings.border_size_inner + settings.cell_size * j + 1;
-	const int y = settings.border_size_outer + settings.border_size_inner + settings.cell_size * i + 1;
+	const int size = settings.cell_size; // - 2;
+	const int x = settings.border_size_outer + settings.border_size_inner + settings.cell_size * j; // + 1;
+	const int y = settings.border_size_outer + settings.border_size_inner + settings.cell_size * i; // + 1;
 	const SDL_Rect cell = {x, y, size, size};
 
 	SDL_RenderFillRect(this->renderer, &cell);

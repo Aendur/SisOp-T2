@@ -54,13 +54,16 @@ void Game::InitBoard(void) {
 void Game::InitUI(void) {
 	this->ui = new UISDL("test", this->settings);
 	this->ui->Initialize();
-	this->ui->DrawBoard();
+	this->ui->DrawBackground();
+	this->ui->DrawBorder();
+	this->ui->DrawGrid();
 	this->ui->Refresh(16);
 }
 
 void Game::RedrawUI(void) const {
 	std::chrono::time_point t0 = std::chrono::steady_clock::now();
-	this->ui->DrawBoard();
+	this->ui->DrawBackground();
+	this->ui->DrawBorder();
 	for (int i = 0; i < board_main->height(); ++i) {
 		for (int j = 0; j < board_main->width(); ++j) {
 			signed char p = board_main->Get(i, j);
@@ -69,6 +72,7 @@ void Game::RedrawUI(void) const {
 			}
 		}
 	}
+	this->ui->DrawGrid();
 	std::chrono::time_point t1 = std::chrono::steady_clock::now();
 	std::chrono::duration<long long, std::nano> dt = t1 - t0;
 	std::chrono::duration<long long, std::nano> t(1000000000L / 24);

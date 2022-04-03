@@ -113,22 +113,13 @@ std::pair<int, int> AI::NextMove(void) {
 const std::pair<int,int> AI::GetNextExpansionCoords(void) {
 	long long total_weight = 0;
 	for (const auto & [k,v] : partial_cores) { total_weight += v; }
-	if (player.GetId() == 0) {
-		std::cout << total_weight << std::endl;
-	}
 	std::uniform_int_distribution<long long> shuffle(0, total_weight - 1);
 	long long pair_index = shuffle(_generator);
 	auto pair = partial_cores.begin(); 
 	pair_index -= pair->second;
 	while(pair_index >= 0) {
-		if (player.GetId() == 0) {
-			std::cout << (pair->first.first) << ',' << (pair->first.second) << ',' << (pair->second) << ' ';
-		}
 		++pair;
 		pair_index -= pair->second;
-	}
-	if (player.GetId() == 0) {
-			std::cout << std::endl;
 	}
 	return pair->first;
 }

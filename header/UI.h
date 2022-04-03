@@ -15,11 +15,12 @@ public:
 	virtual void Dispose(void) = 0;
 
 	virtual void HandleInput(void) = 0;
-	virtual void DrawBoard(void) = 0;
+	virtual void DrawBackground(void) = 0;
+	virtual void DrawBorder(void) = 0;
+	virtual void DrawGrid(void) = 0;
 	virtual void PaintCell(int, int, const Color &) = 0;
 	
 	virtual void Refresh(int) = 0;
-	//virtual void Await(int) = 0;
 	virtual bool Quit(void) = 0;
 };
 

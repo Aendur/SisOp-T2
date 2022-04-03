@@ -33,7 +33,7 @@ void Settings::ParseLine(const string & line, int nline) {
 void Settings::ParseAttr(const string & attr, const string & args) {
 	static const umap<string, std::pair<unsigned int, string>> arg_num = {
 		{ "GRID_SIZE"        , {3, "(width,height,cell_size)" }},
-		{ "LINE_COLOR"       , {3, "(R,G,B)"                  }},
+		{ "LINE_COLOR"       , {4, "(R,G,B,A)"                }},
 		{ "BACKGROUND_COLOR" , {3, "(R,G,B)"                  }},
 		{ "BORDER_SIZE"      , {2, "(outer,inner)"            }},
 		{ "PLAYER"           , {4, "(name,R,G,B)"             }},
@@ -66,7 +66,8 @@ void Settings::SetGridSize(const vector<string> & argv) {
 void Settings::SetLineColor(const vector<string> & argv) {
 	this->line_color.R = std::stoi(argv[0]);
 	this->line_color.G = std::stoi(argv[1]);
-	this->line_color.B = std::stoi(argv[2]);	
+	this->line_color.B = std::stoi(argv[2]);
+	this->line_color.A = std::stoi(argv[3]);
 }
 
 void Settings::SetBackgroundColor(const vector<string> & argv) {

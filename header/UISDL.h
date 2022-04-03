@@ -24,8 +24,6 @@ private:
 	void CreateWindow(void);
 	void CreateRenderer(void);
 	
-	void DrawBorder(void);
-	void DrawGrid(void);
 
 public:
 	UISDL(const std::string & t, const Settings &);
@@ -35,11 +33,12 @@ public:
 	void Dispose(void);
 
 	void HandleInput(void);
-	void DrawBoard(void);
+	void DrawBackground(void);
+	void DrawBorder(void);
+	void DrawGrid(void);
 	void PaintCell(int, int, const Color &);
-	
+
 	void Refresh(int);
-	//void Await(int);
 	bool Quit(void) { return quit; }
 };
 
