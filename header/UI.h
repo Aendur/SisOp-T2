@@ -19,7 +19,7 @@ public:
 	virtual void PaintCell(int, int, const Color &) = 0;
 	
 	virtual void Refresh(int) = 0;
-	virtual void Await(int) = 0;
+	//virtual void Await(int) = 0;
 	virtual bool Quit(void) = 0;
 };
 

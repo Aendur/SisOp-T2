@@ -22,7 +22,7 @@ void Player::Run(void) {
 			bool marked = _game->MarkBoard(*this, move.first, move.second);
 			_ai->ConfirmMove(move.first, move.second, marked);
 		}
-		_ai->Delay();
+		//_ai->Delay();
 	}
 }
 
@@ -34,4 +34,8 @@ Player::~Player(void) {
 	if (this->_ai != nullptr) {
 		delete this->_ai;
 	}
+}
+
+void Player::Delay(void) const {
+	_ai->Delay();
 }

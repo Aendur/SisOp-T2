@@ -7,6 +7,7 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <set>
 
 using std::string;
 
@@ -42,6 +43,10 @@ void Game::InitPlayers(void) {
 void Game::InitBoard(void) {
 	this->board_main = new Board(settings.grid_width, settings.grid_height);
 	this->board_main->print();
+	
+	board_lock_col = std::vector<std::mutex>(settings.grid_width);
+	board_lock_row = std::vector<std::mutex>(settings.grid_height);
+	board_lock_cell = std::vector<std::mutex>(settings.grid_height * settings.grid_width);
 }
 
 void Game::InitUI(void) {
@@ -83,36 +88,44 @@ void Game::Run(void) {
 	}
 
 	while (!ui->Quit()) {
-		RedrawUI();
-		
-		// flush board
-		/*
 		ui->HandleInput();
-		auto pending = board_main->Flush();
-		while (!pending.empty()) {
-			auto & movement = pending.front();
-			ui->PaintCell(movement.i, movement.j, players[movement.player]->GetColor());
-			pending.pop();
-		}
-		ui->Refresh(16);
-		*/
+		RedrawUI();
+		//ui->HandleInput();
+		//ui->Refresh(25);
 	}
 
 	for (std::thread & t : threads) { t.join(); }
 
-	for (Player * p : players) {
-		p->Print();
+	//for (Player * p : players) { p->Print(); }
+	//for (const auto & [k,v] : board_main->CountScores()) {
+	//	int id = k;
+	//	std::cout << id << ": " << v << std::endl;
+	//}
+
+	std::set<std::pair<int, signed char>> scores;
+	for (const auto & [k,v] : board_main->CountScores()) { scores.insert({-v, k}); }
+	for (const auto & [v,k] : scores) {
+		const Color & c = players[k]->GetColor();
+		int id = players[k]->GetId();
+		//std::cout << "\033[48;2;" << c.R << ';' << c.G << ';' << c.B << "m     \033[0m Player " << id << " - Score: " << -v << std::endl;
+		printf("\033[48;2;%d;%d;%dm     \033[0m Player %d - Score: %d\n", c.R, c.G, c.B, id, -v);
 	}
 
-	for (const auto & [k,v] : board_main->CountScores()) {
-		int id = k;
-		std::cout << id << ": " << v << std::endl;
-	}
 }
 
 bool Game::MarkBoard(const Player & p, int i, int j) {
-	board_lock.lock();
+	//board_lock.lock();
+	//board_lock_row[i].lock();
+	//board_lock_col[j].lock();
+	board_lock_cell[i * board_main->width() + j].lock();
+
 	bool marked = this->board_main->Mark(p.GetId(), i, j);
-	board_lock.unlock();
+	p.Delay();
+	
+	//board_lock.unlock();
+	//board_lock_col[j].unlock();
+	//board_lock_row[i].unlock();
+	board_lock_cell[i * board_main->width() + j].unlock();
+
 	return marked;
 }

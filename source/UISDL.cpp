@@ -149,12 +149,12 @@ void UISDL::PaintCell(int i, int j, const Color & color) {
 }
 
 void UISDL::Refresh(int delay) {
-	this->HandleInput();
+	//this->HandleInput();
 	SDL_RenderPresent(this->renderer);
 	SDL_Delay(delay);
 }
 
-void UISDL::Await(int t) {
-	SDL_Delay(t);
-}
+//void UISDL::Await(int t) {
+//	SDL_Delay(t);
+//}
 

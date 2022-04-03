@@ -39,7 +39,7 @@ public:
 	void PaintCell(int, int, const Color &);
 	
 	void Refresh(int);
-	void Await(int);
+	//void Await(int);
 	bool Quit(void) { return quit; }
 };
 

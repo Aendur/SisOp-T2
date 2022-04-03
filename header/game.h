@@ -13,6 +13,9 @@ class UI;
 class Game {
 private:
 	std::mutex board_lock;
+	std::vector<std::mutex> board_lock_col;
+	std::vector<std::mutex> board_lock_row;
+	std::vector<std::mutex> board_lock_cell;
 
 	Settings settings;
 	std::vector<Player*> players;

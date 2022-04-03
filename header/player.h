@@ -24,6 +24,8 @@ public:
 	~Player(void);
 	inline signed char GetId(void) const { return _id; }
 	inline const Color & GetColor(void) const { return _color; }
+
+	void Delay(void) const;
 	
 	void InitAI(const std::string &);
 	void Print(void) const;
