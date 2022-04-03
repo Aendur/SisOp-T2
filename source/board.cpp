@@ -29,18 +29,15 @@ void Board::print(void) const {
 
 
 bool Board::Mark(signed char playerID, int i, int j) {
-	bool marked = false;
+	bool marked = -1;
 	if (0 <= i && i < _height && 0 <= j && j < _width) {
 		int index = i * _width + j;
-		//board_lock.lock();
 		if (this->_board[index] == (signed char) -1) {
 			this->_board[index] = playerID;
-			//pending_changes.push({playerID, i, j});
 			marked = true;
 		} else {
 			marked = false;
 		}
-		//board_lock.unlock();
 	}
 	return marked;
 }

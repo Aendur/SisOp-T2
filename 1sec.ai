@@ -1,0 +1,9 @@
+# Player AI settings
+
+# RNG seed (seed)
+# SEED=0 for random seed
+SEED=0
+
+# delay between moves (us)
+DELAY=1000000
+

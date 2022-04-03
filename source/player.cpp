@@ -18,7 +18,6 @@ void Player::Run(void) {
 	while(_ai->HasMoves()) {
 		const auto & move = _ai->NextMove();
 		if (move.first >= 0 && move.second >= 0) {
-			//bool marked = _game.GetBoard().Mark(_id, move.first, move.second);
 			bool marked = _game->MarkBoard(*this, move.first, move.second);
 			_ai->ConfirmMove(move.first, move.second, marked);
 		}

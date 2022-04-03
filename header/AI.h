@@ -2,8 +2,9 @@
 #define AI_H
 
 #include <vector>
-#include <set>
+#include <map>
 #include <random>
+#include <functional>
 
 class Board;
 class Player;
@@ -14,7 +15,7 @@ private:
 	std::mt19937  _generator;
 
 	std::vector<bool> board_view;
-	std::set<std::pair<int, int>> partial_cores;
+	std::map<std::pair<int, int>, long long> partial_cores;
 	int width;
 	int height;
 	int nmoves = 0;
@@ -31,8 +32,9 @@ private:
 	void SetDelay(const std::vector<std::string> &);
 
 	const std::pair<int, int> GetNextExpansionCoords(void);
-	const std::vector<std::pair<int,int>> GetNeighbors(const std::pair<int,int> &) const;
-	const std::vector<std::pair<int,int>> GetNeighborsNoDiagonal(const std::pair<int,int> &) const;
+	const std::vector<std::pair<int,int>> GetNeighbors8(const std::pair<int,int> &) const;
+	const std::vector<std::pair<int,int>> GetNeighbors4(const std::pair<int,int> &) const;
+	const std::vector<std::pair<int,int>> GetNeighborsRK(const std::pair<int,int> &, int) const;
 public:
 	AI(const std::string &, const Player &, const Board &);
 	//~AI(void);

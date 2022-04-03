@@ -77,17 +77,17 @@ void AI::SetDelay(const vector<string> & args) {
 	this->delay = std::stoull(args[0]);
 }
 
-void print_cores(int id, const std::pair<int,int> & chosen, int neibs, const std::set<std::pair<int,int>> & cores) {
-	if (id == 1) {
-		//std::ofstream logfile("player" + std::to_string(id) + ".log", std::ios_base::openmode::_S_app);
-		std::cout << id << " chosen: (" << chosen.first << ',' << chosen.second << ") neibs: " << neibs << " |";
-		for (const auto & core : cores) {
-			std::cout << " (" << core.first << ',' << core.second << ')';
-		}
-		std::cout << std::endl;
-		//logfile.close();
-	}
-}
+// void print_cores(int id, const std::pair<int,int> & chosen, int neibs, const std::set<std::pair<int,int>> & cores) {
+// 	if (id == 1) {
+// 		//std::ofstream logfile("player" + std::to_string(id) + ".log", std::ios_base::openmode::_S_app);
+// 		std::cout << id << " chosen: (" << chosen.first << ',' << chosen.second << ") neibs: " << neibs << " |";
+// 		for (const auto & core : cores) {
+// 			std::cout << " (" << core.first << ',' << core.second << ')';
+// 		}
+// 		std::cout << std::endl;
+// 		//logfile.close();
+// 	}
+// }
 
 std::pair<int, int> AI::NextMove(void) {
 	if (nmoves == 0) {
@@ -99,15 +99,7 @@ std::pair<int, int> AI::NextMove(void) {
 	} else {
 		if (partial_cores.size() > 0) {
 			auto pair = GetNextExpansionCoords();
-			auto neighbors = GetNeighbors(pair);
-			//auto neighbors = GetNeighborsNoDiagonal(pair);
-			if (neighbors.size() == 0) {
-				partial_cores.erase(pair);
-				return {-1,-1};
-			} else {
-				std::uniform_int_distribution<int> dist(0, neighbors.size() - 1);
-				return neighbors[dist(_generator)];
-			}
+			return pair;
 		} else {
 			int id = player.GetId();
 			std::cout << id << " is out of moves." << std::endl;
@@ -119,14 +111,20 @@ std::pair<int, int> AI::NextMove(void) {
 }
 
 const std::pair<int,int> AI::GetNextExpansionCoords(void) {
-	std::uniform_int_distribution<int> shuffle(0, partial_cores.size() - 1);
-	int pair_index = shuffle(_generator);
+	long long total_weight = 0;
+	for (const auto & [k,v] : partial_cores) { total_weight += v; }
+	std::uniform_int_distribution<long long> shuffle(0, total_weight - 1);
+	long long pair_index = shuffle(_generator);
 	auto pair = partial_cores.begin(); 
-	while(--pair_index >= 0) { ++pair; }
-	return *pair;
+	pair_index -= pair->second;
+	while(pair_index >= 0) {
+		++pair;
+		pair_index -= pair->second;
+	}
+	return pair->first;
 }
 
-const std::vector<std::pair<int,int>> AI::GetNeighbors(const std::pair<int,int> & coords) const {
+const std::vector<std::pair<int,int>> AI::GetNeighbors8(const std::pair<int,int> & coords) const {
 	int i = coords.first;
 	int j = coords.second;
 	std::vector<std::pair<int,int>> result;
@@ -143,11 +141,10 @@ const std::vector<std::pair<int,int>> AI::GetNeighbors(const std::pair<int,int> 
 			}
 		}
 	}
-
 	return result;
 }
 
-const std::vector<std::pair<int,int>> AI::GetNeighborsNoDiagonal(const std::pair<int,int> & coords) const {
+const std::vector<std::pair<int,int>> AI::GetNeighbors4(const std::pair<int,int> & coords) const {
 	int i = coords.first;
 	int j = coords.second;
 	std::vector<std::pair<int,int>> result;
@@ -178,11 +175,64 @@ const std::vector<std::pair<int,int>> AI::GetNeighborsNoDiagonal(const std::pair
 	return result;
 }
 
+const std::vector<std::pair<int,int>> AI::GetNeighborsRK(const std::pair<int,int> & coords, int K) const {
+	int i = coords.first;
+	int j = coords.second;
+	std::vector<std::pair<int,int>> result;
+
+	for (int i2 = i - K; i2 <= i + K; ++i2) {
+		for (int j2 = j - K; j2 <= j + K; ++j2) {
+			bool i_range_ok = (0 <= i2 && i2 < height);
+			bool j_range_ok = (0 <= j2 && j2 < width);
+			bool not_ij = !(i2 == i && j2 == j);
+			bool is_free = (board_view[i2 * width + j2] == false);
+			
+			if (i_range_ok && j_range_ok && not_ij && is_free) {
+				result.push_back({i2, j2});
+			}
+		}
+	}
+	return result;
+}
+
 void AI::ConfirmMove(int i, int j, bool marked) {
 	board_view[i * width + j] = true;
+	const std::pair<int,int> current = {i,j};
 	if (marked) {
-		partial_cores.insert( {i,j} );
+		if (partial_cores.find(current) != partial_cores.end()) {
+			partial_cores.erase(current);
+		}
+
+		for (const auto & neighbor : GetNeighbors8(current)) {
+			int ni = neighbor.first;
+			int nj = neighbor.second;
+			if (!board_view[ni * width + nj]) {
+				partial_cores[neighbor] += 1;
+			}
+		}
+
 		++nmoves;
+	} else {
+		if (partial_cores.find(current) != partial_cores.end()) {
+			partial_cores.erase(current);
+		}
+
+		for (const auto & neighbor1 : GetNeighborsRK(current, 3)) {
+			if (partial_cores.find(neighbor1) != partial_cores.end()) {
+				partial_cores[neighbor1] += width * height * (nmoves + 1);
+			}
+			//for (const auto & neighbor2 : GetNeighbors4(neighbor1)) {
+			//	if (partial_cores.find(neighbor2) != partial_cores.end()) {
+			//		partial_cores[neighbor2] += width * height;
+			//	}
+			//	//for (const auto & neighbor3 : GetNeighbors(neighbor2)) {
+			//	//	if (partial_cores.find(neighbor3) != partial_cores.end()) {
+			//	//		partial_cores[neighbor3] += width * height;
+			//	//	}
+			//	//}
+			//}
+		}
+
 	}
 }
 

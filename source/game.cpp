@@ -123,14 +123,12 @@ bool Game::MarkBoard(const Player & p, int i, int j) {
 	//board_lock_row[i].lock();
 	//board_lock_col[j].lock();
 	board_lock_cell[i * board_main->width() + j].lock();
-
 	bool marked = this->board_main->Mark(p.GetId(), i, j);
 	p.Delay();
-	
-	//board_lock.unlock();
+	board_lock_cell[i * board_main->width() + j].unlock();
 	//board_lock_col[j].unlock();
 	//board_lock_row[i].unlock();
-	board_lock_cell[i * board_main->width() + j].unlock();
+	//board_lock.unlock();
 
 	return marked;
 }
