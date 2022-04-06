@@ -1,0 +1,11 @@
+shmget
+shmat
+shmdt
+shmctl
+shmop
+semget
+semctl
+semop
+ipcs
+ipcrm
+
