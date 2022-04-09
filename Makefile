@@ -1,12 +1,16 @@
 #####
 CFLAGS = -std=c++17 -m64 -Wall -Wextra -Wpedantic
-LIBS = $(patsubst source/%.cpp,obj/%.o,$(filter-out source/main.cpp,$(wildcard source/*.cpp)))
+LIBS = $(patsubst source/%.cpp,obj/%.o,$(filter-out source/main_server.cpp source/main_client.cpp,$(wildcard source/*.cpp)))
+
 #LINKS = -lglfw -lGL
 #LINKS = -lncurses
 LINKS = -lSDL2 -lpthread
 
-main: source/main.cpp dirs $(LIBS)
-	g++ $(CFLAGS) -Iheader -oa.out $< $(LIBS) $(LINKS)
+server: source/main_server.cpp dirs $(LIBS)
+	g++ $(CFLAGS) -Iheader -oserver $< $(LIBS) $(LINKS)
+
+client: source/main_client.cpp dirs $(LIBS)
+	g++ $(CFLAGS) -Iheader -oclient $< $(LIBS) $(LINKS)
 
 tests/%: cpp/tests/%.cpp $(LIBS)
 	g++ $(CFLAGS) -DUNIT_TEST -Iheader -obin/test $< $(LIBS)
