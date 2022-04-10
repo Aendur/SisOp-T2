@@ -11,7 +11,7 @@ using std::string;
 using std::vector;
 #define umap std::unordered_map
 
-void Settings::Load(const std::string & path) {
+void Settings::Load(const char *path) {
 	ifstream stream(path);
 	string line;
 	int nline = 0;
@@ -36,7 +36,8 @@ void Settings::ParseAttr(const string & attr, const string & args) {
 		{ "LINE_COLOR"       , {4, "(R,G,B,A)"                }},
 		{ "BACKGROUND_COLOR" , {3, "(R,G,B)"                  }},
 		{ "BORDER_SIZE"      , {2, "(outer,inner)"            }},
-		{ "PLAYER"           , {4, "(name,R,G,B)"             }},
+		{ "NUM_PLAYERS"      , {1, "(nplayers)"               }},
+		{ "PLAYER_COLOR"     , {3, "(R,G,B)"                  }},
 	};
 
 	static const umap<string, void (Settings::*)(const vector<string> &)> arg_act = {
@@ -44,7 +45,8 @@ void Settings::ParseAttr(const string & attr, const string & args) {
 		{ "LINE_COLOR"       , &Settings::SetLineColor      },
 		{ "BACKGROUND_COLOR" , &Settings::SetBackgroundColor},
 		{ "BORDER_SIZE"      , &Settings::SetBorderSize     },
-		{ "PLAYER"           , &Settings::AddPlayer         },
+		{ "NUM_PLAYERS"      , &Settings::SetNumPlayers     },
+		{ "PLAYER_COLOR"     , &Settings::AddPlayerColor    },
 	};
 
 	vector<string> argv = Utility::split(args, ",");
@@ -81,11 +83,18 @@ void Settings::SetBorderSize(const vector<string> & argv) {
 	this->border_size_inner = std::stoi(argv[1]);
 }
 
-void Settings::AddPlayer(const vector<string> & argv) {
-	Color c(std::stoi(argv[1]), std::stoi(argv[2]), std::stoi(argv[3]), 255);
-	players.push_back({argv[0], c});
+void Settings::SetNumPlayers(const vector<string> & argv) {
+	this->num_players = std::stoi(argv[0]);
 }
 
+void Settings::AddPlayerColor(const vector<string> & argv) {
+	player_colors.emplace_back(
+		std::stoi(argv[0]),
+		std::stoi(argv[1]),
+		std::stoi(argv[2]),
+		255
+	);
+}
 
 int Settings::GetWindowWidth(void) const {
 	return this->cell_size * this->grid_width + 2 * (this->border_size_outer + this->border_size_inner);

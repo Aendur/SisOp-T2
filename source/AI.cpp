@@ -16,8 +16,8 @@ using std::vector;
 using std::ifstream;
 
 AI::AI(const string & path, const Player & p, const Board & board) : player(p) {
-	this->width = board.width();
-	this->height = board.height();
+	this->width = board.GetWidth();
+	this->height = board.GetHeight();
 	this->LoadAI(path);
 	this->_generator = std::mt19937(_seed);
 	this->board_view = vector<bool>(width * height);

@@ -2,40 +2,27 @@
 #define BOARD_H
 
 #include <queue>
-//#include <mutex>
 #include <map>
 
-//struct Movement {
-//	signed char player;
-//	int i;
-//	int j;
-//	Movement(void) : player(-1), i(0), j(0) {};
-//	Movement(signed char p, int i, int j) : player(p), i(i), j(j) {};
-//};
+typedef signed char cell_t;
 
 class Board {
 private:
-	int _width;
-	int _height;
-	signed char * _board = nullptr;
-	//std::mutex board_lock;
+	int _width = 0;
+	int _height = 0;
+	cell_t * _board = nullptr;
 public:
-	//std::queue<Movement> pending_changes = std::queue<Movement>();
+	//Board(void);
+	void Initialize(int width, int height, void* addr);
 
-	Board(int, int);
-	~Board(void);
-	void print(void) const;
-	bool Mark(signed char, int, int);
-	//std::queue<Movement> Flush(void);
+	void Print(void) const;
+	bool Mark(cell_t, int, int);
+	cell_t Get(int, int) const;
+	cell_t Flip(int, int);
+	const std::map<cell_t, int> CountScores(void) const;
 
-	const std::map<signed char, int> CountScores(void) const;
-
-	signed char Get(int, int) const;
-	signed char Flip(int, int);
-
-	inline int width(void) const { return _width; }
-	inline int height(void) const { return _height; }
-
+	inline int GetWidth(void) const { return _width; }
+	inline int GetHeight(void) const { return _height; }
 };
 
 #endif

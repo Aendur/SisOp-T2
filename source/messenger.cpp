@@ -13,12 +13,6 @@ using std::string;
 
 Messenger::Messenger(const string & tag) : speaker_tag(tag) { }
 
-// Messenger::~Messenger(void) {
-// 	this->DetachSharedMemory();
-// 	this->DisposeSharedMemory();
-// 	this->DisposeMessageQueue();
-// }
-
 const char * Messenger::Tag(const char * msg) const {
 	static const int siz = 128;
 	static char buf[siz];
@@ -46,7 +40,7 @@ void Messenger::InitMessageQueue(bool create_new) {
 // Sets msgID according to the message queue returned by the [shmget] syscall.
 // - If create_new_size > 0, will try to create a new shm block.
 void Messenger::InitSharedMemory(int create_new_size) {
-	int key = KeyChain::GetKey();
+	int key = KeyChain::GetKey(true);
 	int flags = 0600 | (create_new_size > 0 ? IPC_CREAT | IPC_EXCL : 0);
 	this->shmID = shmget(key, create_new_size, flags);
 
@@ -101,7 +95,7 @@ void Messenger::DetachSharedMemory(void) {
 		if (status == -1) {
 			perror(Tag("shmdt failed"));
 		} else {
-			printf("[%s] detach(%d) shared memory from address 0x%p\n", speaker_tag.c_str(), status, this->shmAT);
+			printf("[%s] detach(%d) shared memory from address %p\n", speaker_tag.c_str(), status, this->shmAT);
 			this->shmAT = nullptr;
 		}
 	}
@@ -151,7 +145,7 @@ const Message Messenger::AwaitMessage(long msgtype) const {
 	int status;
 	
 	printf("[%s] awaiting message\n", this->speaker_tag.c_str());
-	status = msgrcv(this->msgID, &request, request.Size(), msgtype, NO_FLAGS);
+	status = msgrcv(this->msgID, &request, GM_MSG_SIZE, msgtype, NO_FLAGS);
 	if (status == -1) {
 		perror(Tag("msgrcv failed"));
 	} else {
@@ -165,7 +159,7 @@ void Messenger::SendMessage(long msgtype, const char * msgtext) const {
 	Message request(msgtype, msgtext);
 
 	printf("[%s] send message(%ld) %s\n", this->speaker_tag.c_str(), request.type, request.text);
-	int status = msgsnd(this->msgID, &request, request.Size(), NO_FLAGS);
+	int status = msgsnd(this->msgID, &request, GM_MSG_SIZE, NO_FLAGS);
 	if (status == -1) {
 		perror(Tag("msgsnd failed"));
 	} else {
@@ -173,10 +167,10 @@ void Messenger::SendMessage(long msgtype, const char * msgtext) const {
 	}
 }
 
-void Messenger::ReadData(void) {
-	printf("[%s] SM area content:\n-----\n%s\n-----\n", this->speaker_tag.c_str(), this->shmAT);
-}
+//void Messenger::ReadData(void) {
+//	printf("[%s] SM area content:\n-----\n%s\n-----\n", this->speaker_tag.c_str(), this->shmAT);
+//}
 
-void Messenger::WriteData(void) {
-	snprintf(this->shmAT, NBYTES, "SM area ready\nLast=%s", this->speaker_tag.c_str());
-}
+//void Messenger::WriteData(void) {
+//	snprintf(this->shmAT, NBYTES, "SM area ready\nLast=%s", this->speaker_tag.c_str());
+//}

@@ -10,8 +10,8 @@ private:
 
 	int msgID = -1;
 	int shmID = -1;
-	char * shmAT = nullptr;
 	int NBYTES = 0;
+	void * shmAT = nullptr;
 
 	const char * Tag(const char * msg) const;
 	
@@ -30,8 +30,8 @@ public:
 	
 	const Message AwaitMessage(long msgtype) const;
 	void SendMessage(long msgtype, const char * msgtext) const;
-	void ReadData(void);
-	void WriteData(void);
+
+	inline void * GetAddress(void) const { return shmAT; }
 };
 
 

@@ -2,16 +2,17 @@
 #define MESSAGE_H
 
 #define GM_CONNECTION_REQ 1
-#define GM_CONNECTION_ACK 2
+#define GM_CONNECTION_END 2
+//#define GM_CONNECTION_ACK 2
 #define GM_CMD_STOP "STOP"
-
+#define GM_MSG_SIZE 64
 struct Message {
-	long type;     /* message type, must be > 0 */
-	char text[16]; /* message data */
+	long type; /* message type, must be > 0 */
+	char text[GM_MSG_SIZE]; /* message data */
 
 	Message(void);
 	Message(long t, const char * txt);
-	int Size(void) const { return sizeof(text); }
+	// int Size(void) const { return sizeof(text); }
 };
 
 #endif

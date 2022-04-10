@@ -12,7 +12,8 @@ private:
 	void SetLineColor(const std::vector<std::string> &);
 	void SetBackgroundColor(const std::vector<std::string> &);
 	void SetBorderSize(const std::vector<std::string> &);
-	void AddPlayer(const std::vector<std::string> &);
+	void SetNumPlayers(const std::vector<std::string> &);
+	void AddPlayerColor(const std::vector<std::string> &);
 
 	void ParseLine(const std::string &, int);
 	void ParseAttr(const std::string &, const std::string &);
@@ -27,10 +28,10 @@ public:
 	int grid_height = 8;
 	Color line_color = Color(0, 0, 0, 255);
 	Color background_color = Color(127, 127, 127, 255);
-	std::vector<std::pair<std::string, Color>> players;
+	int num_players;
+	std::vector<Color> player_colors;
 
-	//Settings(const std::string &);
-	void Load(const std::string &);
+	void Load(const char *);
 };
 
 #endif

@@ -22,7 +22,7 @@ Game::~Game(void) {
 }
 
 void Game::LoadSettings(const string & path) {
-	this->settings.Load(path);
+	this->settings.Load(path.c_str());
 }
 
 void Game::Initialize(void) {
@@ -32,19 +32,21 @@ void Game::Initialize(void) {
 }
 
 void Game::InitPlayers(void) {
-	for (auto & i : this->settings.players) {
-		Player * p = new Player(i.second, this);
-		p->InitAI(i.first);
-		p->Print();
-		this->players.push_back(p);
-	}
-
-	this->unfinished_players = (int) players.size();
+	#pragma message "unimplemented"
+	// for (auto & i : this->settings.players) {
+	// 	Player * p = new Player(i.second, this);
+	// 	p->InitAI(i.first);
+	// 	p->Print();
+	// 	this->players.push_back(p);
+	// }
+	// this->unfinished_players = (int) players.size();
 }
 
 void Game::InitBoard(void) {
-	this->board_main = new Board(settings.grid_width, settings.grid_height);
-	this->board_main->print();
+	#pragma message "board API changed, there are bugs here"
+	//this->board_main = new Board(settings.grid_width, settings.grid_height);
+	this->board_main = new Board();
+	this->board_main->Print();
 	
 	board_lock_col = std::vector<std::mutex>(settings.grid_width);
 	board_lock_row = std::vector<std::mutex>(settings.grid_height);
@@ -64,8 +66,8 @@ void Game::RedrawUI(void) const {
 	std::chrono::time_point t0 = std::chrono::steady_clock::now();
 	this->ui->DrawBackground();
 	this->ui->DrawBorder();
-	for (int i = 0; i < board_main->height(); ++i) {
-		for (int j = 0; j < board_main->width(); ++j) {
+	for (int i = 0; i < board_main->GetHeight(); ++i) {
+		for (int j = 0; j < board_main->GetWidth(); ++j) {
 			if (board_main->Get(i, j) < -1) {
 				signed char p = board_main->Flip(i, j);
 				ui->PaintCell(i, j, players[p]->GetColor());
@@ -82,8 +84,8 @@ void Game::RedrawUI(void) const {
 
 void Game::UpdateUI(void) const {
 	std::chrono::time_point t0 = std::chrono::steady_clock::now();
-	for (int i = 0; i < board_main->height(); ++i) {
-		for (int j = 0; j < board_main->width(); ++j) {
+	for (int i = 0; i < board_main->GetHeight(); ++i) {
+		for (int j = 0; j < board_main->GetWidth(); ++j) {
 			if (board_main->Get(i, j) < -1) {
 				signed char p = board_main->Flip(i, j);
 				ui->PaintCell(i, j, players[p]->GetColor());
@@ -140,10 +142,10 @@ bool Game::MarkBoard(const Player & p, int i, int j) {
 	//board_lock.lock();
 	//board_lock_row[i].lock();
 	//board_lock_col[j].lock();
-	board_lock_cell[i * board_main->width() + j].lock();
+	board_lock_cell[i * board_main->GetWidth() + j].lock();
 	bool marked = this->board_main->Mark(p.GetId(), i, j);
 	p.Delay();
-	board_lock_cell[i * board_main->width() + j].unlock();
+	board_lock_cell[i * board_main->GetWidth() + j].unlock();
 	//board_lock_col[j].unlock();
 	//board_lock_row[i].unlock();
 	//board_lock.unlock();

@@ -1,12 +1,16 @@
 #if defined(SERVER)
 #include "server.h"
 
-int main (int, char ** argv) {
-	(void)argv;
-
-	Server server("");
+int main (int argc, char ** argv) {
+	const char * path = "settings.ini";
+	if (argc > 1) {
+		// printf("usage:\n");
+		// printf("  server [settings_file]\n");
+		path = argv[1];
+		return 0;
+	}
+	Server server(path);
 	server.Run();
-
 
 	//std::cout << SEMMSL << std::endl;
 	//int semid = semget(123, 5, flag);
@@ -23,13 +27,12 @@ int main (int, char ** argv) {
 }
 #elif defined(CLIENT)
 #include "client.h"
-#include <cstdlib>
-#include <ctime>
 
 int main (int, char ** argv) {
 	(void)argv;
-	srand(time(NULL));
+	
 	Client client("");
+	client.Connect();
 	client.Run();
 
 	return 0;
