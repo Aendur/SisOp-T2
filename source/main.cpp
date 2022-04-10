@@ -1,10 +1,11 @@
+#if defined(SERVER)
 #include "server.h"
 
 int main (int, char ** argv) {
 	(void)argv;
 
 	Server server("");
-	server.Await();
+	server.Run();
 
 
 	//std::cout << SEMMSL << std::endl;
@@ -20,3 +21,18 @@ int main (int, char ** argv) {
 	// std::cout << "main return 0" << std::endl;
 	return 0;
 }
+#elif defined(CLIENT)
+#include "client.h"
+#include <cstdlib>
+#include <ctime>
+
+int main (int, char ** argv) {
+	(void)argv;
+	srand(time(NULL));
+	Client client("");
+	client.Run();
+
+	return 0;
+}
+#endif
+
