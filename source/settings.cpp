@@ -33,6 +33,7 @@ void Settings::ParseLine(const string & line, int nline) {
 void Settings::ParseAttr(const string & attr, const string & args) {
 	static const umap<string, std::pair<unsigned int, string>> arg_num = {
 		{ "GRID_SIZE"        , {3, "(width,height,cell_size)" }},
+		{ "SHOW_UI"          , {1, "(value)"                  }},
 		{ "LINE_COLOR"       , {4, "(R,G,B,A)"                }},
 		{ "BACKGROUND_COLOR" , {3, "(R,G,B)"                  }},
 		{ "BORDER_SIZE"      , {2, "(outer,inner)"            }},
@@ -42,6 +43,7 @@ void Settings::ParseAttr(const string & attr, const string & args) {
 
 	static const umap<string, void (Settings::*)(const vector<string> &)> arg_act = {
 		{ "GRID_SIZE"        , &Settings::SetGridSize       },
+		{ "SHOW_UI"          , &Settings::SetShowUI         },
 		{ "LINE_COLOR"       , &Settings::SetLineColor      },
 		{ "BACKGROUND_COLOR" , &Settings::SetBackgroundColor},
 		{ "BORDER_SIZE"      , &Settings::SetBorderSize     },
@@ -63,6 +65,10 @@ void Settings::SetGridSize(const vector<string> & argv) {
 	this->grid_width = std::stoi(argv[0]);
 	this->grid_height = std::stoi(argv[1]);
 	this->cell_size = std::stoi(argv[2]);
+}
+
+void Settings::SetShowUI(const vector<string> & argv) {
+	this->show_ui = (argv[0].length() == 1 && argv[0][0] == '1');
 }
 
 void Settings::SetLineColor(const vector<string> & argv) {

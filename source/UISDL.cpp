@@ -8,7 +8,6 @@ UISDL::UISDL(const std::string & t, const Settings & settings) : title(t), setti
 	this->height = settings.GetWindowHeight();
 }
 
-
 void UISDL::Initialize(void) {
 	if (!this->initialized) {
 		InitializeSDL();
@@ -105,6 +104,7 @@ void UISDL::DrawBorder(void) {
 		
 		static const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
 
+		SDL_SetRenderDrawBlendMode(this->renderer, SDL_BLENDMODE_BLEND);
 		SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
 		if (outer_border_size > 0)
 			SDL_RenderFillRects(this->renderer, border_outer, 4);

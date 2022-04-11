@@ -140,25 +140,32 @@ void Messenger::DisposeMessageQueue(bool remove) {
 
 ////////////////////////////
 
-const Message Messenger::AwaitMessage(long msgtype) const {
-	Message request;
+bool Messenger::AwaitMessage(long msgtype, bool await, Message * msgout) const {
 	int status;
-	
-	printf("[%s] awaiting message\n", this->speaker_tag.c_str());
-	status = msgrcv(this->msgID, &request, GM_MSG_SIZE, msgtype, NO_FLAGS);
-	if (status == -1) {
-		perror(Tag("msgrcv failed"));
+	int flags;
+	char * to_print;
+	if (await) {
+		flags = NO_FLAGS;
+		to_print = "[%s] awaiting message\n";
 	} else {
-		printf("[%s] received message: %s\n", this->speaker_tag.c_str(), request.text);
+		flags = IPC_NOWAIT;
+		to_print = "[%s] probing message\n";
 	}
-
-	return request;
+	
+	printf(to_print, this->speaker_tag.c_str());
+	status = msgrcv(this->msgID, msgout, GM_MSG_SIZE, msgtype, flags);
+	if (status == -1) {
+		if (await) { perror(Tag("msgrcv failed")); }
+		return false;
+	} else {
+		printf("[%s] received message: %s\n", this->speaker_tag.c_str(), msgout->text);
+		return true;
+	}
 }
 
 void Messenger::SendMessage(long msgtype, const char * msgtext) const {
 	Message request(msgtype, msgtext);
-
-	printf("[%s] send message(%ld) %s\n", this->speaker_tag.c_str(), request.type, request.text);
+	//printf("[%s] send message(%ld) %s\n", this->speaker_tag.c_str(), request.type, request.text);
 	int status = msgsnd(this->msgID, &request, GM_MSG_SIZE, NO_FLAGS);
 	if (status == -1) {
 		perror(Tag("msgsnd failed"));

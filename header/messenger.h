@@ -28,7 +28,7 @@ public:
 	void DisposeSharedMemory(bool remove);
 	void DisposeMessageQueue(bool remove);
 	
-	const Message AwaitMessage(long msgtype) const;
+	bool AwaitMessage(long msgtype, bool await, Message * out) const;
 	void SendMessage(long msgtype, const char * msgtext) const;
 
 	inline void * GetAddress(void) const { return shmAT; }
