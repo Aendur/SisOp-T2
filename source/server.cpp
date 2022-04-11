@@ -57,8 +57,14 @@ void Server::Run(void) {
 	while (connected_players > 0) {
 		if (this->ui != nullptr) {
 			this->ui->HandleInput();
-			if (this->ui->Quit()) { connected_players = -1; }
 			this->ui->Refresh(32);
+			//if (this->ui->Quit()) { connected_players = -1; }
+			if (this->ui->Quit()) {
+				this->ui->Dispose();
+				delete this->ui;
+				this->ui = nullptr;
+			}
+			
 			if (++frame_count > 30) {
 				frame_count = 0;
 				if (messenger.AwaitMessage(GM_CONNECTION_END, false, &m)) {
