@@ -132,7 +132,7 @@ void Game::PrintResults(void) const {
 		const Color & c = players[k]->GetColor();
 		int id = players[k]->GetId();
 		//std::cout << "\033[48;2;" << c.R << ';' << c.G << ';' << c.B << "m     \033[0m Player " << id << " - Score: " << -v << std::endl;
-		printf("\033[48;2;%d;%d;%dm     \033[0m Player %d - Score: %d\n", c.R, c.G, c.B, id, -v);
+		printf("     \033[48;2;%d;%d;%dm     \033[0m Player %d - Score: %d\n", c.R, c.G, c.B, id, -v);
 	}
 }
 
