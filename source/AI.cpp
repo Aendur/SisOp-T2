@@ -92,7 +92,7 @@ void AI::SetDelay(const vector<string> & args) {
 std::pair<int, int> AI::NextMove(void) {
 	if (nmoves == 0) {
 		int id = player.GetId();
-		std::cout << id << " attempting first move..." << std::endl;
+		//std::cout << id << " attempting first move..." << std::endl;
 		std::uniform_int_distribution<int> dist_i(0, this->height - 1);
 		std::uniform_int_distribution<int> dist_j(0, this->width - 1);
 		return { dist_i(_generator), dist_j(_generator) };
@@ -102,7 +102,7 @@ std::pair<int, int> AI::NextMove(void) {
 			return pair;
 		} else {
 			int id = player.GetId();
-			std::cout << id << " is out of moves." << std::endl;
+			//std::cout << id << " is out of moves." << std::endl;
 			
 			has_moves = false;
 			return {-1,-1};

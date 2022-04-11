@@ -1,9 +1,7 @@
 #####
 CFLAGS = -std=c++17 -m64 -Wall -Wextra -Wpedantic
 LIBS = $(patsubst source/%.cpp,obj/%.o,$(filter-out source/main.cpp,$(wildcard source/*.cpp)))
-#LINKS = -lglfw -lGL
-#LINKS = -lncurses
-LINKS = -lSDL2 -lpthread
+LINKS = -lncursesw -lSDL2 -lpthread
 
 main: source/main.cpp dirs $(LIBS)
 	g++ $(CFLAGS) -Iheader -oa.out $< $(LIBS) $(LINKS)

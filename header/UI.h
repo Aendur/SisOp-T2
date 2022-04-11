@@ -3,11 +3,9 @@
 
 class Settings;
 class Color;
+
 class UI {
-//protected:
-//	const Settings & settings;
 public:
-	//UI(const Settings & s) : settings(s) {}
 	UI(void) {}
 	virtual ~UI(void) {};
 

@@ -3,8 +3,9 @@
 #include "player.h"
 #include "board.h"
 #include "UISDL.h"
+#include "UIncurses.h"
 
-#include <iostream>
+//#include <iostream>
 #include <thread>
 #include <chrono>
 #include <set>
@@ -35,7 +36,7 @@ void Game::InitPlayers(void) {
 	for (auto & i : this->settings.players) {
 		Player * p = new Player(i.second, this);
 		p->InitAI(i.first);
-		p->Print();
+		//p->Print();
 		this->players.push_back(p);
 	}
 
@@ -44,7 +45,7 @@ void Game::InitPlayers(void) {
 
 void Game::InitBoard(void) {
 	this->board_main = new Board(settings.grid_width, settings.grid_height);
-	this->board_main->print();
+	//this->board_main->print();
 	
 	board_lock_col = std::vector<std::mutex>(settings.grid_width);
 	board_lock_row = std::vector<std::mutex>(settings.grid_height);
@@ -52,7 +53,8 @@ void Game::InitBoard(void) {
 }
 
 void Game::InitUI(void) {
-	this->ui = new UISDL("test", this->settings);
+	//this->ui = new UISDL("test", this->settings);
+	this->ui = new UIncurses("test", this->settings);
 	this->ui->Initialize();
 	this->ui->DrawBackground();
 	this->ui->DrawBorder();
@@ -98,7 +100,7 @@ void Game::UpdateUI(void) const {
 }
 
 void Game::Run(void) {
-	std::cout << "init mainloop" << std::endl;
+	//std::cout << "init mainloop" << std::endl;
 
 	std::vector<std::thread> threads;
 	
@@ -115,12 +117,12 @@ void Game::Run(void) {
 
 		if (unfinished_players == 0) {
 			for (std::thread & t : threads) { t.join(); }
-			this->PrintResults();
+			//this->PrintResults();
 			unfinished_players = -1;
 		}
 	}
 	
-	printf("\n\n\n");
+	//printf("\n\n\n");
 	for (std::thread & t : threads) { if (t.joinable()) { t.join(); } }
 }
 
