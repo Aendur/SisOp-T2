@@ -1,17 +1,25 @@
 #include "server.h"
+#include "keychain.h"
 #include "UISDL.h"
+
 
 Server::Server(const char * settings_file) : messenger("Server") {
 	this->seed = std::random_device()();
 	this->generator = std::mt19937_64(seed);
 
-	settings.Load(settings_file);
+	this->settings.Load(settings_file);
+	int missing = this->settings.num_players - this->settings.player_colors.size();
+	while (missing-- > 0) {
+		this->settings.player_colors.push_back(GetRandomColor());
+	}
 
-	int size = settings.grid_width * settings.grid_height * sizeof(cell_t);
-	messenger.InitMessageQueue(true);
-	messenger.InitSharedMemory(size);
+	//int size = settings.grid_width * settings.grid_height * sizeof(cell_t);
+	//messenger.InitMessageQueue(true);
+	//messenger.InitSharedMemory(size);
+	this->mblock.Create(KeyChain::GetKey(SHMKEY_BOARD), Board::GetSize(this->settings));
+	this->board = Board::Initialize(this->settings, this->mblock.addr());
 
-	board.Initialize(settings.grid_width, settings.grid_height, messenger.GetAddress());
+	//board.Initialize(settings.grid_width, settings.grid_height, mblock.GetAddress());
 
 	if (settings.show_ui == true) {
 		this->ui = new UISDL("Server", this->settings);
@@ -24,8 +32,9 @@ Server::Server(const char * settings_file) : messenger("Server") {
 }
 
 Server::~Server(void) {
-	messenger.DisposeSharedMemory(true);
-	messenger.DisposeMessageQueue(true);
+	//messenger.DisposeSharedMemory(true);
+	//messenger.DisposeMessageQueue(true);
+	mblock.Dispose();
 
 	if (this->ui != nullptr) {
 		this->ui->Dispose();
@@ -35,7 +44,8 @@ Server::~Server(void) {
 }
 
 void Server::Run(void) {
-	int connected_players = 0;
+	board->Print();
+	/*int connected_players = 0;
 	int W = settings.grid_width;
 	int H = settings.grid_height;
 	Color C(0,0,0,255);
@@ -76,7 +86,16 @@ void Server::Run(void) {
 				--connected_players;
 			}
 		}
-	}
+	}*/
+}
+
+Color Server::GetRandomColor(void) {
+	auto distribution = std::uniform_int_distribution<unsigned char>(0, 0xFF);
+	unsigned char R = distribution(this->generator);
+	unsigned char G = distribution(this->generator);
+	unsigned char B = distribution(this->generator);
+	unsigned char A = 255; //distribution(this->generator);
+	return Color(R,G,B,A);
 }
 
 void Server::SetNextColor(int player, Color * color) {

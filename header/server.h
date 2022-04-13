@@ -2,8 +2,9 @@
 #define SERVER_H
 
 #include "settings.h"
-#include "messenger.h"
+#include "shared_memory.h"
 #include "board.h"
+#include "messenger.h"
 #include <random>
 
 class UI;
@@ -14,11 +15,13 @@ private:
 
 	Settings settings;
 	Messenger messenger;
-	Board board;
+	SharedMemory mblock;
+	Board* board;
 
 	UI * ui = nullptr;
 
 	void SetNextColor(int, Color *);
+	Color GetRandomColor(void);
 public:
 	Server(const char *);
 	~Server(void);

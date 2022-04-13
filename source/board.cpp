@@ -1,34 +1,56 @@
 #include "board.h"
 #include <cstdio>
 
-// Board::Board(int width, int height, cell_t* board) : _width(width), _height(height), _board(board) {
-// 	for (int j = 0; j < height; ++j) {
-// 		for (int i = 0; i < width; ++i) {
-// 			this->_board[i + j * width] = (cell_t) -1;
-// 		}
-// 	}
-// }
+#include "settings.h"
+#include "color.h"
 
-void Board::Initialize(int width, int height, void * addr) {
-	this->_width = width;
-	this->_height = height;
-	this->_board = (cell_t*) addr;
+size_t Board::GetSize(const Settings & settings) {
+	return sizeof(Board)
+		 + sizeof(Color) * settings.num_players
+		 + sizeof(cell_t) * settings.grid_width * settings.grid_height
+	;
+}
 
-	if (_board[_width * _height / 2] == 0) {
-		printf("initializing board... \n");
-		for (int j = 0; j < height; ++j) {
-			for (int i = 0; i < width; ++i) {
-				this->_board[i + j * width] = (cell_t) -1;
-			}
+Board* Board::Initialize(const Settings & settings, void * addr) {
+	printf("initializing board at address %p... \n", addr);
+	Board * board = (Board*) addr;
+	board->_width = settings.grid_width;
+	board->_height = settings.grid_height;
+	board->_nplayers = settings.num_players;
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wpointer-arith"
+	board->_color_list = (Color*)(addr + sizeof(Board));
+	board->_board = (cell_t*)(addr + sizeof(Board) + sizeof(Color) * settings.num_players);
+	#pragma GCC diagnostic pop
+
+	for (int i = 0; i < (int) settings.player_colors.size(); ++i) {
+		Color * colors = const_cast<Color*> (board->_color_list);
+		colors[i].R = settings.player_colors[i].R;
+		colors[i].G = settings.player_colors[i].G;
+		colors[i].B = settings.player_colors[i].B;
+		colors[i].A = 255;
+	}
+
+	for (int i = 0; i < board->_height; ++i) {
+		for (int j = 0; j < board->_width; ++j) {
+			board->_board[i * board->_width + j] = (cell_t) -1;
 		}
 	}
 	printf("board initialized\n");
+	return board;
 }
 
 void Board::Print(void) const {
-	for (int j = 0; j < _height; ++j) {
-		for (int i = 0; i < _width; ++i) {
-			printf("%4d", this->_board[i + j * _width]);
+	printf("width: %d height: %d\n", _width, _height);
+	printf("nplayers: %d\n", _nplayers);
+	for (int i = 0; i < _nplayers; ++i) {
+		const Color & c =  _color_list[i];
+		printf("Player %d (%d,%d,%d)\n", i, c.R, c.G, c.B);
+	}
+	for (int i = 0; i < _height; ++i) {
+		for (int j = 0; j < _width; ++j) {
+			printf("%4d", this->_board[i * _width + j]);
 		}
 		printf("\n");
 	}

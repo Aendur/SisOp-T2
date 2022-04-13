@@ -14,6 +14,8 @@ private:
 	void Attach(void);
 	void Detach(void);
 public:
+	~SharedMemory(void);
+
 	// Requests a new shared memory block with given size
 	void Create(int key, size_t size);
 

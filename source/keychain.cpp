@@ -1,8 +1,8 @@
 #include "keychain.h"
-#include <cstdio>
-#include <cstring>
+//#include <cstdio>
+//#include <cstring>
 
-int KeyChain::GetKey(bool print) {
+int KeyChain::GetKey(int index) {
 	const char ichi[] = "いっちゃん";
 	unsigned short * ichi_vec = (unsigned short*) ichi;
 	int n = sizeof(ichi) / sizeof(unsigned short);
@@ -12,12 +12,12 @@ int KeyChain::GetKey(bool print) {
 	skey = ~skey;
 	int key = skey << 8;
 
-	if (print) {
-		printf("S: %s %lu\n", ichi, strlen(ichi));
-		printf("k: 0x%x %d\n", skey, skey);
-		printf("K: 0x%x %d\n", key, key);
-	}
+	//if (print) {
+	//	printf("S: %s %lu\n", ichi, strlen(ichi));
+	//	printf("k: 0x%x %d\n", skey, skey);
+	//	printf("K: 0x%x %d\n", key, key);
+	//}
 
-	return key;
+	return key | index;
 }
 

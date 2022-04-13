@@ -58,7 +58,7 @@ void SharedMemory::Fetch(void) {
 			throw std::runtime_error(error_msg);
 		} else {
 			this->_size = info.shm_segsz;
-			printf("shared memory size=%llu\n", this->_size);
+			printf("shared memory size=%lu\n", this->_size);
 		}
 	}
 }
@@ -86,7 +86,7 @@ void SharedMemory::Detach(void) {
 		if (status == -1) {
 			perror("shmdt failed");
 		} else {
-			printf("detached(%d) shared memory from address %p\n", status, this->_id);
+			printf("detached(%d) shared memory from address %p\n", status, this->_addr);
 			this->_addr = nullptr;
 		}
 	}

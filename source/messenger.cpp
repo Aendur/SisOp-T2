@@ -23,7 +23,7 @@ const char * Messenger::Tag(const char * msg) const {
 // Sets msgID according to the message queue returned by the [shmget] syscall.
 // - If create_new is true, will try to create a new queue.
 void Messenger::InitMessageQueue(bool create_new) {
-	int key = KeyChain::GetKey();
+	int key = KeyChain::GetKey(0);
 	int flags = 0600 | (create_new ? IPC_CREAT | IPC_EXCL : 0);
 	this->msgID = msgget(key, flags);
 
@@ -40,7 +40,7 @@ void Messenger::InitMessageQueue(bool create_new) {
 // Sets msgID according to the message queue returned by the [shmget] syscall.
 // - If create_new_size > 0, will try to create a new shm block.
 void Messenger::InitSharedMemory(int create_new_size) {
-	int key = KeyChain::GetKey(true);
+	int key = KeyChain::GetKey(0);
 	int flags = 0600 | (create_new_size > 0 ? IPC_CREAT | IPC_EXCL : 0);
 	this->shmID = shmget(key, create_new_size, flags);
 

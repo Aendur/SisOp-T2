@@ -31,7 +31,7 @@ void Client::Connect(void) {
 		int G = std::stoi(&m.text[15]);
 		int B = std::stoi(&m.text[20]);
 		printf("%d,%d,%d,%d,%d\n", W, H, R, G, B);
-		this->board.Initialize(W, H, messenger.GetAddress());
+		//this->board.Initialize(W, H, messenger.GetAddress());
 	}
 }
 
