@@ -3,7 +3,7 @@
 #include "UISDL.h"
 
 
-Server::Server(const char * settings_file) : messenger("Server") {
+Server::Server(const char * settings_file) {
 	this->seed = std::random_device()();
 	this->generator = std::mt19937_64(seed);
 
@@ -13,13 +13,9 @@ Server::Server(const char * settings_file) : messenger("Server") {
 		this->settings.player_colors.push_back(GetRandomColor());
 	}
 
-	//int size = settings.grid_width * settings.grid_height * sizeof(cell_t);
-	//messenger.InitMessageQueue(true);
-	//messenger.InitSharedMemory(size);
-	this->mblock.Create(KeyChain::GetKey(SHMKEY_BOARD), Board::GetSize(this->settings));
+	this->messenger.Create(KeyChain::GetKey(KEY_MQ_CONNECTION));
+	this->mblock.Create(KeyChain::GetKey(KEY_SM_BOARD), Board::GetSize(this->settings));
 	this->board = Board::Initialize(this->settings, this->mblock.addr());
-
-	//board.Initialize(settings.grid_width, settings.grid_height, mblock.GetAddress());
 
 	if (settings.show_ui == true) {
 		this->ui = new UISDL("Server", this->settings);
@@ -32,8 +28,7 @@ Server::Server(const char * settings_file) : messenger("Server") {
 }
 
 Server::~Server(void) {
-	//messenger.DisposeSharedMemory(true);
-	//messenger.DisposeMessageQueue(true);
+	messenger.Dispose();
 	mblock.Dispose();
 
 	if (this->ui != nullptr) {
@@ -45,24 +40,22 @@ Server::~Server(void) {
 
 void Server::Run(void) {
 	board->Print();
-	/*int connected_players = 0;
-	int W = settings.grid_width;
-	int H = settings.grid_height;
-	Color C(0,0,0,255);
+	
+	cell_t connected_players = 0;
 	char buf[GM_MSG_SIZE];
 
 	Message m;
 	while (connected_players < settings.num_players) {
-		if (messenger.AwaitMessage(GM_CONNECTION_REQ, true, &m)) {
+		if (messenger.Receive(GM_CONNECTION_REQ, true, &m)) {
 			long token = std::stol(m.text);
-			this->SetNextColor(connected_players, &C);
-			snprintf(buf, GM_MSG_SIZE, "%-4d %-4d %-4d %-4d %-4d", W, H, C.R, C.G, C.B);
+			snprintf(buf, GM_MSG_SIZE, "%d", connected_players);
 			
-			messenger.SendMessage(token, buf);
+			messenger.Send(token, buf);
 			++connected_players;
 		}
 	}
 	
+	/*
 	int frame_count = 0;
 	while (connected_players > 0) {
 		if (this->ui != nullptr) {
@@ -77,16 +70,17 @@ void Server::Run(void) {
 			
 			if (++frame_count > 30) {
 				frame_count = 0;
-				if (messenger.AwaitMessage(GM_CONNECTION_END, false, &m)) {
+				if (messenger.Receive(GM_CONNECTION_END, false, &m)) {
 					--connected_players;
 				}
 			}
 		} else {
-			if (messenger.AwaitMessage(GM_CONNECTION_END, true, &m)) {
+			if (messenger.Receive(GM_CONNECTION_END, true, &m)) {
 				--connected_players;
 			}
 		}
-	}*/
+	}
+	*/
 }
 
 Color Server::GetRandomColor(void) {
@@ -98,15 +92,15 @@ Color Server::GetRandomColor(void) {
 	return Color(R,G,B,A);
 }
 
-void Server::SetNextColor(int player, Color * color) {
-	if (player < (int) settings.player_colors.size()) {
-		color->R = settings.player_colors[player].R;
-		color->G = settings.player_colors[player].G;
-		color->B = settings.player_colors[player].B;
-	} else {
-		auto distribution = std::uniform_int_distribution<unsigned char>(0, 0xFF);
-		color->R = distribution(this->generator);
-		color->G = distribution(this->generator);
-		color->B = distribution(this->generator);
-	}
-}
+// void Server::SetNextColor(int player, Color * color) {
+// 	if (player < (int) settings.player_colors.size()) {
+// 		color->R = settings.player_colors[player].R;
+// 		color->G = settings.player_colors[player].G;
+// 		color->B = settings.player_colors[player].B;
+// 	} else {
+// 		auto distribution = std::uniform_int_distribution<unsigned char>(0, 0xFF);
+// 		color->R = distribution(this->generator);
+// 		color->G = distribution(this->generator);
+// 		color->B = distribution(this->generator);
+// 	}
+// }

@@ -2,7 +2,7 @@
 #define CLIENT_H
 
 //#include "settings.h"
-#include "messenger.h"
+#include "message_queue.h"
 #include "board.h"
 #include <random>
 
@@ -12,7 +12,7 @@ private:
 	std::mt19937_64 generator;
 
 	//Settings settings;
-	Messenger messenger;
+	MessageQueue messenger;
 	Board board;
 public:
 	Client(const char *);
