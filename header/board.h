@@ -15,8 +15,10 @@ private:
 	int _width = 0;
 	int _height = 0;
 	int _nplayers = 0;
-	const Color * _color_list = nullptr;
-	cell_t * _board = nullptr;
+	// const Color * _color_list = nullptr;
+	// cell_t * _board = nullptr;
+	Color * _color_list(cell_t id) const;
+	cell_t * _board(int i, int j) const;
 public:
 	//Board(void) {}
 	void Print(void) const;
