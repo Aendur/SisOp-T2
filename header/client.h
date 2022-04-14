@@ -20,7 +20,7 @@ private:
 	Board * board;
 public:
 	Client(const char *);
-	~Client(void);
+	// ~Client(void);
 
 	void Connect(void);
 	void Run(void);

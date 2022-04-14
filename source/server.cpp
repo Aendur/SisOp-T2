@@ -15,7 +15,7 @@ Server::Server(const char * settings_file) {
 
 	this->messenger.Create(KeyChain::GetKey(KEY_MQ_CONNECTION));
 	this->mblock.Create(KeyChain::GetKey(KEY_SM_BOARD), Board::GetSize(this->settings));
-	this->ssync.Create(KeyChain::GetKey(KEY_SS_SYNC), 2, 0); //settings.num_players);
+	this->ssync.Create(KeyChain::GetKey(KEY_SS_SYNC), 3, 0); //settings.num_players);
 	
 	this->board = Board::Initialize(this->settings, this->mblock.addr());
 
@@ -58,16 +58,12 @@ void Server::Run(void) {
 		}
 	}
 
-	printf("waiting for input\n");
-	getchar();
+	printf("waiting for players\n");
 	ssync.Op(0, -settings.num_players);
-	printf("sync 1 barrier\n");
-	printf("waiting for input\n");
-	getchar();
+	printf("sync barrier\n");
 	ssync.Op(1, settings.num_players);
-	printf("sync 2 barrier\n");
 	printf("awaiting endgame\n");
-	getchar();
+	ssync.Op(2, -settings.num_players);
 
 	/*
 	int frame_count = 0;
