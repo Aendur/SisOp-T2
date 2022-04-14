@@ -6,13 +6,14 @@ class SemaphoreSet {
 private:
 	int    _key = -1;        // Create / Retrieve / Remove
 	int    _id = -1;         // Create / Retrieve / Remove
-	int    _nsems = 0;        // Fetch
+	unsigned long _nsems = 0;        // Fetch
+
+	void Fetch(void);
+	void Initialize(int init_value);
 
 public:
-	// ~SharedMemory(void);
-
 	// Requests a new shared memory block with given size
-	void Create(int key, int nsems);
+	void Create(int key, int nsems, int init_value);
 
 	// Requests an existing shared memory block
 	void Retrieve(int key);

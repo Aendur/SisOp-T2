@@ -3,6 +3,8 @@
 
 //#include "settings.h"
 #include "message_queue.h"
+#include "shared_memory.h"
+#include "semaphore_set.h"
 #include "board.h"
 #include <random>
 
@@ -13,7 +15,9 @@ private:
 
 	//Settings settings;
 	MessageQueue messenger;
-	Board board;
+	SharedMemory sm_board;
+	SemaphoreSet ss_sync;
+	Board * board;
 public:
 	Client(const char *);
 	~Client(void);

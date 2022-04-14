@@ -8,6 +8,8 @@ Client::Client(const char *) {
 
 	messenger.Retrieve(KeyChain::GetKey(KEY_MQ_CONNECTION));
 	#pragma message "TODO attach shared memory"
+	//sm_board.Retrieve(KeyChain::GetKey(KEY_SM...));
+	ss_sync.Retrieve(KeyChain::GetKey(KEY_SS_SYNC));
 }
 
 Client::~Client(void) {
@@ -30,6 +32,16 @@ void Client::Connect(void) {
 // #include <chrono>
 void Client::Run(void) {
 	//std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(30000));
+	// getchar();
+	// messenger.Send(GM_CONNECTION_END, "OK");
+	printf("waiting for input\n");
 	getchar();
-	messenger.Send(GM_CONNECTION_END, "OK");
+	ss_sync.Op(0,  1);
+	printf("sync 1 barrier\n");
+	printf("waiting for input\n");
+	getchar();
+	ss_sync.Op(1, -1);
+	printf("sync 2 barrier\n");
+	printf("playing\n");
+	getchar();
 }

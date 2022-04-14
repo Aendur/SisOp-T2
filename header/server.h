@@ -4,8 +4,9 @@
 #include <random>
 
 #include "settings.h"
-#include "shared_memory.h"
 #include "message_queue.h"
+#include "shared_memory.h"
+#include "semaphore_set.h"
 #include "board.h"
 
 class UI;
@@ -17,6 +18,7 @@ private:
 	Settings settings;
 	MessageQueue messenger;
 	SharedMemory mblock;
+	SemaphoreSet ssync;
 	Board* board;
 
 	UI * ui = nullptr;
