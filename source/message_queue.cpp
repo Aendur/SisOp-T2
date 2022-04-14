@@ -14,11 +14,11 @@ void MessageQueue::Create(int key) {
 	if (this->_id == -1) {
 		const char * msg = "msget failed";
 		perror(msg);
-		_key = -1;
+		this->_key = -1;
 		throw std::runtime_error(msg);
 	} else {
-		_key = key;
-		printf("message queue initialized Key=%d ID=%d\n", this->_key, this->_id);
+		this->_key = key;
+		printf("message queue initialized KEY=0x%x ID=%d\n", this->_key, this->_id);
 	}
 }
 
@@ -28,11 +28,11 @@ void MessageQueue::Retrieve(int key) {
 	if (this->_id == -1) {
 		const char * msg = "msget failed";
 		perror(msg);
-		_key = -1;
+		this->_key = -1;
 		throw std::runtime_error(msg);
 	} else {
-		_key = key;
-		printf("message queue retrieved Key=%d ID=%d\n", this->_key, this->_id);
+		this->_key = key;
+		printf("message queue retrieved KEY=0x%x ID=%d\n", this->_key, this->_id);
 	}
 }
 
@@ -42,7 +42,7 @@ void MessageQueue::Dispose(void) {
 		if (status == -1) {
 			perror("msgctl failed");
 		} else {
-			printf("message queue released Key=%d ID=%d\n", this->_key, this->_id);
+			printf("message queue released KEY=0x%x ID=%d\n", this->_key, this->_id);
 			this->_id = -1;
 			this->_key = -1;
 		}

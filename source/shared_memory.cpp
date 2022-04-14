@@ -23,7 +23,7 @@ void SharedMemory::Create(int key, size_t size) {
 		throw std::runtime_error(msg);
 	} else {
 		this->_key = key;
-		printf("shared memory initialized key=0x%x id=%d\n", this->_key, this->_id);
+		printf("shared memory initialized KEY=0x%x id=%d\n", this->_key, this->_id);
 		this->Fetch();
 		this->Attach();
 	}
@@ -39,7 +39,7 @@ void SharedMemory::Retrieve(int key) {
 		throw std::runtime_error(msg);
 	} else {
 		this->_key = key;
-		printf("shared memory retrieved key=0x%x id=%d\n", this->_key, this->_id);
+		printf("shared memory retrieved KEY=0x%x id=%d\n", this->_key, this->_id);
 		this->Fetch();
 		this->Attach();
 	}
@@ -100,7 +100,7 @@ void SharedMemory::Dispose(void) {
 		if (status == -1) {
 			perror("shmctl failed");
 		} else {
-			printf("released shared memory block ID=%d\n", this->_id);
+			printf("shared memory block released KEY=0x%x ID=%d\n", this->_key, this->_id);
 			this->_id = -1;
 			this->_key = -1;
 		}
