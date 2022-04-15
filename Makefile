@@ -18,17 +18,15 @@ tests/%: cpp/tests/%.cpp $(LIBS)
 obj/%.o: source/%.cpp header/%.h
 	g++ $(CFLAGS) -Iheader -c -o$@ $<
 
-.PHONY: env dirs clean cleanse
+.PHONY: ipcrm dirs clean cleanse
 
 dirs:
 	mkdir -p bin
 	mkdir -p obj
 
 # CUIDADO AO UTILIZAR AS RECEITAS ABAIXO POIS ELAS PODEM REMOVER OU SUBSTITUIR ARQUIVOS IMPORTANTES
-env:
-	mkdir -vp ./env/bin
-	cp -v ./bin/unbsh ./env/bin
-	rsync -av ./env/ ~
+ipcrm:
+	ipcrm -Q 0x005da900 -M 0x005da900 -S 0x005da900
 
 clean:
 	rm -vfr obj
