@@ -1,4 +1,4 @@
-#include "UISDL.h"
+#include "UI/UISDL.h"
 #include "settings/settings.h"
 
 #include <iostream>
@@ -8,7 +8,7 @@ UISDL::UISDL(const std::string & t, const Settings & settings) : title(t), setti
 	this->height = settings.GetWindowHeight();
 }
 
-void UISDL::Initialize(void) {
+void UISDL::Initialize(Board*) {
 	if (!this->initialized) {
 		InitializeSDL();
 		CreateWindow();
@@ -73,10 +73,10 @@ void UISDL::HandleInput(void) {
 		switch (event.type) {
 			case SDL_KEYUP:
 				if ((event.key.keysym.sym == SDLK_q) || (event.key.keysym.sym == SDLK_ESCAPE))
-					this->quit = true;
+					this->online = false;
 				break;
 			case SDL_QUIT:
-				this->quit = true;
+				this->online = false;
 				break;
 		}
 

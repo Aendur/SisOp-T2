@@ -1,6 +1,6 @@
 #include "server.h"
 #include "keychain.h"
-#include "UISDL.h"
+#include "UI/UISDL.h"
 
 Server::Server(const char * settings_file) {
 	this->seed = std::random_device()();
@@ -23,10 +23,10 @@ Server::Server(const char * settings_file) {
 
 	if (settings.show_ui == true) {
 		this->ui = new UISDL("Server", this->settings);
-		this->ui->Initialize();
-		this->ui->DrawBackground();
-		this->ui->DrawBorder();
-		this->ui->DrawGrid();
+		this->ui->Initialize(this->board);
+		// this->ui->DrawBackground();
+		// this->ui->DrawBorder();
+		// this->ui->DrawGrid();
 		this->ui->Refresh(16);
 	}
 }

@@ -1,6 +1,6 @@
 #include "game.h"
 #include "board.h"
-#include "UISDL.h"
+#include "UI/UISDL.h"
 
 #include <iostream>
 #include <thread>

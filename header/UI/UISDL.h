@@ -1,11 +1,13 @@
 #ifndef UISDL_H
 #define UISDL_H
 
-#include "UI.h"
+#include "UI/UI.h"
 #include "color.h"
 
 #include <string>
 #include <SDL2/SDL.h>
+
+class Settings;
 
 class UISDL : public UI {
 private:
@@ -18,28 +20,25 @@ private:
 	int height;
 
 	bool initialized = false;
-	bool quit = false;
+	bool online = true;
 
 	void InitializeSDL(void);
 	void CreateWindow(void);
 	void CreateRenderer(void);
 	
 
-public:
-	UISDL(const std::string & t, const Settings &);
-	///~UI(void);
-
-	void Initialize(void);
-	void Dispose(void);
-
 	void HandleInput(void);
 	void DrawBackground(void);
 	void DrawBorder(void);
 	void DrawGrid(void);
 	void PaintCell(int, int, const Color &);
+public:
+	UISDL(const std::string & t, const Settings &);
 
+	void Initialize(Board*);
+	void Dispose(void);
 	void Refresh(int);
-	bool Quit(void) { return quit; }
+	bool Online(void) { return online; }
 };
 
 #endif
