@@ -15,66 +15,12 @@ using std::string;
 using std::vector;
 using std::ifstream;
 
-AI::AI(const string & path, const Player & p, const Board & board) : player(p) {
+AI::AI(const char * path, const Player & p, const Board & board) : player(p) {
 	this->width = board.GetWidth();
 	this->height = board.GetHeight();
-	this->LoadAI(path);
-	this->_generator = std::mt19937(_seed);
+	this->settings.Load(path);
+	this->generator = std::mt19937(settings.seed);
 	this->board_view = vector<bool>(width * height);
-}
-
-void AI::LoadAI(const std::string & path) {
-	ifstream stream(path + ".ai");
-	string line;
-	int nline = 0;
-	while( std::getline(stream, line) ) {
-		ParseLine(line, ++nline);
-	}
-	stream.close();
-}
-
-void AI::ParseLine(const string & line, int nline) {
-	if (line.length() > 2 && line[0] != '#') {
-		auto v1 = Utility::split(line, "=");
-
-		if (v1.size() != 2) { throw std::runtime_error("error: invalid arguments on line " + std::to_string(nline) + ":\n" + line); }
-		ParseAttr(Utility::strip(v1[0]), v1[1]);
-	}
-}
-
-struct arg_feats {
-	unsigned int argc;
-	string argdesc;
-	void (AI::*argf)(const vector<string> &);
-};
-
-void AI::ParseAttr(const string & attr, const string & args) {
-	static const umap<string, arg_feats> arg_act = {
-		{ "SEED",  {1, "(seed)", &AI::SetSeed } },
-		{ "DELAY", {1, "(ms)"  , &AI::SetDelay} },
-	};
-
-	vector<string> argv = Utility::split(args, ",");
-	unsigned int argc_expected = arg_act.at(attr).argc;
-	if (argv.size() != argc_expected) { throw std::runtime_error(attr + " expects " + std::to_string(argc_expected) + " arguments " + arg_act.at(attr).argdesc); }
-	try {
-		(this->*(arg_act.at(attr).argf))(argv);
-	} catch (std::exception & e) {
-		std::cout << e.what() << std::endl;
-	}
-}
-
-void AI::SetSeed(const vector<string> & args) {
-	unsigned long long s = std::stoull(args[0]);
-	if (s == 0) {
-		this->_seed = std::random_device()();
-	} else {
-		this->_seed = s;
-	}
-}
-
-void AI::SetDelay(const vector<string> & args) {
-	this->delay = std::stoull(args[0]);
 }
 
 // void print_cores(int id, const std::pair<int,int> & chosen, int neibs, const std::set<std::pair<int,int>> & cores) {
@@ -95,7 +41,7 @@ std::pair<int, int> AI::NextMove(void) {
 		std::cout << id << " attempting first move..." << std::endl;
 		std::uniform_int_distribution<int> dist_i(0, this->height - 1);
 		std::uniform_int_distribution<int> dist_j(0, this->width - 1);
-		return { dist_i(_generator), dist_j(_generator) };
+		return { dist_i(generator), dist_j(generator) };
 	} else {
 		if (partial_cores.size() > 0) {
 			auto pair = GetNextExpansionCoords();
@@ -114,7 +60,7 @@ const std::pair<int,int> AI::GetNextExpansionCoords(void) {
 	long long total_weight = 0;
 	for (const auto & [k,v] : partial_cores) { total_weight += v; }
 	std::uniform_int_distribution<long long> shuffle(0, total_weight - 1);
-	long long pair_index = shuffle(_generator);
+	long long pair_index = shuffle(generator);
 	auto pair = partial_cores.begin(); 
 	pair_index -= pair->second;
 	while(pair_index >= 0) {
@@ -242,12 +188,12 @@ void AI::ConfirmMove(int i, int j, bool marked) {
 }
 
 void AI::Print(void) const {
-	std::cout << "SEED=" << this->_seed << '\n';
-	std::cout << "DELAY=" << this->delay << '\n';
+	std::cout << "SEED=" << this->settings.seed << '\n';
+	std::cout << "DELAY=" << this->settings.delay << '\n';
 	std::cout << "nmoves=" << this->nmoves << std::endl;
 }
 
 void AI::Delay(void) const {
-	auto t = std::chrono::duration<int, std::micro>(this->delay);
+	auto t = std::chrono::duration<int, std::micro>(this->settings.delay);
 	std::this_thread::sleep_for(t);
 }

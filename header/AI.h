@@ -1,42 +1,34 @@
 #ifndef AI_H
 #define AI_H
 
+#include "settings_ai.h"
 #include <vector>
 #include <map>
 #include <random>
-#include <functional>
 
 class Board;
 class Player;
 
 class AI {
 private:
-	unsigned long long _seed;
-	std::mt19937  _generator;
+	SettingsAI settings;
+	std::mt19937 generator;
 
 	std::vector<bool> board_view;
 	std::map<std::pair<int, int>, long long> partial_cores;
 	int width;
 	int height;
 	int nmoves = 0;
-	unsigned long long delay = 1;
 
 	bool has_moves = true;
 	const Player & player;
-
-	void LoadAI(const std::string &);
-	void ParseLine(const std::string &, int);
-	void ParseAttr(const std::string &, const std::string &);
-
-	void SetSeed(const std::vector<std::string> &);
-	void SetDelay(const std::vector<std::string> &);
 
 	const std::pair<int, int> GetNextExpansionCoords(void);
 	const std::vector<std::pair<int,int>> GetNeighbors8(const std::pair<int,int> &) const;
 	const std::vector<std::pair<int,int>> GetNeighbors4(const std::pair<int,int> &) const;
 	const std::vector<std::pair<int,int>> GetNeighborsRK(const std::pair<int,int> &, int) const;
 public:
-	AI(const std::string &, const Player &, const Board &);
+	AI(const char *, const Player &, const Board &);
 	//~AI(void);
 
 	std::pair<int, int> NextMove(void);
