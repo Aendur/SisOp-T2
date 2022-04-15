@@ -27,7 +27,7 @@ void Player::Run(void) {
 }
 
 void Player::InitAI(const std::string & path) {
-	this->_ai = new AI(path.c_str(), *this, this->_game->GetBoard());
+	//this->_ai = new AI(path.c_str(), *this, this->_game->GetBoard());
 }
 
 Player::~Player(void) {

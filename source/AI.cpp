@@ -1,21 +1,23 @@
 #include "AI.h"
-#include "board.h"
-#include "utility.h"
-#include "player.h"
+//#include "player.h"
 
 #include <iostream>
-#include <fstream>
-#include <unordered_map>
 #include <chrono>
 #include <thread>
 
-#define umap std::unordered_map
-
 using std::string;
 using std::vector;
-using std::ifstream;
 
-AI::AI(const char * path, const Player & p, const Board & board) : player(p) {
+//AI::AI(const char * path, const Player & p, const Board & board) : player(p) {
+//	this->width = board.GetWidth();
+//	this->height = board.GetHeight();
+//	this->settings.Load(path);
+//	this->generator = std::mt19937(settings.seed);
+//	this->board_view = vector<bool>(width * height);
+//}
+
+void AI::Initialize(const char * path, cell_t id, const Board & board) {
+	this->player_id = id;
 	this->width = board.GetWidth();
 	this->height = board.GetHeight();
 	this->settings.Load(path);
@@ -37,8 +39,7 @@ AI::AI(const char * path, const Player & p, const Board & board) : player(p) {
 
 std::pair<int, int> AI::NextMove(void) {
 	if (nmoves == 0) {
-		int id = player.GetId();
-		std::cout << id << " attempting first move..." << std::endl;
+		std::cout << player_id << " attempting first move..." << std::endl;
 		std::uniform_int_distribution<int> dist_i(0, this->height - 1);
 		std::uniform_int_distribution<int> dist_j(0, this->width - 1);
 		return { dist_i(generator), dist_j(generator) };
@@ -47,8 +48,7 @@ std::pair<int, int> AI::NextMove(void) {
 			auto pair = GetNextExpansionCoords();
 			return pair;
 		} else {
-			int id = player.GetId();
-			std::cout << id << " is out of moves." << std::endl;
+			std::cout << player_id << " is out of moves." << std::endl;
 			
 			has_moves = false;
 			return {-1,-1};
@@ -188,6 +188,8 @@ void AI::ConfirmMove(int i, int j, bool marked) {
 }
 
 void AI::Print(void) const {
+	int id = this->player_id;
+	std::cout << "id=" << id << '\n';
 	std::cout << "SEED=" << this->settings.seed << '\n';
 	std::cout << "DELAY=" << this->settings.delay << '\n';
 	std::cout << "nmoves=" << this->nmoves << std::endl;

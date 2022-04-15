@@ -2,9 +2,9 @@
 #include "keychain.h"
 
 Client::Client(const char * settings_file) {
-	this->seed = (long) std::random_device()();
-	if (this->seed < 100) this->seed += 100;
-	this->generator = std::mt19937_64(seed);
+	// this->seed = (long) std::random_device()();
+	// if (this->seed < 100) this->seed += 100;
+	// this->generator = std::mt19937_64(seed);
 
 	this->settings.Load(settings_file);
 	
@@ -16,8 +16,10 @@ Client::Client(const char * settings_file) {
 
 void Client::Connect(void) {
 	ss_sync.Op(GM_SEM_GET_ID, -1);
-	this->playerID = board->GetID();
-	printf("received id %d\n", this->playerID);
+	this->player_id = board->GetID();
+	printf("received id %d\n", this->player_id);
+	ai.Initialize(this->settings.ai_file.c_str(), this->player_id, *this->board);
+	ai.Print();
 	ss_sync.Op(GM_SEM_WAIT_PLAYERS, 1);
 	// char buf[GM_MSG_SIZE];
 	// snprintf(buf, GM_MSG_SIZE, "%ld", this->seed);
@@ -30,15 +32,10 @@ void Client::Connect(void) {
 	// }
 }
 
-// #include <thread>
-// #include <chrono>
 void Client::Run(void) {
-	if (this->playerID == -1) {
+	if (this->player_id == -1) {
 		printf("failed to get id\n");
 	} else {
-		//std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(30000));
-		// getchar();
-		// messenger.Send(GM_CONNECTION_END, "OK");
 		board->Print();
 		printf("waiting for others\n");
 		ss_sync.Op(GM_SEM_SYNC_BARRIER, -1);
@@ -53,11 +50,32 @@ void Client::Run(void) {
 }
 
 void Client::MainLoop(void) {
-	// while(_ai->HasMoves()) {
-	// 	const auto & move = _ai->NextMove();
-	// 	if (move.first >= 0 && move.second >= 0) {
-	// 		bool marked = _game->MarkBoard(*this, move.first, move.second);
-	// 		_ai->ConfirmMove(move.first, move.second, marked);
-	// 	}
-	// }
+	while(ai.HasMoves()) {
+		const auto & move = ai.NextMove();
+		if (move.first >= 0 && move.second >= 0) {
+			// LOCK
+			// TRY MARK
+			//bool marked = _game->MarkBoard(*this, move.first, move.second);
+			bool marked = false;
+			ai.Delay();
+			// UNLOCK
+
+			ai.ConfirmMove(move.first, move.second, marked);
+		}
+	}
 }
+
+// bool Game::MarkBoard(const Player & p, int i, int j) {
+// 	//board_lock.lock();
+// 	//board_lock_row[i].lock();
+// 	//board_lock_col[j].lock();
+// 	board_lock_cell[i * board_main->GetWidth() + j].lock();
+// 	bool marked = this->board_main->Mark(p.GetId(), i, j);
+// 	p.Delay();
+// 	board_lock_cell[i * board_main->GetWidth() + j].unlock();
+// 	//board_lock_col[j].unlock();
+// 	//board_lock_row[i].unlock();
+// 	//board_lock.unlock();
+
+// 	return marked;
+// }

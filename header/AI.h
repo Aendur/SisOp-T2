@@ -2,12 +2,10 @@
 #define AI_H
 
 #include "settings/settings_ai.h"
+#include "board.h"
 #include <vector>
 #include <map>
 #include <random>
-
-class Board;
-class Player;
 
 class AI {
 private:
@@ -20,16 +18,17 @@ private:
 	int height;
 	int nmoves = 0;
 
+	bool initialized = false;
 	bool has_moves = true;
-	const Player & player;
+	cell_t player_id;
+	//const Player & player;
 
 	const std::pair<int, int> GetNextExpansionCoords(void);
 	const std::vector<std::pair<int,int>> GetNeighbors8(const std::pair<int,int> &) const;
 	const std::vector<std::pair<int,int>> GetNeighbors4(const std::pair<int,int> &) const;
 	const std::vector<std::pair<int,int>> GetNeighborsRK(const std::pair<int,int> &, int) const;
 public:
-	AI(const char *, const Player &, const Board &);
-	//~AI(void);
+	void Initialize(const char *, cell_t, const Board &);
 
 	std::pair<int, int> NextMove(void);
 	void ConfirmMove(int, int, bool);
