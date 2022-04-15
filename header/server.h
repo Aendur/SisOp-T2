@@ -3,8 +3,8 @@
 
 #include <random>
 
-#include "settings.h"
-#include "message_queue.h"
+#include "settings/settings.h"
+//#include "message_queue.h"
 #include "shared_memory.h"
 #include "semaphore_set.h"
 #include "board.h"
@@ -16,7 +16,7 @@ private:
 	std::mt19937_64 generator;
 
 	Settings settings;
-	MessageQueue messenger;
+	//MessageQueue messenger;
 	SharedMemory mblock;
 	SemaphoreSet ssync;
 	Board* board;

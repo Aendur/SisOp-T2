@@ -1,6 +1,11 @@
 #ifndef SEMAPHORE_SET_H
 #define SEMAPHORE_SET_H
 
+#define GM_SS_SYNC_NSEMS 4
+#define GM_SEM_WAIT_PLAYERS 0
+#define GM_SEM_SYNC_BARRIER 1
+#define GM_SEM_END_GAME 2
+#define GM_SEM_GET_ID 3
 
 class SemaphoreSet {
 private:

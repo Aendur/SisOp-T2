@@ -1,8 +1,8 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "settings_client.h"
-#include "message_queue.h"
+#include "settings/settings_client.h"
+//#include "message_queue.h"
 #include "shared_memory.h"
 #include "semaphore_set.h"
 #include "board.h"
@@ -14,7 +14,7 @@ private:
 	std::mt19937_64 generator;
 
 	SettingsClient settings;
-	MessageQueue messenger;
+	//MessageQueue messenger;
 	SharedMemory sm_board;
 	SemaphoreSet ss_sync;
 	Board * board;

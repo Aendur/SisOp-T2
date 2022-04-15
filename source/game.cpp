@@ -1,5 +1,4 @@
 #include "game.h"
-#include "settings.h"
 #include "player.h"
 #include "board.h"
 #include "UISDL.h"

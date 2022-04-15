@@ -1,4 +1,4 @@
-#include "settings_ai.h"
+#include "settings/settings_ai.h"
 
 using std::string;
 using std::vector;

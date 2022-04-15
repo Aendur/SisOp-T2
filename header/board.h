@@ -15,8 +15,8 @@ private:
 	int _width = 0;
 	int _height = 0;
 	int _nplayers = 0;
-	// const Color * _color_list = nullptr;
-	// cell_t * _board = nullptr;
+	cell_t _last_id = 0;
+
 	Color * _color_list(cell_t id) const;
 	cell_t * _board(int i, int j) const;
 public:
@@ -28,6 +28,8 @@ public:
 	const std::map<cell_t, int> CountScores(void) const;
 	inline int GetWidth(void) const { return _width; }
 	inline int GetHeight(void) const { return _height; }
+	inline cell_t GetID(void) const { return _last_id; }
+	inline cell_t AddID(void) { return ++_last_id; }
 
 	
 	static Board* Initialize(const Settings &, void* addr);

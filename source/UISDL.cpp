@@ -1,5 +1,5 @@
 #include "UISDL.h"
-#include "settings.h"
+#include "settings/settings.h"
 
 #include <iostream>
 

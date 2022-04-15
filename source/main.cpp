@@ -1,9 +1,7 @@
 #if defined(SERVER)
 #include "server.h"
 
-int main (int argc, char ** argv) {
-	(void)argv;
-	
+int main (int, char **) {
 	Server server("settings_server.ini");
 	server.Run();
 
@@ -23,9 +21,7 @@ int main (int argc, char ** argv) {
 #elif defined(CLIENT)
 #include "client.h"
 
-int main (int, char ** argv) {
-	(void)argv;
-	
+int main (int, char **) {
 	Client client("settings_client.ini");
 	client.Connect();
 	client.Run();

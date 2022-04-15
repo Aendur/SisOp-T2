@@ -1,7 +1,7 @@
 #include "board.h"
 #include <cstdio>
 
-#include "settings.h"
+#include "settings/settings.h"
 #include "color.h"
 
 size_t Board::GetSize(const Settings & settings) {
@@ -17,6 +17,7 @@ Board* Board::Initialize(const Settings & settings, void * addr) {
 	board->_width = settings.grid_width;
 	board->_height = settings.grid_height;
 	board->_nplayers = settings.num_players;
+	board->_last_id = -1;
 
 	for (int i = 0; i < (int) settings.player_colors.size(); ++i) {
 		//Color * colors = const_cast<Color*> (board->_color_list());

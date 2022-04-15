@@ -1,7 +1,7 @@
 #ifndef AI_H
 #define AI_H
 
-#include "settings_ai.h"
+#include "settings/settings_ai.h"
 #include <vector>
 #include <map>
 #include <random>

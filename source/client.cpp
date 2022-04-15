@@ -8,23 +8,26 @@ Client::Client(const char * settings_file) {
 
 	this->settings.Load(settings_file);
 	
-	this->messenger.Retrieve(KeyChain::GetKey(KEY_MQ_CONNECTION));
+	//this->messenger.Retrieve(KeyChain::GetKey(KEY_MQ_CONNECTION));
 	this->sm_board.Retrieve(KeyChain::GetKey(KEY_SM_BOARD));
 	this->ss_sync.Retrieve(KeyChain::GetKey(KEY_SS_SYNC));
 	this->board = (Board*) sm_board.addr();
 }
 
 void Client::Connect(void) {
-	char buf[GM_MSG_SIZE];
-	snprintf(buf, GM_MSG_SIZE, "%ld", this->seed);
-	messenger.Send(GM_CONNECTION_REQ, buf);
-	
-	Message m;
-	if (messenger.Receive(this->seed, true, &m)) {
-		//#pragma message "TODO handle player ID"
-		//int id = std::stoi(m.text);
-		this->playerID = (cell_t) std::stoi(m.text);
-	}
+	ss_sync.Op(GM_SEM_GET_ID, -1);
+	this->playerID = board->GetID();
+	printf("received id %d\n", this->playerID);
+	ss_sync.Op(GM_SEM_WAIT_PLAYERS, 1);
+	// char buf[GM_MSG_SIZE];
+	// snprintf(buf, GM_MSG_SIZE, "%ld", this->seed);
+	// messenger.Send(GM_CONNECTION_REQ, buf);
+	// Message m;
+	// if (messenger.Receive(this->seed, true, &m)) {
+	// 	//#pragma message "TODO handle player ID"
+	// 	//int id = std::stoi(m.text);
+	// 	this->playerID = (cell_t) std::stoi(m.text);
+	// }
 }
 
 // #include <thread>
@@ -38,16 +41,14 @@ void Client::Run(void) {
 		// messenger.Send(GM_CONNECTION_END, "OK");
 		board->Print();
 		printf("waiting for others\n");
-		ss_sync.Op(0,  1);
-		printf("sync barrier\n");
-		ss_sync.Op(1, -1);
+		ss_sync.Op(GM_SEM_SYNC_BARRIER, -1);
 
 		printf("init mainloop\n");
 		// INIT MAIN LOOP
 		this->MainLoop();
 		// END MAIN LOOP
 		printf("end mainloop\n");
-		ss_sync.Op(2, 1);
+		ss_sync.Op(GM_SEM_END_GAME, 1);
 	}
 }
 

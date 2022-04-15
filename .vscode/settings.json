@@ -61,6 +61,7 @@
 		"semaphore": "cpp",
 		"stop_token": "cpp",
 		"thread": "cpp",
-		"xtree": "cpp"
+		"xtree": "cpp",
+		"unordered_set": "cpp"
 	}
 }

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
-#include "settings.h"
+#include "settings/settings.h"
 
 class Player;
 class Board;

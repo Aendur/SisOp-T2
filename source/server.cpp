@@ -13,9 +13,9 @@ Server::Server(const char * settings_file) {
 		this->settings.player_colors.push_back(GetRandomColor());
 	}
 
-	this->messenger.Create(KeyChain::GetKey(KEY_MQ_CONNECTION));
+	//this->messenger.Create(KeyChain::GetKey(KEY_MQ_CONNECTION));
 	this->mblock.Create(KeyChain::GetKey(KEY_SM_BOARD), Board::GetSize(this->settings));
-	this->ssync.Create(KeyChain::GetKey(KEY_SS_SYNC), 3, 0); //settings.num_players);
+	this->ssync.Create(KeyChain::GetKey(KEY_SS_SYNC), GM_SS_SYNC_NSEMS, 0); //settings.num_players);
 	
 	this->board = Board::Initialize(this->settings, this->mblock.addr());
 	//this->board->test.x = std::uniform_int_distribution<int>(0, 100)(this->generator);
@@ -32,7 +32,7 @@ Server::Server(const char * settings_file) {
 }
 
 Server::~Server(void) {
-	messenger.Dispose();
+	//messenger.Dispose();
 	mblock.Dispose();
 	ssync.Dispose();
 
@@ -46,26 +46,29 @@ Server::~Server(void) {
 void Server::Run(void) {
 	board->Print();
 	
-	cell_t connected_players = 0;
-	char buf[GM_MSG_SIZE];
+	//cell_t connected_players = 0;
+	//char buf[GM_MSG_SIZE];
+	//Message m;
+	//while (connected_players < settings.num_players) {
+	//	if (messenger.Receive(GM_CONNECTION_REQ, true, &m)) {
+	//		long token = std::stol(m.text);
+	//		snprintf(buf, GM_MSG_SIZE, "%d", connected_players);
+	//		
+	//		messenger.Send(token, buf);
+	//		++connected_players;
+	//	}
+	//}
 
-	Message m;
-	while (connected_players < settings.num_players) {
-		if (messenger.Receive(GM_CONNECTION_REQ, true, &m)) {
-			long token = std::stol(m.text);
-			snprintf(buf, GM_MSG_SIZE, "%d", connected_players);
-			
-			messenger.Send(token, buf);
-			++connected_players;
-		}
+	while(board->AddID() < settings.num_players) {
+		printf("waiting for players (%d)\n", board->GetID());
+		ssync.Op(GM_SEM_GET_ID, 1);
+		ssync.Op(GM_SEM_WAIT_PLAYERS, -1);
 	}
 
-	printf("waiting for players\n");
-	ssync.Op(0, -settings.num_players);
 	printf("sync barrier\n");
-	ssync.Op(1, settings.num_players);
+	ssync.Op(GM_SEM_SYNC_BARRIER, settings.num_players);
 	printf("awaiting endgame\n");
-	ssync.Op(2, -settings.num_players);
+	ssync.Op(GM_SEM_END_GAME, -settings.num_players);
 
 	/*
 	int frame_count = 0;
