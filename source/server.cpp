@@ -75,8 +75,7 @@ void Server::Run(void) {
 
 	bool finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, false, GM_NO_DELAY);
 	while (!finished) {
-		printf("\033[1;1H\033[0J");
-		board->Print();
+		board->Draw();
 		finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, true, 33333L);
 	}
 
