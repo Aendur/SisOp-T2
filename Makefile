@@ -10,10 +10,10 @@ LINKS = -lSDL2 -lpthread
 all: server client
 
 server: source/main.cpp dirs $(LIBS1) $(LIBS2)
-	g++ $(CFLAGS) -DSERVER -Iheader -oserver $< $(LIBS1) $(LIBS2) $(LINKS)
+	g++ $(CFLAGS) -DSERVER -Iheader -obin/server $< $(LIBS1) $(LIBS2) $(LINKS)
 
 client: source/main.cpp dirs $(LIBS1) $(LIBS2)
-	g++ $(CFLAGS) -DCLIENT -Iheader -oclient $<  $(LIBS1) $(LIBS2) $(LINKS)
+	g++ $(CFLAGS) -DCLIENT -Iheader -obin/client $<  $(LIBS1) $(LIBS2) $(LINKS)
 
 tests/%: cpp/tests/%.cpp $(LIBS1) $(LIBS2)
 	g++ $(CFLAGS) -DUNIT_TEST -Iheader -obin/test $<  $(LIBS1) $(LIBS2)
@@ -32,7 +32,7 @@ dirs:
 
 # CUIDADO AO UTILIZAR AS RECEITAS ABAIXO POIS ELAS PODEM REMOVER OU SUBSTITUIR ARQUIVOS IMPORTANTES
 ipcrm:
-	ipcrm -Q 0x005da900 -M 0x005da900 -S 0x005da900
+	ipcrm -M 0x005da900 -S 0x005da900 -S 0x005da901 -S 0x005da902
 
 clean:
 	rm -vfr obj

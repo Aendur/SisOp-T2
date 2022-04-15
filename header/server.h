@@ -17,8 +17,10 @@ private:
 
 	Settings settings;
 	//MessageQueue messenger;
-	SharedMemory mblock;
-	SemaphoreSet ssync;
+	SharedMemory sm_board;
+	SemaphoreSet ss_board_row;
+	SemaphoreSet ss_board_col;
+	SemaphoreSet ss_sync;
 	Board* board;
 
 	UI * ui = nullptr;

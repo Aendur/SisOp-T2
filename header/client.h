@@ -17,12 +17,14 @@ private:
 	SettingsClient settings;
 	//MessageQueue messenger;
 	SharedMemory sm_board;
+	SemaphoreSet ss_board_row;
+	SemaphoreSet ss_board_col;
 	SemaphoreSet ss_sync;
 	Board * board;
 
 	cell_t player_id = -1;
 	AI ai;
-	
+
 	void MainLoop(void);
 public:
 	Client(const char *);

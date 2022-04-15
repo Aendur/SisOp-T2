@@ -10,17 +10,19 @@ Client::Client(const char * settings_file) {
 	
 	//this->messenger.Retrieve(KeyChain::GetKey(KEY_MQ_CONNECTION));
 	this->sm_board.Retrieve(KeyChain::GetKey(KEY_SM_BOARD));
+	this->ss_board_row.Retrieve(KeyChain::GetKey(KEY_SS_BOARD_ROW));
+	this->ss_board_col.Retrieve(KeyChain::GetKey(KEY_SS_BOARD_COL));
 	this->ss_sync.Retrieve(KeyChain::GetKey(KEY_SS_SYNC));
 	this->board = (Board*) sm_board.addr();
 }
 
 void Client::Connect(void) {
-	ss_sync.Op(GM_SEM_GET_ID, -1);
+	ss_sync.Op(GM_SEM_GET_ID, -1, true, GM_NO_DELAY);
 	this->player_id = board->GetID();
 	printf("received id %d\n", this->player_id);
 	ai.Initialize(this->settings.ai_file.c_str(), this->player_id, *this->board);
 	ai.Print();
-	ss_sync.Op(GM_SEM_WAIT_PLAYERS, 1);
+	ss_sync.Op(GM_SEM_WAIT_PLAYERS, 1, true, GM_NO_DELAY);
 	// char buf[GM_MSG_SIZE];
 	// snprintf(buf, GM_MSG_SIZE, "%ld", this->seed);
 	// messenger.Send(GM_CONNECTION_REQ, buf);
@@ -38,29 +40,37 @@ void Client::Run(void) {
 	} else {
 		board->Print();
 		printf("waiting for others\n");
-		ss_sync.Op(GM_SEM_SYNC_BARRIER, -1);
+		ss_sync.Op(GM_SEM_SYNC_BARRIER, -1, true, GM_NO_DELAY);
 
 		printf("init mainloop\n");
 		// INIT MAIN LOOP
 		this->MainLoop();
 		// END MAIN LOOP
 		printf("end mainloop\n");
-		ss_sync.Op(GM_SEM_END_GAME, 1);
+		ss_sync.Op(GM_SEM_END_GAME, 1, true, GM_NO_DELAY);
 	}
 }
 
 void Client::MainLoop(void) {
 	while(ai.HasMoves()) {
-		const auto & move = ai.NextMove();
-		if (move.first >= 0 && move.second >= 0) {
+		auto [i, j] = ai.NextMove();
+		printf("%d %d\n", i, j);
+		if (i >= 0 && j >= 0) {
 			// LOCK
+			ss_board_row.Op(i, -1, true, GM_NO_DELAY);
+			ss_board_col.Op(j, -1, true, GM_NO_DELAY);
+
 			// TRY MARK
 			//bool marked = _game->MarkBoard(*this, move.first, move.second);
-			bool marked = false;
+			bool marked = board->Mark(player_id, i, j);
 			ai.Delay();
-			// UNLOCK
 
-			ai.ConfirmMove(move.first, move.second, marked);
+			// UNLOCK
+			ss_board_col.Op(j, 1, true, GM_NO_DELAY);
+			ss_board_row.Op(i, 1, true, GM_NO_DELAY);
+
+			// NOTIFY
+			ai.ConfirmMove(i, j, marked);
 		}
 	}
 }

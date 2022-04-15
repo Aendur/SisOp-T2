@@ -7,6 +7,8 @@
 #define GM_SEM_END_GAME 2
 #define GM_SEM_GET_ID 3
 
+#define GM_NO_DELAY -1
+
 class SemaphoreSet {
 private:
 	int    _key = -1;        // Create / Retrieve / Remove
@@ -26,9 +28,9 @@ public:
 	// Requests an existing shared memory block to be removed
 	void Dispose(void);
 
-	void Op(unsigned short index, short value);
-	void Wait(void);
-	void Post(void);
+	bool Op(unsigned short index, short value, bool await, long delay);
+	// void Wait(void);
+	// void Post(void);
 };
 
 

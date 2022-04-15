@@ -4,6 +4,8 @@
 #define KEY_MQ_CONNECTION 0
 #define KEY_SM_BOARD 0
 #define KEY_SS_SYNC 0
+#define KEY_SS_BOARD_ROW 1
+#define KEY_SS_BOARD_COL 2
 
 class KeyChain {
 public:

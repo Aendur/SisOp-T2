@@ -15,7 +15,7 @@ void SemaphoreSet::Create(int key, int nsems, int init_value) {
 		throw std::runtime_error(msg);
 	} else {
 		this->_key = key;
-		printf("semaphore set initialized KEY=%x ID=%d\n", this->_key, this->_id);
+		printf("semaphore set initialized KEY=0x%x ID=%d\n", this->_key, this->_id);
 		this->Fetch();
 		this->Initialize(init_value);
 	}
@@ -99,17 +99,30 @@ void SemaphoreSet::Dispose(void) {
 
 //////////
 
-void SemaphoreSet::Op(unsigned short index, short value) {
+
+bool SemaphoreSet::Op(unsigned short index, short value, bool await, long delay) {
 	struct sembuf op;
 	op.sem_num = index;
 	op.sem_op = value;
-	op.sem_flg = 0;
-	
-	int status = semop(this->_id, &op, 1);
+	op.sem_flg = await ? 0 : IPC_NOWAIT;
+
+	int status;
+	if (delay <= 0) {
+		status = semop(this->_id, &op, 1);
+	} else {
+		struct timespec t;
+		t.tv_sec = 0;
+		t.tv_nsec = delay * 1000L;
+		status = semtimedop(this->_id, &op, 1, &t);
+	}
+
 
 	if (status == -1) {
+		//if (await) { perror("semop failed"); }
 		perror("semop failed");
+		return false;
 	} else {
 		printf("semop sem %u op: %d\n", index, value);
+		return true;
 	}
 }

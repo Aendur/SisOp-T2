@@ -2,7 +2,6 @@
 #include "keychain.h"
 #include "UISDL.h"
 
-
 Server::Server(const char * settings_file) {
 	this->seed = std::random_device()();
 	this->generator = std::mt19937_64(seed);
@@ -13,13 +12,14 @@ Server::Server(const char * settings_file) {
 		this->settings.player_colors.push_back(GetRandomColor());
 	}
 
+	//size_t size = settings.grid_height * settings.grid_width;
 	//this->messenger.Create(KeyChain::GetKey(KEY_MQ_CONNECTION));
-	this->mblock.Create(KeyChain::GetKey(KEY_SM_BOARD), Board::GetSize(this->settings));
-	this->ssync.Create(KeyChain::GetKey(KEY_SS_SYNC), GM_SS_SYNC_NSEMS, 0); //settings.num_players);
-	
-	this->board = Board::Initialize(this->settings, this->mblock.addr());
-	//this->board->test.x = std::uniform_int_distribution<int>(0, 100)(this->generator);
-	//this->board->test.y = std::uniform_int_distribution<int>(0, 100)(this->generator);
+	this->sm_board.Create(KeyChain::GetKey(KEY_SM_BOARD), Board::GetSize(this->settings));
+	this->ss_board_row.Create(KeyChain::GetKey(KEY_SS_BOARD_ROW), settings.grid_height, 1);
+	this->ss_board_col.Create(KeyChain::GetKey(KEY_SS_BOARD_COL), settings.grid_width, 1);
+	this->ss_sync.Create(KeyChain::GetKey(KEY_SS_SYNC), GM_SS_SYNC_NSEMS, 0); //settings.num_players);
+	this->board = Board::Initialize(this->settings, this->sm_board.addr());
+
 
 	if (settings.show_ui == true) {
 		this->ui = new UISDL("Server", this->settings);
@@ -33,8 +33,10 @@ Server::Server(const char * settings_file) {
 
 Server::~Server(void) {
 	//messenger.Dispose();
-	mblock.Dispose();
-	ssync.Dispose();
+	ss_sync.Dispose();
+	ss_board_col.Dispose();
+	ss_board_row.Dispose();
+	sm_board.Dispose();
 
 	if (this->ui != nullptr) {
 		this->ui->Dispose();
@@ -61,14 +63,22 @@ void Server::Run(void) {
 
 	while(board->AddID() < settings.num_players) {
 		printf("waiting for players (%d)\n", board->GetID());
-		ssync.Op(GM_SEM_GET_ID, 1);
-		ssync.Op(GM_SEM_WAIT_PLAYERS, -1);
+		ss_sync.Op(GM_SEM_GET_ID, 1, true, GM_NO_DELAY);
+		ss_sync.Op(GM_SEM_WAIT_PLAYERS, -1, true, GM_NO_DELAY);
 	}
 
 	printf("sync barrier\n");
-	ssync.Op(GM_SEM_SYNC_BARRIER, settings.num_players);
-	printf("awaiting endgame\n");
-	ssync.Op(GM_SEM_END_GAME, -settings.num_players);
+	printf("----- press return to start game -----\n");
+	getchar();
+	ss_sync.Op(GM_SEM_SYNC_BARRIER, settings.num_players, true, GM_NO_DELAY);
+	
+
+	bool finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, false, GM_NO_DELAY);
+	while (!finished) {
+		printf("\033[1;1H\033[0J");
+		board->Print();
+		finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, true, 33333L);
+	}
 
 	/*
 	int frame_count = 0;

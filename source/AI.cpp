@@ -38,8 +38,9 @@ void AI::Initialize(const char * path, cell_t id, const Board & board) {
 // }
 
 std::pair<int, int> AI::NextMove(void) {
+	int id = player_id;
 	if (nmoves == 0) {
-		std::cout << player_id << " attempting first move..." << std::endl;
+		std::cout << id << " attempting first move..." << std::endl;
 		std::uniform_int_distribution<int> dist_i(0, this->height - 1);
 		std::uniform_int_distribution<int> dist_j(0, this->width - 1);
 		return { dist_i(generator), dist_j(generator) };
@@ -48,7 +49,7 @@ std::pair<int, int> AI::NextMove(void) {
 			auto pair = GetNextExpansionCoords();
 			return pair;
 		} else {
-			std::cout << player_id << " is out of moves." << std::endl;
+			std::cout << id << " is out of moves." << std::endl;
 			
 			has_moves = false;
 			return {-1,-1};
