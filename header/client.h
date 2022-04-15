@@ -18,6 +18,8 @@ private:
 	SharedMemory sm_board;
 	SemaphoreSet ss_sync;
 	Board * board;
+
+	cell_t playerID = -1;
 public:
 	Client(const char *);
 	// ~Client(void);

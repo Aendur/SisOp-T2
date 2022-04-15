@@ -2,14 +2,9 @@
 #include "server.h"
 
 int main (int argc, char ** argv) {
-	const char * path = "settings_server.ini";
-	if (argc > 1) {
-		// printf("usage:\n");
-		// printf("  server [settings_file]\n");
-		path = argv[1];
-		return 0;
-	}
-	Server server(path);
+	(void)argv;
+	
+	Server server("settings_server.ini");
 	server.Run();
 
 	//std::cout << SEMMSL << std::endl;
@@ -31,7 +26,7 @@ int main (int argc, char ** argv) {
 int main (int, char ** argv) {
 	(void)argv;
 	
-	Client client("");
+	Client client("settings_client.ini");
 	client.Connect();
 	client.Run();
 
