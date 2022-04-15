@@ -22,6 +22,8 @@ private:
 public:
 	//Board(void) {}
 	void Print(void) const;
+	void Draw(void) const;
+	
 	bool Mark(cell_t, int, int);
 	cell_t Get(int, int) const;
 	cell_t Flip(int, int);
