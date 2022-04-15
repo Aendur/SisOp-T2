@@ -75,17 +75,10 @@ void Client::MainLoop(void) {
 	}
 }
 
-// bool Game::MarkBoard(const Player & p, int i, int j) {
-// 	//board_lock.lock();
-// 	//board_lock_row[i].lock();
-// 	//board_lock_col[j].lock();
-// 	board_lock_cell[i * board_main->GetWidth() + j].lock();
-// 	bool marked = this->board_main->Mark(p.GetId(), i, j);
-// 	p.Delay();
-// 	board_lock_cell[i * board_main->GetWidth() + j].unlock();
-// 	//board_lock_col[j].unlock();
-// 	//board_lock_row[i].unlock();
-// 	//board_lock.unlock();
+//void Player::Print(void) const {
+//	printf("\033[48;2;%d;%d;%dm     \033[0m ", _color.R, _color.G, _color.B);
+//	printf("PLAYER %d ", _id);
+//	printf("(%d,%d,%d)\n", _color.R, _color.G, _color.B);
+//	this->_ai->Print();
+//}
 
-// 	return marked;
-// }

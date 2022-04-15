@@ -1,5 +1,4 @@
 #include "game.h"
-#include "player.h"
 #include "board.h"
 #include "UISDL.h"
 
@@ -10,48 +9,6 @@
 
 using std::string;
 
-Game::~Game(void) {
-	this->ui->Dispose();
-	delete this->ui;
-	
-	for (Player * p : this->players) { delete p; }
-	this->players.clear();
-
-	delete this->board_main;
-}
-
-void Game::LoadSettings(const string & path) {
-	this->settings.Load(path.c_str());
-}
-
-void Game::Initialize(void) {
-	InitBoard();
-	InitPlayers();
-	InitUI();
-}
-
-void Game::InitPlayers(void) {
-	#pragma message "unimplemented"
-	// for (auto & i : this->settings.players) {
-	// 	Player * p = new Player(i.second, this);
-	// 	p->InitAI(i.first);
-	// 	p->Print();
-	// 	this->players.push_back(p);
-	// }
-	// this->unfinished_players = (int) players.size();
-}
-
-void Game::InitBoard(void) {
-	#pragma message "board API changed, there are bugs here"
-	//this->board_main = new Board(settings.grid_width, settings.grid_height);
-	this->board_main = new Board();
-	this->board_main->Print();
-	
-	board_lock_col = std::vector<std::mutex>(settings.grid_width);
-	board_lock_row = std::vector<std::mutex>(settings.grid_height);
-	board_lock_cell = std::vector<std::mutex>(settings.grid_height * settings.grid_width);
-}
-
 void Game::InitUI(void) {
 	this->ui = new UISDL("test", this->settings);
 	this->ui->Initialize();
@@ -59,6 +16,11 @@ void Game::InitUI(void) {
 	this->ui->DrawBorder();
 	this->ui->DrawGrid();
 	this->ui->Refresh(16);
+}
+
+Game::~Game(void) {
+	this->ui->Dispose();
+	delete this->ui;
 }
 
 void Game::RedrawUI(void) const {
@@ -69,7 +31,7 @@ void Game::RedrawUI(void) const {
 		for (int j = 0; j < board_main->GetWidth(); ++j) {
 			if (board_main->Get(i, j) < -1) {
 				signed char p = board_main->Flip(i, j);
-				ui->PaintCell(i, j, players[p]->GetColor());
+				//ui->PaintCell(i, j, players[p]->GetColor());
 			}
 		}
 	}
@@ -87,7 +49,7 @@ void Game::UpdateUI(void) const {
 		for (int j = 0; j < board_main->GetWidth(); ++j) {
 			if (board_main->Get(i, j) < -1) {
 				signed char p = board_main->Flip(i, j);
-				ui->PaintCell(i, j, players[p]->GetColor());
+				//ui->PaintCell(i, j, players[p]->GetColor());
 			}
 		}
 	}
@@ -102,10 +64,9 @@ void Game::Run(void) {
 	std::cout << "init mainloop" << std::endl;
 
 	std::vector<std::thread> threads;
-	
-	for (Player * p : players) {
-		threads.emplace_back(&Player::Run, p);
-	}
+	// for (Player * p : players) {
+	// 	threads.emplace_back(&Player::Run, p);
+	// }
 
 	while (!ui->Quit()) {
 		ui->HandleInput();
@@ -130,30 +91,8 @@ void Game::PrintResults(void) const {
 	std::set<std::pair<int, signed char>> scores;
 	for (const auto & [k,v] : board_main->CountScores()) { scores.insert({-v, k}); }
 	for (const auto & [v,k] : scores) {
-		const Color & c = players[k]->GetColor();
-		int id = players[k]->GetId();
-		//std::cout << "\033[48;2;" << c.R << ';' << c.G << ';' << c.B << "m     \033[0m Player " << id << " - Score: " << -v << std::endl;
+		//const Color & c = players[k]->GetColor();
+		//int id = players[k]->GetId();
 		printf("\033[48;2;%d;%d;%dm     \033[0m Player %d - Score: %d\n", c.R, c.G, c.B, id, -v);
 	}
-}
-
-bool Game::MarkBoard(const Player & p, int i, int j) {
-	//board_lock.lock();
-	//board_lock_row[i].lock();
-	//board_lock_col[j].lock();
-	board_lock_cell[i * board_main->GetWidth() + j].lock();
-	bool marked = this->board_main->Mark(p.GetId(), i, j);
-	p.Delay();
-	board_lock_cell[i * board_main->GetWidth() + j].unlock();
-	//board_lock_col[j].unlock();
-	//board_lock_row[i].unlock();
-	//board_lock.unlock();
-
-	return marked;
-}
-
-void Game::NotifyFinished(void) {
-	notice_lock.lock();
-	--unfinished_players;
-	notice_lock.unlock();
 }
