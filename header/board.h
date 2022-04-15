@@ -6,7 +6,8 @@
 #include <cstddef>
 #include "color.h"
 
-typedef signed char cell_t;
+//typedef signed char cell_t;
+typedef signed short cell_t;
 
 class Settings;
 
@@ -23,10 +24,10 @@ public:
 	//Board(void) {}
 	void Print(void) const;
 	void Draw(void) const;
-	
+
 	bool Mark(cell_t, int, int);
 	cell_t Get(int, int) const;
-	cell_t Flip(int, int);
+	//cell_t Flip(int, int);
 	const std::map<cell_t, int> CountScores(void) const;
 	inline int GetWidth(void) const { return _width; }
 	inline int GetHeight(void) const { return _height; }

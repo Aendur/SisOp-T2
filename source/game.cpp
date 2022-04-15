@@ -30,7 +30,7 @@ void Game::RedrawUI(void) const {
 	for (int i = 0; i < board_main->GetHeight(); ++i) {
 		for (int j = 0; j < board_main->GetWidth(); ++j) {
 			if (board_main->Get(i, j) < -1) {
-				signed char p = board_main->Flip(i, j);
+				//signed char p = board_main->Flip(i, j);
 				//ui->PaintCell(i, j, players[p]->GetColor());
 			}
 		}
@@ -48,7 +48,7 @@ void Game::UpdateUI(void) const {
 	for (int i = 0; i < board_main->GetHeight(); ++i) {
 		for (int j = 0; j < board_main->GetWidth(); ++j) {
 			if (board_main->Get(i, j) < -1) {
-				signed char p = board_main->Flip(i, j);
+				//signed char p = board_main->Flip(i, j);
 				//ui->PaintCell(i, j, players[p]->GetColor());
 			}
 		}

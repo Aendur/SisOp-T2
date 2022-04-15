@@ -73,29 +73,31 @@ void Board::Print(void) const {
 
 void Board::Draw(void) const {
 	char vsep = '#';
-	printf("\033[1;1H\033[0J\n ##########\n");
-	printf(" %c  Width: %d Height: %d\n %c Players:\n", vsep, _width, _height, vsep);
+	printf("\033[1;1H\n ##########\n");
+	printf(" %c Width: %d\n %c Height: %d\n", vsep, _width, vsep, _height);
 	for (int i = 0; i < _nplayers; ++i) {
 		const Color & c =  *_color_list(i);
-		printf(" %c   \033[48;2;%d;%d;%dm   \033[0m ", vsep, c.R, c.G, c.B);
-		printf("Player %d (%d,%d,%d)\n", i, c.R, c.G, c.B);
+		printf(" %c \033[48;2;%d;%d;%dm   \033[0m ", vsep, c.R, c.G, c.B);
+		printf("Player %d (%d,%d,%d)\n", vsep, i, c.R, c.G, c.B);
 	}
 	printf(" ##########\n");
 	for (int i = 0; i < _height; ++i) {
 		printf(" %c", vsep);
 		for (int j = 0; j < _width; ++j) {
-			printf("%4d", *(this->_board(i, j)));
+			cell_t id = *_board(i, j);
+			Color& c = *_color_list(id);
+			printf("\033[48;2;%d;%d;%dm  \033[0m", c.R, c.G, c.B);
 		}
 		printf("%c\n", vsep);
 	}
-	printf(" ##########\n\n");
+	printf(" ##########\n\n\033[0J");
 }
 
 bool Board::Mark(cell_t playerID, int i, int j) {
 	bool marked = -1;
 	if (0 <= i && i < _height && 0 <= j && j < _width) {
 		if (*(this->_board(i, j)) == (cell_t) -1) {
-			*(this->_board(i, j)) = playerID | (cell_t) 0x80;
+			*(this->_board(i, j)) = playerID; // | (cell_t) 0x80;
 			marked = true;
 		} else {
 			marked = false;
@@ -109,11 +111,12 @@ const std::map<cell_t, int> Board::CountScores(void) const {
 
 	for (int i = 0; i < _height; ++i) {
 		for (int j = 0; j < _width; ++j) {
-			if ((*_board(i,j)) < 0) {
-				++scores[ (*_board(i,j)) & (cell_t) 0x7F ];
-			} else {
-				++scores[ (*_board(i,j)) ];
-			}
+			++scores[ (*_board(i,j)) ];
+			//if ((*_board(i,j)) < 0) {
+			//	++scores[ (*_board(i,j)) & (cell_t) 0x7F ];
+			//} else {
+			//	++scores[ (*_board(i,j)) ];
+			//}
 		}
 	}
 
@@ -124,7 +127,7 @@ cell_t Board::Get(int i, int j) const {
 	return *_board(i,j);
 }
 
-cell_t Board::Flip(int i, int j) {
-	(*_board(i,j)) &= (cell_t) 0x7F;
-	return *_board(i,j);
-}
+//cell_t Board::Flip(int i, int j) {
+//	(*_board(i,j)) &= (cell_t) 0x7F;
+//	return *_board(i,j);
+//}
