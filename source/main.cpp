@@ -2,7 +2,7 @@
 #include "server.h"
 
 int main (int argc, char ** argv) {
-	const char * path = "settings.ini";
+	const char * path = "settings_server.ini";
 	if (argc > 1) {
 		// printf("usage:\n");
 		// printf("  server [settings_file]\n");

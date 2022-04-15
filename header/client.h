@@ -24,6 +24,7 @@ public:
 
 	void Connect(void);
 	void Run(void);
+	void MainLoop(void);
 };
 
 

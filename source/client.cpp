@@ -39,7 +39,12 @@ void Client::Run(void) {
 	ss_sync.Op(0,  1);
 	printf("sync barrier\n");
 	ss_sync.Op(1, -1);
-	printf("playing\n");
-	getchar();
+
+	// INIT MAIN LOOP
+	// Receive player input
+	// Send player input to server
+	// Update UI
+	// END MAIN LOOP
+
 	ss_sync.Op(2, 1);
 }

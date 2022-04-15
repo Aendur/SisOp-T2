@@ -18,6 +18,8 @@ Server::Server(const char * settings_file) {
 	this->ssync.Create(KeyChain::GetKey(KEY_SS_SYNC), 3, 0); //settings.num_players);
 	
 	this->board = Board::Initialize(this->settings, this->mblock.addr());
+	//this->board->test.x = std::uniform_int_distribution<int>(0, 100)(this->generator);
+	//this->board->test.y = std::uniform_int_distribution<int>(0, 100)(this->generator);
 
 	if (settings.show_ui == true) {
 		this->ui = new UISDL("Server", this->settings);
