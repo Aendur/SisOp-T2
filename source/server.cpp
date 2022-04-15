@@ -72,12 +72,21 @@ void Server::Run(void) {
 	getchar();
 	ss_sync.Op(GM_SEM_SYNC_BARRIER, settings.num_players, true, GM_NO_DELAY);
 	
+	//for(int i = 0; i < settings.grid_height / 2 + 5; ++i) { printf("\n\n"); }
+	//printf("\033[50;1H");
+	// "clear" screen
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n");
 
 	bool finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, false, GM_NO_DELAY);
 	while (!finished) {
 		board->Draw();
 		finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, true, 33333L);
 	}
+	board->Draw();
 
 	/*
 	int frame_count = 0;

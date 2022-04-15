@@ -78,7 +78,7 @@ void Board::Draw(void) const {
 	for (int i = 0; i < _nplayers; ++i) {
 		const Color & c =  *_color_list(i);
 		printf(" %c \033[48;2;%d;%d;%dm   \033[0m ", vsep, c.R, c.G, c.B);
-		printf("Player %d (%d,%d,%d)\n", vsep, i, c.R, c.G, c.B);
+		printf("Player %d (%d,%d,%d)\n", i, c.R, c.G, c.B);
 	}
 	printf(" ##########\n");
 	for (int i = 0; i < _height; ++i) {
