@@ -55,28 +55,6 @@ void Board::Print(void) const {
 	}
 }
 
-void Board::Draw(void) const {
-	char vsep = '#';
-	printf("\033[1;1H\n ##########\n");
-	printf(" %c Width: %d\n %c Height: %d\n", vsep, _width, vsep, _height);
-	for (int i = 0; i < _nplayers; ++i) {
-		const Color & c =  *_color_list(i);
-		printf(" %c \033[48;2;%d;%d;%dm   \033[0m ", vsep, c.R, c.G, c.B);
-		printf("Player %d (%d,%d,%d)\n", i, c.R, c.G, c.B);
-	}
-	printf(" ##########\n");
-	for (int i = 0; i < _height; ++i) {
-		printf(" %c", vsep);
-		for (int j = 0; j < _width; ++j) {
-			cell_t id = *_board(i, j);
-			Color& c = *_color_list(id);
-			printf("\033[48;2;%d;%d;%dm  \033[0m", c.R, c.G, c.B);
-		}
-		printf("%c\n", vsep);
-	}
-	printf(" ##########\n\n\033[0J");
-}
-
 bool Board::Mark(cell_t playerID, int i, int j) {
 	bool marked = -1;
 	if (0 <= i && i < _height && 0 <= j && j < _width) {

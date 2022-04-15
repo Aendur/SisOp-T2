@@ -2,39 +2,28 @@
 #define UITERM_H
 
 #include "UI/UI.h"
-#include "color.h"
-
-#include <string>
-#include <SDL2/SDL.h>
+#include "board.h"
 
 class SettingsUI;
 
 class UITerm : public UI {
 private:
-	SDL_Window * window = nullptr;
-	SDL_Renderer * renderer = nullptr;
-
-	const std::string title;
 	const SettingsUI & settings;
 	const Board * board;
 
-	int window_w;
-	int window_h;
+	char v_sep;
+	char h_sep;
+	char c_sep;
+	char * border_h = nullptr;
 
 	bool initialized = false;
-	bool online = true;
 
-	void InitializeSDL(void);
-	void CreateWindow(void);
-	void CreateRenderer(void);
-	
+	void DrawHLine(void);
+	void DrawCells(int row);
+	void DrawLBorder(void);
+	void DrawRBorder(int row);
+	void PrintPlayer(cell_t p);
 
-	void HandleInput(void);
-	void DrawBackground(void);
-	void DrawBorder(void);
-	void DrawGrid(void);
-	void PaintCell(int, int, const Color &);
-	void DrawBoard(void);
 public:
 	UITerm(const SettingsUI & settings);
 
@@ -42,14 +31,8 @@ public:
 	void Dispose(void);
 	void Refresh(int);
 	void Clear(void);
-	bool Stop(void) { return false; }
+	inline bool Stop(void) { return false; }
 };
 
 #endif
 
-
-// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
-// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
-// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
-// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
-// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
