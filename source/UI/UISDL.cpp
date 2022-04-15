@@ -1,14 +1,15 @@
 #include "UI/UISDL.h"
-#include "settings/settings.h"
-
+#include "settings/settings_ui.h"
+#include "board.h"
 #include <iostream>
 
-UISDL::UISDL(const std::string & t, const Settings & settings) : title(t), settings(settings) {
-	this->width = settings.GetWindowWidth();
-	this->height = settings.GetWindowHeight();
+UISDL::UISDL(const std::string & title, const SettingsUI & settings) : title(title), settings(settings) {
+	this->window_w = settings.cell_size * settings.grid_width + 2 * (settings.border_size_outer + settings.border_size_inner);
+	this->window_h = settings.cell_size * settings.grid_height + 2 * (settings.border_size_outer + settings.border_size_inner);
 }
 
-void UISDL::Initialize(Board*) {
+void UISDL::Initialize(const Board* b) {
+	this->board = b;
 	if (!this->initialized) {
 		InitializeSDL();
 		CreateWindow();
@@ -51,7 +52,7 @@ void UISDL::CreateWindow(void) {
 	std::cout << "creating SDL window..." << std::endl;
 	int position = SDL_WINDOWPOS_UNDEFINED; // SDL_WINDOWPOS_CENTERED;
 	unsigned int flags = SDL_WINDOW_OPENGL; // | SDL_WINDOW_BORDERLESS;
-	this->window = SDL_CreateWindow(this->title.c_str(), position, position, this->width, this->height, flags);
+	this->window = SDL_CreateWindow(this->title.c_str(), position, position, this->window_w, this->window_h, flags);
 	if (this->window == nullptr) {
 		std::string error = SDL_GetError();
 		throw std::runtime_error(error);
@@ -73,10 +74,10 @@ void UISDL::HandleInput(void) {
 		switch (event.type) {
 			case SDL_KEYUP:
 				if ((event.key.keysym.sym == SDLK_q) || (event.key.keysym.sym == SDLK_ESCAPE))
-					this->online = false;
+					this->stop = true;
 				break;
 			case SDL_QUIT:
-				this->online = false;
+				this->stop = true;
 				break;
 		}
 
@@ -91,15 +92,15 @@ void UISDL::DrawBackground(void) {
 void UISDL::DrawBorder(void) {
 	static const int outer_border_size = settings.border_size_outer;
 	static const int total_border_size = settings.border_size_outer + settings.border_size_inner;
-	static const int board_w = width  - 2 * total_border_size + 2;
-	static const int board_h = height - 2 * total_border_size + 2;
+	static const int board_w = this->window_w - 2 * total_border_size + 2;
+	static const int board_h = this->window_h - 2 * total_border_size + 2;
 	
 	if (total_border_size > 0) {
 		static const SDL_Rect border_outer[4] = {
-			{ 0, 0, width, outer_border_size },
-			{ 0, 0, outer_border_size, height },
-			{ 0, height - outer_border_size, width, outer_border_size },
-			{ width - outer_border_size, 0, outer_border_size, height },
+			{ 0, 0, this->window_w, outer_border_size },
+			{ 0, 0, outer_border_size, this->window_h },
+			{ 0, this->window_h - outer_border_size, this->window_w, outer_border_size },
+			{ this->window_w - outer_border_size, 0, outer_border_size, this->window_h },
 		};
 		
 		static const SDL_Rect border_inner = { total_border_size - 1, total_border_size - 1, board_w, board_h };
@@ -160,8 +161,23 @@ void UISDL::PaintCell(int i, int j, const Color & color) {
 	}
 }
 
+void UISDL::DrawBoard(void) {
+	#pragma message "optimize this"
+	for (int i = 0; i < this->board->GetHeight(); ++i) {
+		for (int j = 0; j < this->board->GetWidth(); ++j) {
+			this->PaintCell(i, j, this->board->GetColor(this->board->Get(i, j)));
+		}
+	}
+}
+
 void UISDL::Refresh(int delay) {
-	//this->HandleInput();
+	this->HandleInput();
+
+	this->DrawBackground();
+	this->DrawBorder();
+	this->DrawBoard();
+	this->DrawGrid();
+
 	SDL_RenderPresent(this->renderer);
 	if (delay > 0) {
 		SDL_Delay(delay);

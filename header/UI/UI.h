@@ -9,17 +9,11 @@ class UI {
 public:
 	UI(void) {}
 	virtual ~UI(void) {};
-	virtual void Initialize(Board*) = 0;
+	virtual void Initialize(const Board*) = 0;
 	virtual void Dispose(void) = 0;
 	virtual void Refresh(int) = 0;
-	virtual bool Online(void) = 0;
-
-	// virtual void HandleInput(void) = 0;
-	// virtual void DrawBackground(void) = 0;
-	// virtual void DrawBorder(void) = 0;
-	// virtual void DrawGrid(void) = 0;
-	// virtual void PaintCell(int, int, const Color &) = 0;
-	
+	virtual void Clear(void) = 0;
+	virtual bool Stop(void) = 0;
 };
 
 #endif

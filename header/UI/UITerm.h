@@ -1,5 +1,5 @@
-#ifndef UISDL_H
-#define UISDL_H
+#ifndef UITERM_H
+#define UITERM_H
 
 #include "UI/UI.h"
 #include "color.h"
@@ -9,7 +9,7 @@
 
 class SettingsUI;
 
-class UISDL : public UI {
+class UITerm : public UI {
 private:
 	SDL_Window * window = nullptr;
 	SDL_Renderer * renderer = nullptr;
@@ -22,7 +22,7 @@ private:
 	int window_h;
 
 	bool initialized = false;
-	bool stop = false;
+	bool online = true;
 
 	void InitializeSDL(void);
 	void CreateWindow(void);
@@ -36,14 +36,20 @@ private:
 	void PaintCell(int, int, const Color &);
 	void DrawBoard(void);
 public:
-	UISDL(const std::string & title, const SettingsUI & settings);
+	UITerm(const SettingsUI & settings);
 
 	void Initialize(const Board*);
 	void Dispose(void);
 	void Refresh(int);
-	inline void Clear(void) { }
-	inline bool Stop(void) { return stop; }
-
+	void Clear(void);
+	bool Stop(void) { return false; }
 };
 
 #endif
+
+
+// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+// printf("\n\n\n\n\n\n\n\n\n\n\n\n");
+// printf("\n\n\n\n\n\n\n\n\n\n\n\n");

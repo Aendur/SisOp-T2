@@ -3,6 +3,9 @@
 
 #include "settings_base.h"
 
+#define GM_UI_TERMINAL 0
+#define GM_UI_SDL 1
+
 class SettingsUI : public SettingsBase {
 private:
 	void SetShowUI(const std::vector<std::string> &);
@@ -13,10 +16,7 @@ private:
 protected:
 	const std::unordered_map<std::string, SettingsBase::Action> & GetActTable(void);
 public:
-	int GetWindowWidth(void) const;
-	int GetWindowHeight(void) const;
-
-	bool show_ui = false;
+	int show_ui = GM_UI_TERMINAL;
 	int grid_width = 8;
 	int grid_height = 8;
 	int cell_size = 10;

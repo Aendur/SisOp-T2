@@ -36,22 +36,6 @@ Board* Board::Initialize(const Settings & settings, void * addr) {
 	return board;
 }
 
-// #pragma GCC diagnostic push
-// #pragma GCC diagnostic ignored "-Wpointer-arith"
-Color * Board::_color_list(cell_t id) const {
-	// void * addr = ((void*) this) + sizeof(Board);
-	//return ((Color*) addr) + id;
-	return (Color*)(this + 1) + id;
-}
-
-cell_t * Board::_board(int i, int j) const {
-	int index = i * _width + j;
-	//void * addr = ((void*) this) + sizeof(Board) + sizeof(Color) * this->_nplayers;
-	//return ((cell_t*) addr) + index;
-	return (cell_t*)((Color*)(this + 1) + this->_nplayers) + index;
-}
-// #pragma GCC diagnostic pop
-
 void Board::Print(void) const {
 	printf("width: %d height: %d\n", _width, _height);
 	printf("nplayers: %d\n", _nplayers);
@@ -112,22 +96,9 @@ const std::map<cell_t, int> Board::CountScores(void) const {
 	for (int i = 0; i < _height; ++i) {
 		for (int j = 0; j < _width; ++j) {
 			++scores[ (*_board(i,j)) ];
-			//if ((*_board(i,j)) < 0) {
-			//	++scores[ (*_board(i,j)) & (cell_t) 0x7F ];
-			//} else {
-			//	++scores[ (*_board(i,j)) ];
-			//}
 		}
 	}
 
 	return scores;
 }
 
-cell_t Board::Get(int i, int j) const {
-	return *_board(i,j);
-}
-
-//cell_t Board::Flip(int i, int j) {
-//	(*_board(i,j)) &= (cell_t) 0x7F;
-//	return *_board(i,j);
-//}

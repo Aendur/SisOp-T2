@@ -24,7 +24,8 @@ void SettingsUI::SetGridSize(const vector<string> & argv) {
 }
 
 void SettingsUI::SetShowUI(const vector<string> & argv) {
-	this->show_ui = (argv[0].length() == 1 && argv[0][0] == '1');
+	//this->show_ui = (argv[0].length() == 1 && argv[0][0] == '1');
+	this->show_ui = std::stoi(argv[0]);
 }
 
 void SettingsUI::SetLineColor(const vector<string> & argv) {
@@ -44,12 +45,3 @@ void SettingsUI::SetBorderSize(const vector<string> & argv) {
 	this->border_size_outer = std::stoi(argv[0]);
 	this->border_size_inner = std::stoi(argv[1]);
 }
-
-int SettingsUI::GetWindowWidth(void) const {
-	return this->cell_size * this->grid_width + 2 * (this->border_size_outer + this->border_size_inner);
-}
-
-int SettingsUI::GetWindowHeight(void) const {
-	return this->cell_size * this->grid_height + 2 * (this->border_size_outer + this->border_size_inner);
-}
-
