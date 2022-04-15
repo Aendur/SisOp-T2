@@ -6,6 +6,8 @@ LIBS = $(patsubst source/%.cpp,obj/%.o,$(filter-out source/main.cpp,$(wildcard s
 #LINKS = -lncurses
 LINKS = -lSDL2 -lpthread
 
+all: server client
+
 server: source/main.cpp dirs $(LIBS)
 	g++ $(CFLAGS) -DSERVER -Iheader -oserver $< $(LIBS) $(LINKS)
 
