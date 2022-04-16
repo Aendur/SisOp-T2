@@ -18,13 +18,16 @@ Board* Board::Initialize(const Settings & settings, void * addr) {
 	board->_height = settings.grid_height;
 	board->_nplayers = settings.num_players;
 	board->_last_id = -1;
+	board->_offsets[OFFSET_SCORE] = sizeof(Board);
+	board->_offsets[OFFSET_COLOR] = sizeof(Board) + sizeof(int) * board->_nplayers;
+	board->_offsets[OFFSET_BOARD] = sizeof(Board) + sizeof(int) * board->_nplayers + sizeof(Color) * board->_nplayers;
 
 	for (int i = 0; i < (int) settings.player_colors.size(); ++i) {
-		//Color * colors = const_cast<Color*> (board->_color_list());
-		board->_color_list(i)->R = settings.player_colors[i].R;
-		board->_color_list(i)->G = settings.player_colors[i].G;
-		board->_color_list(i)->B = settings.player_colors[i].B;
-		board->_color_list(i)->A = 255;
+		*board->_scores(i) = 0;
+		board->_colors(i)->R = settings.player_colors[i].R;
+		board->_colors(i)->G = settings.player_colors[i].G;
+		board->_colors(i)->B = settings.player_colors[i].B;
+		board->_colors(i)->A = 255;
 	}
 
 	for (int i = 0; i < board->_height; ++i) {
@@ -40,12 +43,13 @@ void Board::Print(void) const {
 	printf("width: %d height: %d\n", _width, _height);
 	printf("nplayers: %d\n", _nplayers);
 	printf("thisp @ %p\n", (void*) this);
-	printf("colrs @ %p\n", (void*) _color_list(0));
+	printf("colrs @ %p\n", (void*) _colors(0));
 	printf("board @ %p\n", (void*) _board(0,0));
 
 	for (int i = 0; i < _nplayers; ++i) {
-		const Color & c =  *_color_list(i);
-		printf("Player %d (%d,%d,%d)\n", i, c.R, c.G, c.B);
+		const Color & c =  *_colors(i);
+		int score = *_scores(i);
+		printf("Player %d (%d,%d,%d) - %d\n", i, c.R, c.G, c.B, score);
 	}
 	for (int i = 0; i < _height; ++i) {
 		for (int j = 0; j < _width; ++j) {
@@ -56,10 +60,11 @@ void Board::Print(void) const {
 }
 
 bool Board::Mark(cell_t playerID, int i, int j) {
-	bool marked = -1;
+	bool marked = false;
 	if (0 <= i && i < _height && 0 <= j && j < _width) {
 		if (*(this->_board(i, j)) == (cell_t) -1) {
 			*(this->_board(i, j)) = playerID; // | (cell_t) 0x80;
+			*(this->_scores(playerID)) += 1;
 			marked = true;
 		} else {
 			marked = false;

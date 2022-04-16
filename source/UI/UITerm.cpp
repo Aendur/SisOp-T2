@@ -67,24 +67,24 @@ void UITerm::DrawLBorder(void) {
 
 void UITerm::DrawRBorder(int row) {
 	printf("%c ", v_sep);
-
+	
+	//PrintPlayer(row - 1);
 	switch (row) {
-		case 0: printf("Width:  %d\n", board->GetWidth()); break;
-		case 1: printf("Height: %d\n", board->GetHeight()); break;
-		case 2: printf("Scores:\n"); break;
-		default: PrintPlayer(row - 3); break;
+		case 0: printf("Scores\n"); break;
+		default: PrintPlayer(row - 2); break;
+		//case 0: printf("Width:  %d\n", board->GetWidth()); break;
+		//case 1: printf("Height: %d\n", board->GetHeight()); break;
+		//case 2: printf("Scores:\n"); break;
+		//default: PrintPlayer(row - 3); break;
 	}
 }
 
 void UITerm::PrintPlayer(cell_t p) {
 	if (0 <= p && p < board->GetNPlayers()) {
 		const Color & c =  board->GetColor(p);
-		printf("   \033[48;2;%d;%d;%dm   \033[0m", c.R, c.G, c.B);
-		printf(" P%d (%3d,%3d,%3d)\n", p, c.R, c.G, c.B);
+		int score = board->GetScore(p);
+		printf(" \033[48;2;%d;%d;%dm   \033[0m P%d: %d\n", c.R, c.G, c.B, p, score);
 		
-		//int score = board->GetScore(p);
-		//printf(" Player %d (%3d,%3d,%3d): %d", p, c.R, c.G, c.B, score);
-		//printf(" Player %2d: %d", p, score);
 	} else {
 		printf("\n");
 	}

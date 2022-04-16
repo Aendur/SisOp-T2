@@ -8,8 +8,11 @@
 
 //typedef signed char cell_t;
 typedef signed short cell_t;
-
 class Settings;
+
+#define OFFSET_SCORE 0
+#define OFFSET_COLOR 1
+#define OFFSET_BOARD 2
 
 class Board {
 private:
@@ -18,8 +21,14 @@ private:
 	int _nplayers = 0;
 	cell_t _last_id = 0;
 
-	inline Color * _color_list(cell_t id) const { return (Color*)(this + 1) + id; }
-	inline cell_t * _board(int i, int j) const { return (cell_t*)((Color*)(this + 1) + this->_nplayers) + (i * _width + j); }
+	int _offsets[3];
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpointer-arith"
+	inline int* _scores(cell_t id) const { return (int*)((void*)this + _offsets[OFFSET_SCORE]) + id; }
+	inline Color* _colors(cell_t id) const { return (Color*)((void*)this + _offsets[OFFSET_COLOR]) + id; }
+	inline cell_t* _board(int i, int j) const { return (cell_t*)((void*)this + _offsets[OFFSET_BOARD]) + (i * _width + j); }
+#pragma GCC diagnostic pop
 public:
 	void Print(void) const;
 
@@ -32,7 +41,8 @@ public:
 	inline cell_t GetID(void) const { return _last_id; }
 	inline cell_t AddID(void) { return ++_last_id; }
 	
-	inline const Color & GetColor(cell_t id) const { return *_color_list(id); }
+	inline int GetScore(cell_t id) const { return *_scores(id); }
+	inline const Color & GetColor(cell_t id) const { return *_colors(id); }
 	inline cell_t Get(int i, int j) const { return *_board(i,j); }
 
 	// board factory
