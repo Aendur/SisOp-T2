@@ -112,7 +112,6 @@ void UISDL::DrawBorder(void) {
 		if (settings.border_size_inner > 0)
 			SDL_RenderDrawRect(this->renderer, &border_inner);
 	}
-
 }
 
 void UISDL::DrawGrid(void) {
@@ -144,32 +143,38 @@ void UISDL::DrawGrid(void) {
 
 }
 
-void UISDL::PaintCell(int i, int j, const Color & color) {
+void UISDL::PaintCells(int i, int j, int k, const Color & color) {
+	static const int size = settings.cell_size;
+	const int x = settings.border_size_outer + settings.border_size_inner + size * j;
+	const int y = settings.border_size_outer + settings.border_size_inner + size * i;
+	const SDL_Rect cell = {x, y, size * k, size};
+
 	SDL_SetRenderDrawColor(this->renderer, color.R, color.G, color.B, color.A);
-
-	const int size = settings.cell_size; // - 2;
-	const int x = settings.border_size_outer + settings.border_size_inner + settings.cell_size * j; // + 1;
-	const int y = settings.border_size_outer + settings.border_size_inner + settings.cell_size * i; // + 1;
-	const SDL_Rect cell = {x, y, size, size};
-
 	SDL_RenderFillRect(this->renderer, &cell);
+}
 
-	if (settings.line_color.A > 0) {
-		SDL_SetRenderDrawBlendMode(this->renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(this->renderer, settings.line_color.R, settings.line_color.G, settings.line_color.B, settings.line_color.A);
-		SDL_RenderDrawRect(this->renderer, &cell);
+void UISDL::PaintRow(int i) {
+	int j0 = 0;
+	int j1;
+	cell_t last = this->board->Get(i, 0);
+	cell_t next;
+	
+	for (j1 = 1; j1 < this->board->GetWidth(); ++j1) {
+		next = this->board->Get(i, j1);
+		if (next != last) {
+			PaintCells(i, j0, j1-j0, this->board->GetColor(last));
+			last = next;
+			j0 = j1;	
+		}
+	}
+	if (next == last) {
+		PaintCells(i, j0, j1-j0, this->board->GetColor(last));
 	}
 }
 
 void UISDL::DrawBoard(void) {
-	#pragma message "optimize this"
 	for (int i = 0; i < this->board->GetHeight(); ++i) {
-		for (int j = 0; j < this->board->GetWidth(); ++j) {
-			cell_t p = this->board->Get(i, j);
-			if (p >= 0) {
-				this->PaintCell(i, j, this->board->GetColor(p));
-			}
-		}
+		this->PaintRow(i);
 	}
 }
 

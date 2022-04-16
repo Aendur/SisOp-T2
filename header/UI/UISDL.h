@@ -33,7 +33,8 @@ private:
 	void DrawBackground(void);
 	void DrawBorder(void);
 	void DrawGrid(void);
-	void PaintCell(int, int, const Color &);
+	void PaintCells(int, int, int, const Color &);
+	void PaintRow(int);
 	void DrawBoard(void);
 public:
 	UISDL(const std::string & title, const SettingsUI & settings);
