@@ -60,7 +60,8 @@ void UITerm::Refresh(int delay) {
 
 void UITerm::DrawCells(int row) {
 	for (int col = 0; col < board->GetWidth(); ++col) {
-		const Color& c = board->GetColor(board->Get(row, col));
+		cell_t p = board->Get(row, col);
+		const Color& c = (p < 0) ? settings.background_color : board->GetColor(p);
 		printf("\033[48;2;%d;%d;%dm  \033[0m", c.R, c.G, c.B);
 	}
 }

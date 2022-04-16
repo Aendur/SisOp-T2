@@ -162,12 +162,14 @@ void UISDL::PaintRow(int i) {
 	for (j1 = 1; j1 < this->board->GetWidth(); ++j1) {
 		next = this->board->Get(i, j1);
 		if (next != last) {
-			PaintCells(i, j0, j1-j0, this->board->GetColor(last));
+			if (last >= 0) {
+				PaintCells(i, j0, j1-j0, this->board->GetColor(last));
+			}
 			last = next;
 			j0 = j1;	
 		}
 	}
-	if (next == last) {
+	if (next == last && last >= 0) {
 		PaintCells(i, j0, j1-j0, this->board->GetColor(last));
 	}
 }

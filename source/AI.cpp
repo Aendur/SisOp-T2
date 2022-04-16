@@ -21,10 +21,10 @@ std::pair<int, int> AI::NextMove(void) {
 	int id = player_id;
 	if (nmoves == 0) {
 		std::cout << id << " attempting first move..." << std::endl;
-		int x0 = (settings->start_x - settings->var_x) * this->width / 100;
-		int x1 = (settings->start_x + settings->var_x) * this->width / 100;
-		int y0 = (settings->start_y - settings->var_y) * this->height / 100;
-		int y1 = (settings->start_y + settings->var_y) * this->height / 100;
+		int x0 = (2*settings->start_x - settings->var_x) * this->width / 200;
+		int x1 = (2*settings->start_x + settings->var_x) * this->width / 200;
+		int y0 = (2*settings->start_y - settings->var_y) * this->height / 200;
+		int y1 = (2*settings->start_y + settings->var_y) * this->height / 200;
 		std::uniform_int_distribution<int> dist_i(y0, y1 - 1);
 		std::uniform_int_distribution<int> dist_j(x0, x1 - 1);
 		return { dist_i(generator), dist_j(generator) };

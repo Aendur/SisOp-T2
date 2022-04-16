@@ -5,7 +5,9 @@
 #include "color.h"
 
 size_t Board::GetSize(const Settings & settings) {
+	printf("SIZE %lu\n", sizeof(Board));
 	return sizeof(Board)
+		 + sizeof(int) * settings.num_players
 		 + sizeof(Color) * settings.num_players
 		 + sizeof(cell_t) * settings.grid_width * settings.grid_height
 	;

@@ -19,9 +19,8 @@ private:
 	int _width = 0;
 	int _height = 0;
 	int _nplayers = 0;
-	cell_t _last_id = 0;
-
 	int _offsets[3];
+	cell_t _last_id = 0;
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpointer-arith"
