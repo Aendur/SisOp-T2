@@ -40,7 +40,10 @@ void UITerm::Clear(void) {
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n");
 }
 
-void UITerm::Refresh(int) {
+#include <thread>
+#include <chrono>
+
+void UITerm::Refresh(int delay) {
 	printf("\033[1;1H\n");
 	DrawHLine();
 	for (int i = 0; i < board->GetHeight(); ++i) {
@@ -50,8 +53,9 @@ void UITerm::Refresh(int) {
 	}
 	DrawHLine();
 
-	//printf(this->border_h);
-	
+	if (delay > 0) {
+		std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(delay));
+	}
 }
 
 void UITerm::DrawCells(int row) {

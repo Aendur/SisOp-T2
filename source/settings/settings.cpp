@@ -7,8 +7,9 @@ using std::vector;
 
 const umap<std::string, SettingsBase::Action> & Settings::GetActTable(void) {
 	static umap<string, SettingsBase::Action> arg_num = {
-		{ "NUM_PLAYERS"      , {1, "(nplayers)", [this] (const vector<string> & argv) { this->SetNumPlayers(argv);}  }},
-		{ "PLAYER_COLOR"     , {3, "(R,G,B)"   , [this] (const vector<string> & argv) { this->AddPlayerColor(argv);} }},
+		{ "WAIT_FOR_INPUT" , {1, "(value)"   , [this] (const vector<string> & argv) { this->SetWaitForInput(argv); } }},
+		{ "NUM_PLAYERS"    , {1, "(nplayers)", [this] (const vector<string> & argv) { this->SetNumPlayers(argv); }   }},
+		{ "PLAYER_COLOR"   , {3, "(R,G,B)"   , [this] (const vector<string> & argv) { this->AddPlayerColor(argv); }  }},
 	};
 	static bool concat = false;
 	if (!concat) {
@@ -18,6 +19,10 @@ const umap<std::string, SettingsBase::Action> & Settings::GetActTable(void) {
 		std::cout << "concatenating act tables\n";
 	}
 	return arg_num;
+}
+
+void Settings::SetWaitForInput(const vector<string> & argv) {
+	this->wait_for_input = std::stoi(argv[0]) == 1;
 }
 
 void Settings::SetNumPlayers(const vector<string> & argv) {

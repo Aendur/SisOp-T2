@@ -3,8 +3,9 @@
 
 #include "settings_base.h"
 
-#define GM_UI_TERMINAL 0
-#define GM_UI_SDL 1
+#define GM_UI_EMPTY 0
+#define GM_UI_TERMINAL 1
+#define GM_UI_SDL 2
 
 class SettingsUI : public SettingsBase {
 private:

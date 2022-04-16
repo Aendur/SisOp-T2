@@ -32,6 +32,8 @@
 *.app
 client
 server
+main
+bin/
 
 # Other
 test.cpp

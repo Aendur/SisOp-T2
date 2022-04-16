@@ -165,7 +165,10 @@ void UISDL::DrawBoard(void) {
 	#pragma message "optimize this"
 	for (int i = 0; i < this->board->GetHeight(); ++i) {
 		for (int j = 0; j < this->board->GetWidth(); ++j) {
-			this->PaintCell(i, j, this->board->GetColor(this->board->Get(i, j)));
+			cell_t p = this->board->Get(i, j);
+			if (p >= 0) {
+				this->PaintCell(i, j, this->board->GetColor(p));
+			}
 		}
 	}
 }
@@ -183,8 +186,3 @@ void UISDL::Refresh(int delay) {
 		SDL_Delay(delay);
 	}
 }
-
-//void UISDL::Await(int t) {
-//	SDL_Delay(t);
-//}
-

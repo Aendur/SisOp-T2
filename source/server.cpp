@@ -1,5 +1,6 @@
 #include "server.h"
 #include "keychain.h"
+#include "UI/UIEmpty.h"
 #include "UI/UITerm.h"
 #include "UI/UISDL.h"
 
@@ -20,6 +21,9 @@ Server::Server(const char * settings_file) {
 	this->board = Board::Initialize(this->settings, this->sm_board.addr());
 
 	switch (settings.show_ui) {
+		case GM_UI_EMPTY:
+			this->ui = new UIEmpty();
+			break;
 		case GM_UI_TERMINAL:
 			this->ui = new UITerm(this->settings);
 			break;
@@ -32,7 +36,6 @@ Server::Server(const char * settings_file) {
 			break;
 	}
 	this->ui->Initialize(this->board);
-	this->ui->Refresh(0);
 }
 
 Server::~Server(void) {
@@ -58,8 +61,10 @@ void Server::Run(void) {
 	}
 
 	printf("sync barrier\n");
-	printf("----- press return to start game -----\n");
-	getchar();
+	if (settings.wait_for_input) {
+		printf("----- press return to start game -----\n");
+		getchar();
+	}
 	ss_sync.Op(GM_SEM_SYNC_BARRIER, settings.num_players, true, GM_NO_DELAY);
 	
 
@@ -69,10 +74,13 @@ void Server::Run(void) {
 		this->ui->Refresh(0);
 		finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, true, 33333L);
 	}
-	this->ui->Refresh(0);
+	this->ui->Refresh(10);
 	
-	printf("----- game finished, press return to exit -----\n");
-	getchar();
+	printf("\n\n\ngame finished\n");
+	if (settings.wait_for_input) {
+		printf("----- press return to exit -----\n");
+		getchar();
+	}
 }
 
 Color Server::GetRandomColor(void) {

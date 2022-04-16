@@ -21,9 +21,8 @@ private:
 	SemaphoreSet ss_board_row;
 	SemaphoreSet ss_board_col;
 	SemaphoreSet ss_sync;
-	Board* board;
-
-	UI * ui = nullptr;
+	Board* board = nullptr;
+	UI* ui = nullptr;
 
 	//void SetNextColor(int, Color *);
 	Color GetRandomColor(void);

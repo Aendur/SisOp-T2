@@ -4,18 +4,7 @@
 int main (int, char **) {
 	Server server("settings_server.ini");
 	server.Run();
-
-	//std::cout << SEMMSL << std::endl;
-	//int semid = semget(123, 5, flag);
-	//sleep(60);
-
-	// Game * game = new Game();
-	// game->LoadSettings("settings.ini");
-	// game->Initialize();
-	// game->Run();
-	// delete game;
-	
-	// std::cout << "main return 0" << std::endl;
+	printf("main return 0\n");
 	return 0;
 }
 #elif defined(CLIENT)
@@ -25,7 +14,7 @@ int main (int, char **) {
 	Client client("settings_client.ini");
 	client.Connect();
 	client.Run();
-
+	printf("main return 0\n");
 	return 0;
 }
 #endif

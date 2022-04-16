@@ -1,19 +1,42 @@
 #include "client.h"
 #include "keychain.h"
+#include "UI/UIEmpty.h"
+#include "UI/UITerm.h"
+#include "UI/UISDL.h"
 
 Client::Client(const char * settings_file) {
-	// this->seed = (long) std::random_device()();
-	// if (this->seed < 100) this->seed += 100;
-	// this->generator = std::mt19937_64(seed);
-
 	this->settings.Load(settings_file);
 	
-	//this->messenger.Retrieve(KeyChain::GetKey(KEY_MQ_CONNECTION));
 	this->sm_board.Retrieve(KeyChain::GetKey(KEY_SM_BOARD));
 	this->ss_board_row.Retrieve(KeyChain::GetKey(KEY_SS_BOARD_ROW));
 	this->ss_board_col.Retrieve(KeyChain::GetKey(KEY_SS_BOARD_COL));
 	this->ss_sync.Retrieve(KeyChain::GetKey(KEY_SS_SYNC));
 	this->board = (Board*) sm_board.addr();
+
+	switch (settings.show_ui) {
+		case GM_UI_EMPTY:
+			this->ui = new UIEmpty();
+			break;
+		case GM_UI_TERMINAL:
+			this->ui = new UITerm(this->settings);
+			break;
+		case GM_UI_SDL:
+			this->ui = new UISDL("Server", this->settings);
+			break;
+		default:
+			printf("unrecognized UI option - fallback to terminal UI\n");
+			this->ui = new UITerm(this->settings);
+			break;
+	}
+	this->ui->Initialize(this->board);
+}
+
+Client::~Client(void) {
+	if (this->ui != nullptr) {
+		this->ui->Dispose();
+		delete this->ui;
+		this->ui = nullptr;
+	}
 }
 
 void Client::Connect(void) {
