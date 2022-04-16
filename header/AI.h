@@ -25,7 +25,6 @@ private:
 
 	const std::pair<int, int> GetNextExpansionCoords(void);
 	const std::vector<std::pair<int,int>> GetNeighbors8(const std::pair<int,int> &) const;
-	const std::vector<std::pair<int,int>> GetNeighbors4(const std::pair<int,int> &) const;
 	const std::vector<std::pair<int,int>> GetNeighborsRK(const std::pair<int,int> &, int) const;
 public:
 	void Initialize(const char *, cell_t, const Board &);

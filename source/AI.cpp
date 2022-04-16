@@ -1,6 +1,7 @@
 #include "AI.h"
 
 #include <iostream>
+#include <stdexcept>
 #include <chrono>
 #include <thread>
 
@@ -50,6 +51,26 @@ const std::pair<int,int> AI::GetNextExpansionCoords(void) {
 	return pair->first;
 }
 
+
+int wrap_value(int v, int max, bool wrap, bool * range_ok) {
+	if (0 <= v && v < max) {
+		*range_ok = true;
+		return v;
+	} else {
+		if (!wrap) {
+			*range_ok = false;
+			return -1;
+		} else if (v < 0) {
+			*range_ok = true;
+			return max + (v % max);
+		} else if (v >= max) {
+			*range_ok = true;
+			return v % max;
+		}
+	}
+	throw std::logic_error("cannot wrap?");
+}
+
 const std::vector<std::pair<int,int>> AI::GetNeighbors8(const std::pair<int,int> & coords) const {
 	int i = coords.first;
 	int j = coords.second;
@@ -57,47 +78,24 @@ const std::vector<std::pair<int,int>> AI::GetNeighbors8(const std::pair<int,int>
 
 	for (int i2 = i - 1; i2 <= i + 1; ++i2) {
 		for (int j2 = j - 1; j2 <= j + 1; ++j2) {
-			bool i_range_ok = (0 <= i2 && i2 < height);
-			bool j_range_ok = (0 <= j2 && j2 < width);
-			bool not_ij = !(i2 == i && j2 == j);
-			bool is_free = (board_view[i2 * width + j2] == false);
+			bool i_range_ok; // = (0 <= i2 && i2 < height);
+			bool j_range_ok; // = (0 <= j2 && j2 < width);
+
+			int i3 = wrap_value(i2, height, settings.wrap_y, &i_range_ok);
+			int j3 = wrap_value(j2, width, settings.wrap_x, &j_range_ok);
+			
+			//bool not_ij = !(i2 == i && j2 == j);
+			//bool is_free = (board_view[i2 * width + j2] == false);
+
+			bool not_ij = !(i3 == i && j3 == j);
+			bool is_free = (board_view[i3 * width + j3] == false);
 			
 			if (i_range_ok && j_range_ok && not_ij && is_free) {
-				result.push_back({i2, j2});
+				//result.push_back({i2, j2});
+				result.push_back({i3, j3});
 			}
 		}
 	}
-	return result;
-}
-
-const std::vector<std::pair<int,int>> AI::GetNeighbors4(const std::pair<int,int> & coords) const {
-	int i = coords.first;
-	int j = coords.second;
-	std::vector<std::pair<int,int>> result;
-
-	for (int i2 = i - 1; i2 <= i + 1; ++i2) {
-		int j2 = j;
-		bool i_range_ok = (0 <= i2 && i2 < height);
-		bool not_ij = (i2 != i);
-		bool is_free = (board_view[i2 * width + j2] == false);
-		
-		if (i_range_ok && not_ij && is_free) {
-			result.push_back({i2, j2});
-		}
-	}
-		
-		
-	for (int j2 = j - 1; j2 <= j + 1; ++j2) {
-		int i2 = i;
-		bool j_range_ok = (0 <= j2 && j2 < width);
-		bool not_ij = (j2 != j);
-		bool is_free = (board_view[i2 * width + j2] == false);
-		
-		if (j_range_ok && not_ij && is_free) {
-			result.push_back({i2, j2});
-		}
-	}
-
 	return result;
 }
 
@@ -108,14 +106,20 @@ const std::vector<std::pair<int,int>> AI::GetNeighborsRK(const std::pair<int,int
 
 	for (int i2 = i - K; i2 <= i + K; ++i2) {
 		for (int j2 = j - K; j2 <= j + K; ++j2) {
-			bool i_range_ok = (0 <= i2 && i2 < height);
-			bool j_range_ok = (0 <= j2 && j2 < width);
-			bool not_ij = !(i2 == i && j2 == j);
-			bool is_free = (board_view[i2 * width + j2] == false);
+			bool i_range_ok; // = (0 <= i2 && i2 < height);
+			bool j_range_ok; // = (0 <= j2 && j2 < width);
+			int i3 = wrap_value(i2, height, settings.wrap_y, &i_range_ok);
+			int j3 = wrap_value(j2, width, settings.wrap_x, &j_range_ok);
+
+			//bool not_ij = !(i2 == i && j2 == j);
+			//bool is_free = (board_view[i2 * width + j2] == false);
+			bool not_ij = !(i3 == i && j3 == j);
+			bool is_free = (board_view[i3 * width + j3] == false);
 			bool radius = (abs(i - i2) + abs(j - j2)) <= K;
 			
 			if (i_range_ok && j_range_ok && not_ij && is_free && radius) {
-				result.push_back({i2, j2});
+				//result.push_back({i2, j2});
+				result.push_back({i3, j3});
 			}
 		}
 	}
