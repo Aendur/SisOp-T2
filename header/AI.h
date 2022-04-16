@@ -34,6 +34,8 @@ public:
 	void ConfirmMove(int, int, bool);
 	void Print(void) const;
 	void Delay(void) const;
+	void Delay(unsigned long long) const;
+	inline unsigned long long GetDelay(void) const { return settings.delay; }
 	
 	inline bool HasMoves(void) { return has_moves; }
 };

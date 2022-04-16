@@ -26,6 +26,10 @@ private:
 
 	//void SetNextColor(int, Color *);
 	Color GetRandomColor(void);
+	void Connect(void);
+	void Sync(void);
+	void Watch(void);
+	void Finish(void);
 public:
 	Server(const char *);
 	~Server(void);

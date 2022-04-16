@@ -1,5 +1,4 @@
 #include "AI.h"
-//#include "player.h"
 
 #include <iostream>
 #include <chrono>
@@ -7,14 +6,6 @@
 
 using std::string;
 using std::vector;
-
-//AI::AI(const char * path, const Player & p, const Board & board) : player(p) {
-//	this->width = board.GetWidth();
-//	this->height = board.GetHeight();
-//	this->settings.Load(path);
-//	this->generator = std::mt19937(settings.seed);
-//	this->board_view = vector<bool>(width * height);
-//}
 
 void AI::Initialize(const char * path, cell_t id, const Board & board) {
 	this->player_id = id;
@@ -24,18 +15,6 @@ void AI::Initialize(const char * path, cell_t id, const Board & board) {
 	this->generator = std::mt19937(settings.seed);
 	this->board_view = vector<bool>(width * height);
 }
-
-// void print_cores(int id, const std::pair<int,int> & chosen, int neibs, const std::set<std::pair<int,int>> & cores) {
-// 	if (id == 1) {
-// 		//std::ofstream logfile("player" + std::to_string(id) + ".log", std::ios_base::openmode::_S_app);
-// 		std::cout << id << " chosen: (" << chosen.first << ',' << chosen.second << ") neibs: " << neibs << " |";
-// 		for (const auto & core : cores) {
-// 			std::cout << " (" << core.first << ',' << core.second << ')';
-// 		}
-// 		std::cout << std::endl;
-// 		//logfile.close();
-// 	}
-// }
 
 std::pair<int, int> AI::NextMove(void) {
 	int id = player_id;
@@ -197,6 +176,11 @@ void AI::Print(void) const {
 }
 
 void AI::Delay(void) const {
-	auto t = std::chrono::duration<int, std::micro>(this->settings.delay);
+	auto t = std::chrono::duration<unsigned long long, std::micro>(this->settings.delay);
+	std::this_thread::sleep_for(t);
+}
+
+void AI::Delay(unsigned long long delay) const {
+	auto t = std::chrono::duration<unsigned long long, std::micro>(delay);
 	std::this_thread::sleep_for(t);
 }

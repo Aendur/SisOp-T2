@@ -25,7 +25,9 @@ private:
 	cell_t player_id = -1;
 	AI ai;
 
-	void MainLoop(void);
+	void Mainloop(void);
+	void Move(void);
+	void Watch(void);
 public:
 	Client(const char *);
 	~Client(void);

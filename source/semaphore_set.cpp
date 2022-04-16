@@ -122,7 +122,7 @@ bool SemaphoreSet::Op(unsigned short index, short value, bool await, long delay)
 		//perror("semop failed");
 		return false;
 	} else {
-		printf("semop sem %u op: %d\n", index, value);
+		//printf("semop sem %u op: %d\n", index, value);
 		return true;
 	}
 }

@@ -19,6 +19,7 @@ Server::Server(const char * settings_file) {
 	this->ss_board_col.Create(KeyChain::GetKey(KEY_SS_BOARD_COL), settings.grid_width, 1);
 	this->ss_sync.Create(KeyChain::GetKey(KEY_SS_SYNC), GM_SS_SYNC_NSEMS, 0); //settings.num_players);
 	this->board = Board::Initialize(this->settings, this->sm_board.addr());
+	this->board->Print();
 
 	switch (settings.show_ui) {
 		case GM_UI_EMPTY:
@@ -52,36 +53,13 @@ Server::~Server(void) {
 }
 
 void Server::Run(void) {
-	board->Print();
-
-	while(board->AddID() < settings.num_players) {
-		printf("waiting for players (%d)\n", board->GetID());
-		ss_sync.Op(GM_SEM_GET_ID, 1, true, GM_NO_DELAY);
-		ss_sync.Op(GM_SEM_WAIT_PLAYERS, -1, true, GM_NO_DELAY);
-	}
-
-	printf("sync barrier\n");
-	if (settings.wait_for_input) {
-		printf("----- press return to start game -----\n");
-		getchar();
-	}
-	ss_sync.Op(GM_SEM_SYNC_BARRIER, settings.num_players, true, GM_NO_DELAY);
-	
-
-	this->ui->Clear();
-	bool finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, false, GM_NO_DELAY);
-	while (!finished) {
-		this->ui->Refresh(0);
-		finished = ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, true, 33333L);
-	}
-	this->ui->Refresh(10);
-	
-	printf("\n\n\ngame finished\n");
-	if (settings.wait_for_input) {
-		printf("----- press return to exit -----\n");
-		getchar();
-	}
+	this->Connect();
+	this->Sync();
+	this->Watch();
+	this->Finish();
 }
+
+////////////////
 
 Color Server::GetRandomColor(void) {
 	auto distribution = std::uniform_int_distribution<unsigned char>(0, 0xFF);
@@ -90,4 +68,38 @@ Color Server::GetRandomColor(void) {
 	unsigned char B = distribution(this->generator);
 	unsigned char A = 255;
 	return Color(R,G,B,A);
+}
+
+void Server::Connect(void) {
+	while(board->AddID() < settings.num_players) {
+		printf("waiting for players (%d)\n", board->GetID());
+		ss_sync.Op(GM_SEM_GET_ID, 1, true, GM_NO_DELAY);
+		ss_sync.Op(GM_SEM_WAIT_PLAYERS, -1, true, GM_NO_DELAY);
+	}
+}
+
+void Server::Sync(void) {
+	printf("sync barrier\n");
+	if (settings.wait_for_input) {
+		printf("----- press return to start game -----\n");
+		getchar();
+	}
+	ss_sync.Op(GM_SEM_SYNC_BARRIER, settings.num_players, true, GM_NO_DELAY);
+}
+
+void Server::Watch(void) {
+	this->ui->Clear();
+	do {
+		this->ui->Refresh(0);
+	} while (!ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, true, 33333L));
+	this->ui->Refresh(10);
+}
+
+void Server::Finish(void) {
+	printf("\n\n\ngame finished\n");
+	if (settings.wait_for_input) {
+		printf("----- press return to exit -----\n");
+		getchar();
+	}
+	ss_sync.Op(GM_SEM_SYNC_BARRIER, settings.num_players, true, GM_NO_DELAY);
 }
