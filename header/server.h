@@ -4,7 +4,6 @@
 #include <random>
 
 #include "settings/settings.h"
-//#include "message_queue.h"
 #include "shared_memory.h"
 #include "semaphore_set.h"
 #include "board.h"
@@ -16,7 +15,6 @@ private:
 	std::mt19937_64 generator;
 
 	Settings settings;
-	//MessageQueue messenger;
 	SharedMemory sm_board;
 	SemaphoreSet ss_board_row;
 	SemaphoreSet ss_board_col;
@@ -24,12 +22,12 @@ private:
 	Board* board = nullptr;
 	UI* ui = nullptr;
 
-	//void SetNextColor(int, Color *);
 	Color GetRandomColor(void);
 	void Connect(void);
 	void Sync(void);
 	void Watch(void);
 	void Finish(void);
+	void ShowResults(void) const;
 public:
 	Server(const char *);
 	~Server(void);

@@ -21,8 +21,9 @@ private:
 	AI ai;
 
 	void Mainloop(void);
-	void Move(void);
 	void Watch(void);
+	void Await(void);
+	void ShowResults(void) const;
 public:
 	Client(const char *);
 	~Client(void);

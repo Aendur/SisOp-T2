@@ -75,15 +75,10 @@ bool Board::Mark(cell_t playerID, int i, int j) {
 	return marked;
 }
 
-const std::map<cell_t, int> Board::CountScores(void) const {
-	std::map<cell_t, int> scores;
-
-	for (int i = 0; i < _height; ++i) {
-		for (int j = 0; j < _width; ++j) {
-			++scores[ (*_board(i,j)) ];
-		}
+const result_t Board::CountScores(void) const {
+	result_t scores;
+	for (cell_t p = 0; p < _nplayers; ++p) {
+		scores.insert({*_scores(p), p});
 	}
-
 	return scores;
 }
-

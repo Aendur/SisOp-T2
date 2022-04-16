@@ -56,19 +56,13 @@ void Client::Run(void) {
 		printf("waiting for others\n");
 		ss_sync.Op(GM_SEM_SYNC_BARRIER, -1, true, GM_NO_DELAY);
 
-		printf("init mainloop\n");
 		this->Mainloop();
 		this->ui->Refresh(0);
 
-		printf("end mainloop\n");
 		ss_sync.Op(GM_SEM_END_GAME, 1, true, GM_NO_DELAY);
 
-		printf("waiting for game to finish\n");
-		do {
-			this->ui->Refresh(0);
-		} while (!ss_sync.Op(GM_SEM_SYNC_BARRIER, -1, true, 33333L));
-		this->ui->Refresh(0);
-		printf("\n\n\ngame finished\n");
+		this->Watch();
+		this->ShowResults();
 	}
 }
 
@@ -83,7 +77,7 @@ void Client::Mainloop(void) {
 
 			// TRY MARK
 			bool marked = board->Mark(player_id, i, j);
-			this->Watch();
+			this->Await();
 
 			// UNLOCK
 			ss_board_col.Op(j, 1, true, GM_NO_DELAY);
@@ -96,7 +90,7 @@ void Client::Mainloop(void) {
 }
 
 
-void Client::Watch(void) {
+void Client::Await(void) {
 	static const long long ai_delay = ai.GetDelay();
 	static const long long frame_delay = 33333L;
 	static long long elapsed = 0L;
@@ -118,3 +112,20 @@ void Client::Watch(void) {
 	}
 }
 
+void Client::Watch(void) {
+	printf("\n\nwaiting for game to finish\n");
+	do {
+		this->ui->Refresh(0);
+	} while (!ss_sync.Op(GM_SEM_SYNC_BARRIER, -1, true, 33333L));
+	this->ui->Refresh(0);
+	printf("\n\n\ngame finished\n");
+}
+
+void Client::ShowResults(void) const {
+	printf("\n\n\n     ----- RESULTS -----\n\n");
+	for (const auto & [score,player] : board->CountScores()) {
+		const Color & c = board->GetColor(player);
+		printf("     \033[48;2;%d;%d;%dm   \033[0m Player %d - Score: %d\n", c.R, c.G, c.B, player, score);
+	}
+	printf("\n\n\n");
+}

@@ -2,12 +2,14 @@
 #define BOARD_H
 
 #include <queue>
-#include <map>
+#include <set>
 #include <cstddef>
 #include "color.h"
 
 //typedef signed char cell_t;
 typedef signed short cell_t;
+typedef std::set<std::pair<int, cell_t>, std::greater<std::pair<int, cell_t>>> result_t;
+
 class Settings;
 
 #define OFFSET_SCORE 0
@@ -32,7 +34,7 @@ public:
 	void Print(void) const;
 
 	bool Mark(cell_t, int, int);
-	const std::map<cell_t, int> CountScores(void) const;
+	const result_t CountScores(void) const;
 
 	inline int GetWidth(void) const { return _width; }
 	inline int GetHeight(void) const { return _height; }

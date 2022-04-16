@@ -57,6 +57,7 @@ void Server::Run(void) {
 	this->Sync();
 	this->Watch();
 	this->Finish();
+	this->ShowResults();
 }
 
 ////////////////
@@ -97,9 +98,20 @@ void Server::Watch(void) {
 
 void Server::Finish(void) {
 	printf("\n\n\ngame finished\n");
+	ss_sync.Op(GM_SEM_SYNC_BARRIER, settings.num_players, true, GM_NO_DELAY);
+}
+
+
+void Server::ShowResults(void) const {
+	printf("\n\n\n     ----- RESULTS -----\n\n");
+	for (const auto & [score,player] : board->CountScores()) {
+		const Color & c = board->GetColor(player);
+		printf("     \033[48;2;%d;%d;%dm   \033[0m Player %d - Score: %d\n", c.R, c.G, c.B, player, score);
+	}
+	printf("\n\n");
+	
 	if (settings.wait_for_input) {
 		printf("----- press return to exit -----\n");
 		getchar();
 	}
-	ss_sync.Op(GM_SEM_SYNC_BARRIER, settings.num_players, true, GM_NO_DELAY);
 }
