@@ -8,7 +8,7 @@ public:
 	inline UIEmpty(void) { }
 	inline void Initialize(const Board*) { }
 	inline void Dispose(void) { }
-	inline void Refresh(int) { }
+	void Refresh(int);
 	inline void Clear(void) { }
 	inline bool Stop(void) { return false; }
 };

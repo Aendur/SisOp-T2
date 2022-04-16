@@ -3,13 +3,13 @@
 #include "board.h"
 #include <iostream>
 
-UISDL::UISDL(const std::string & title, const SettingsUI & settings) : title(title), settings(settings) {
-	this->window_w = settings.cell_size * settings.grid_width + 2 * (settings.border_size_outer + settings.border_size_inner);
-	this->window_h = settings.cell_size * settings.grid_height + 2 * (settings.border_size_outer + settings.border_size_inner);
-}
+UISDL::UISDL(const std::string & title, const SettingsUI & settings) : title(title), settings(settings) { }
 
 void UISDL::Initialize(const Board* b) {
 	this->board = b;
+	this->window_w = settings.cell_size * b->GetWidth() + 2 * (settings.border_size_outer + settings.border_size_inner);
+	this->window_h = settings.cell_size * b->GetHeight() + 2 * (settings.border_size_outer + settings.border_size_inner);
+
 	if (!this->initialized) {
 		InitializeSDL();
 		CreateWindow();
