@@ -8,12 +8,12 @@
 using std::string;
 using std::vector;
 
-void AI::Initialize(const char * path, cell_t id, const Board & board) {
+void AI::Initialize(const SettingsAI * settings, cell_t id, const Board & board) {
 	this->player_id = id;
 	this->width = board.GetWidth();
 	this->height = board.GetHeight();
-	this->settings.Load(path);
-	this->generator = std::mt19937(settings.seed);
+	this->settings = settings;
+	this->generator = std::mt19937(settings->seed);
 	this->board_view = vector<bool>(width * height);
 }
 
@@ -21,8 +21,12 @@ std::pair<int, int> AI::NextMove(void) {
 	int id = player_id;
 	if (nmoves == 0) {
 		std::cout << id << " attempting first move..." << std::endl;
-		std::uniform_int_distribution<int> dist_i(0, this->height - 1);
-		std::uniform_int_distribution<int> dist_j(0, this->width - 1);
+		int x0 = (settings->start_x - settings->var_x) * this->width / 100;
+		int x1 = (settings->start_x + settings->var_x) * this->width / 100;
+		int y0 = (settings->start_y - settings->var_y) * this->height / 100;
+		int y1 = (settings->start_y + settings->var_y) * this->height / 100;
+		std::uniform_int_distribution<int> dist_i(y0, y1 - 1);
+		std::uniform_int_distribution<int> dist_j(x0, x1 - 1);
 		return { dist_i(generator), dist_j(generator) };
 	} else {
 		if (partial_cores.size() > 0) {
@@ -81,8 +85,8 @@ const std::vector<std::pair<int,int>> AI::GetNeighbors8(const std::pair<int,int>
 			bool i_range_ok; // = (0 <= i2 && i2 < height);
 			bool j_range_ok; // = (0 <= j2 && j2 < width);
 
-			int i3 = wrap_value(i2, height, settings.wrap_y, &i_range_ok);
-			int j3 = wrap_value(j2, width, settings.wrap_x, &j_range_ok);
+			int i3 = wrap_value(i2, height, settings->wrap_y, &i_range_ok);
+			int j3 = wrap_value(j2, width, settings->wrap_x, &j_range_ok);
 			
 			//bool not_ij = !(i2 == i && j2 == j);
 			//bool is_free = (board_view[i2 * width + j2] == false);
@@ -108,8 +112,8 @@ const std::vector<std::pair<int,int>> AI::GetNeighborsRK(const std::pair<int,int
 		for (int j2 = j - K; j2 <= j + K; ++j2) {
 			bool i_range_ok; // = (0 <= i2 && i2 < height);
 			bool j_range_ok; // = (0 <= j2 && j2 < width);
-			int i3 = wrap_value(i2, height, settings.wrap_y, &i_range_ok);
-			int j3 = wrap_value(j2, width, settings.wrap_x, &j_range_ok);
+			int i3 = wrap_value(i2, height, settings->wrap_y, &i_range_ok);
+			int j3 = wrap_value(j2, width, settings->wrap_x, &j_range_ok);
 
 			//bool not_ij = !(i2 == i && j2 == j);
 			//bool is_free = (board_view[i2 * width + j2] == false);
@@ -174,13 +178,13 @@ void AI::ConfirmMove(int i, int j, bool marked) {
 void AI::Print(void) const {
 	int id = this->player_id;
 	std::cout << "id=" << id << '\n';
-	std::cout << "SEED=" << this->settings.seed << '\n';
-	std::cout << "DELAY=" << this->settings.delay << '\n';
+	std::cout << "SEED=" << this->settings->seed << '\n';
+	std::cout << "DELAY=" << this->settings->delay << '\n';
 	std::cout << "nmoves=" << this->nmoves << std::endl;
 }
 
 void AI::Delay(void) const {
-	auto t = std::chrono::duration<unsigned long long, std::micro>(this->settings.delay);
+	auto t = std::chrono::duration<unsigned long long, std::micro>(this->settings->delay);
 	std::this_thread::sleep_for(t);
 }
 

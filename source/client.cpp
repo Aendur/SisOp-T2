@@ -44,7 +44,7 @@ void Client::Connect(void) {
 	ss_sync.Op(GM_SEM_GET_ID, -1, true, GM_NO_DELAY);
 	this->player_id = board->GetID();
 	printf("received id %d\n", this->player_id);
-	ai.Initialize(this->settings.ai_file.c_str(), this->player_id, *this->board);
+	ai.Initialize(&this->settings, this->player_id, *this->board);
 	ai.Print();
 	ss_sync.Op(GM_SEM_WAIT_PLAYERS, 1, true, GM_NO_DELAY);
 }
