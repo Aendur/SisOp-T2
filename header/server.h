@@ -2,25 +2,24 @@
 #define SERVER_H
 
 #include <random>
+#include <thread>
 
 #include "settings/settings.h"
-#include "shared_memory.h"
-#include "semaphore_set.h"
 #include "board.h"
 
 class UI;
+class Player;
 class Server {
 private:
 	unsigned long long seed;
 	std::mt19937_64 generator;
 
 	Settings settings;
-	SharedMemory sm_board;
-	SemaphoreSet ss_board_row;
-	SemaphoreSet ss_board_col;
-	SemaphoreSet ss_sync;
 	Board* board = nullptr;
 	UI* ui = nullptr;
+
+	std::vector<std::thread> player_threads;
+	std::vector<Player*> player_objects;
 
 	Color GetRandomColor(void);
 	void Connect(void);
@@ -32,6 +31,7 @@ public:
 	Server(const char *);
 	~Server(void);
 
+	void InitPlayers(void);
 	void Run(void);
 };
 
