@@ -4,9 +4,10 @@ Implementação do trabalho 2 para a disciplina de Sistemas Operacionais / UnB
 
 Autor: Diogo César Ferreira
 
-Link para o repositório: https://github.com/Aendur/SisOp-T2
-Este branch é referente à implementação usando **IPC**.
+Link para o repositório: https://github.com/Aendur/SisOp-T2/tree/IPC
 
+Este branch é referente à implementação usando **IPC**.
+Para acesar a implementação com _threads_, acesse https://github.com/Aendur/SisOp-T2/tree/main
 
 ## Compilação
 Para compilar, executar o comando 
@@ -21,9 +22,10 @@ Serão criados dois executáveis, nos caminhos `bin/server` e `bin/client`.
 
 ## Pre-requisitos
 Este programa apresenta como pre-requisitos adicionais as seguintes bibliotecas:
-- Simple DirectMedia Layer
--- `libsdl2-2.0-0`
--- `libsdl2-dev`
+
+Simple DirectMedia Layer
+- `libsdl2-2.0-0`
+- `libsdl2-dev`
 
 
 ## Servidor
