@@ -12,10 +12,14 @@ using std::vector;
 
 void SettingsBase::Load(const char *path) {
 	ifstream stream(path);
-	string line;
-	int nline = 0;
-	while( std::getline(stream, line) ) {
-		ParseLine(line, ++nline);
+	if (stream.good()) {
+		string line;
+		int nline = 0;
+		while( std::getline(stream, line) ) {
+			ParseLine(line, ++nline);
+		}
+	} else {
+		throw std::runtime_error("unable to open file: " + string(path));
 	}
 	stream.close();
 }

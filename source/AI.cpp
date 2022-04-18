@@ -25,6 +25,12 @@ std::pair<int, int> AI::NextMove(void) {
 		int x1 = (2*settings->start_x + settings->var_x) * this->width / 200;
 		int y0 = (2*settings->start_y - settings->var_y) * this->height / 200;
 		int y1 = (2*settings->start_y + settings->var_y) * this->height / 200;
+		if (x0 < 0) { x0 = 0; }
+		if (x1 > this->width) { x1 = this->width; }
+		if (x0 >= x1) { x0 = 0; x1 = this->width; }
+		if (y0 < 0) { y0 = 0; }
+		if (y1 > this->height) { y1 = this->height; }
+		if (y0 >= y1)  { y0 = 0; y1 = this->height; }
 		std::uniform_int_distribution<int> dist_i(y0, y1 - 1);
 		std::uniform_int_distribution<int> dist_j(x0, x1 - 1);
 		return { dist_i(generator), dist_j(generator) };
