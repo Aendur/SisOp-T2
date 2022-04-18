@@ -11,6 +11,18 @@ Server::Server(const char * settings_file) {
 	this->generator = std::mt19937_64(seed);
 
 	this->settings.Load(settings_file);
+
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
+	printf("%d\n", settings.show_ui);
 	int missing = this->settings.num_players - this->settings.player_colors.size();
 	while (missing-- > 0) {
 		this->settings.player_colors.push_back(GetRandomColor());
@@ -22,8 +34,10 @@ Server::Server(const char * settings_file) {
 	this->board->Print();
 
 	for (int i = 0; i < settings.num_players; ++i) {
-		player_objects.emplace_back("client_settings.ini", this->board);
+		Player * new_player = new Player("settings_client.ini", this->board);
+		player_objects.push_back(new_player);
 	}
+
 
 	switch (settings.show_ui) {
 		case GM_UI_EMPTY:
@@ -44,6 +58,8 @@ Server::Server(const char * settings_file) {
 }
 
 Server::~Server(void) {
+	Sync::Dispose();
+
 	delete this->board;
 	
 	for(Player * client : this->player_objects) { delete client; }
@@ -57,8 +73,7 @@ Server::~Server(void) {
 }
 
 void Server::Run(void) {
-	this->Connect();
-	this->Sync();
+	this->StartPlayers();
 	this->Watch();
 	this->Finish();
 	this->ShowResults();
@@ -75,26 +90,11 @@ Color Server::GetRandomColor(void) {
 	return Color(R,G,B,A);
 }
 
-void Server::Connect(void) {
+void Server::StartPlayers(void) {
+	printf("initializing players\n");
 	for (Player * player : this->player_objects) {
 		player_threads.emplace_back(&Player::Start, player);
 	}
-
-
-	while(board->AddID() < settings.num_players) {
-		printf("waiting for players (%d)\n", board->GetID());
-		Sync::Notify(GM_SEM_GET_ID); //, 1, true, GM_NO_DELAY);
-		Sync::Wait(GM_SEM_WAIT_PLAYERS, GM_NO_DELAY); //, -1, true, GM_NO_DELAY);
-	}
-}
-
-void Server::Sync(void) {
-	printf("sync barrier\n");
-	if (settings.wait_for_input) {
-		printf("----- press return to start game -----\n");
-		getchar();
-	}
-	Sync::Broadcast(GM_SEM_SYNC_BARRIER); //, settings.num_players, true, GM_NO_DELAY);
 }
 
 void Server::Watch(void) {
@@ -102,14 +102,18 @@ void Server::Watch(void) {
 	int remaining_players = settings.num_players;
 	do {
 		this->ui->Refresh(0);
-		#pragma message "infinite loop"
+		//for (auto & thread : player_threads) {
+		//	if (thread.joinable()) {
+		//		thread.join();
+		//		--remaining_players;
+		//	}
+		//}
 	} while (remaining_players > 0); //while (!Sync::ss_sync.Op(GM_SEM_END_GAME, -settings.num_players, true, 33333L));
 	this->ui->Refresh(10);
 }
 
 void Server::Finish(void) {
 	printf("\n\n\ngame finished\n");
-	Sync::Broadcast(GM_SEM_SYNC_BARRIER); //, settings.num_players, true, GM_NO_DELAY);
 }
 
 

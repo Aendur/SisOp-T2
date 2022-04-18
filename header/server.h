@@ -22,8 +22,7 @@ private:
 	std::vector<Player*> player_objects;
 
 	Color GetRandomColor(void);
-	void Connect(void);
-	void Sync(void);
+	void StartPlayers(void);
 	void Watch(void);
 	void Finish(void);
 	void ShowResults(void) const;
@@ -31,7 +30,6 @@ public:
 	Server(const char *);
 	~Server(void);
 
-	void InitPlayers(void);
 	void Run(void);
 };
 

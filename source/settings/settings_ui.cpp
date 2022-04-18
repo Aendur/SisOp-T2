@@ -5,6 +5,7 @@ using std::string;
 using std::vector;
 #define umap std::unordered_map
 
+#include <iostream>
 
 const umap<std::string, SettingsBase::Action> & SettingsUI::GetActTable(void) {
 	static const umap<string, SettingsBase::Action> arg_num = {
@@ -24,7 +25,6 @@ void SettingsUI::SetGridSize(const vector<string> & argv) {
 }
 
 void SettingsUI::SetShowUI(const vector<string> & argv) {
-	//this->show_ui = (argv[0].length() == 1 && argv[0][0] == '1');
 	this->show_ui = std::stoi(argv[0]);
 }
 
